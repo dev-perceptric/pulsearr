@@ -16,7 +16,7 @@ Written November 10, 2026. Baremetrics facts come from its own site on that date
 | Scale | $1,152/mo (FAQ says from $749) | $3.6M+ | Unlimited | Scenario planning, budgets and expenses, Analytics API, dedicated rep |
 
 - 35% off for paying yearly. 14-day free trial with no card.
-- Their integrations page says "free until you reach $180K ARR," which clashes with the pricing page. Their pricing is confusing, and that's an opening for us.
+- **Free until $180K ARR ($15K MRR)**, per their integrations page. Their pricing page doesn't mention it, so the pricing is confusing, and that's an opening for us.
 
 ### Add-ons
 | Add-on | Price | What it does |
@@ -59,7 +59,7 @@ Stripe, Braintree, Chargebee, Recurly, Paddle (beta), Rebill (beta), Apple App S
 **For:** SaaS founders and small finance or growth teams from $0 to $5M ARR, on Stripe first.
 
 ### How we win
-1. **Cheaper and simpler.** Free up to $10K MRR. Recover and the cancel flow are in the paid plans, with no $129 add-ons.
+1. **Cheaper and simpler.** Free up to $20K MRR ($240K ARR), above Baremetrics' $180K ARR. Recover and the cancel flow are in the paid plans, with no $129 add-ons.
 2. **The AI analyst (Pulse).** Every morning: what moved, why, and what to do. Ask anything in plain English: "Why did churn jump in March?" Every answer links to the customers and payments behind it.
 3. **Revenue to source.** Connect Omniscient, HubSpot or Claritia and see MRR by rep, deal source, campaign and landing page. Connect Arrowsterr and see revenue from visitors who came from ChatGPT, Perplexity and Google AI answers. Baremetrics can't do this.
 4. **Numbers you can trust.** Every number can be traced back to the Stripe events behind it, and a test suite of hard billing cases runs on every change.
@@ -148,12 +148,14 @@ Stripe, Braintree, Chargebee, Recurly, Paddle (beta), Rebill (beta), Apple App S
 
 | Plan | Price | MRR covered | What's in it |
 |---|---|---|---|
-| Free | $0 | Up to $10K MRR | All metrics, dashboard, live feed, customers, weekly email, 1 billing source |
-| Starter | $29/mo | Up to $50K MRR | Everything in Free, plus Pulse briefs and Ask (100 questions a month), segments, cohorts, Slack, daily email, Recover, cancel flow |
-| Growth | $79/mo | Up to $250K MRR | Everything in Starter, plus revenue by source, unlimited sources, goals, MCP and API, 500 questions a month |
+| Free | $0 | Up to $20K MRR ($240K ARR) | All metrics, dashboard, live feed, customers, weekly email, 1 billing source |
+| Starter | $29/mo | $20K–50K MRR | Everything in Free, plus Pulse briefs and Ask (100 questions a month), segments, cohorts, Slack, daily email, Recover, cancel flow |
+| Growth | $79/mo | $50K–250K MRR | Everything in Starter, plus revenue by source, unlimited sources, goals, MCP and API, 500 questions a month |
 | Scale | $199/mo | Over $250K MRR | Everything in Growth, plus forecast, benchmarks, SSO, priority support, 2,000 questions a month |
 
 - 20% off yearly. 14-day trial of Growth, no card.
+- Baremetrics is free to $15K MRR ($180K ARR), and we're free to $20K MRR.
+- Free teams can try Pulse, Recover and the cancel flow for 14 days, and keep them by upgrading to Starter. This is the main reason to pay before $20K MRR.
 - Compared with Baremetrics Launch plus both add-ons ($333), Starter is $29 and Growth is $79.
 - Bands use MRR because founders think in MRR. They're checked each month, with a 60-day grace period before an upgrade is asked for.
 
@@ -287,7 +289,7 @@ Ask questions are capped per plan (section 4), so a heavy team can't run up the 
 |---|---|
 | Wrong numbers lose trust fast | Fixture tests, nightly check against Stripe, every number traceable to its events |
 | Stripe's free dashboard gets better | Win on Pulse, Recover and revenue by source, which Stripe doesn't do |
-| ProfitWell and ChartMogul have free tiers | Our free tier is just as generous, and paid starts at $29 |
+| Baremetrics, ProfitWell and ChartMogul have free tiers | Our free tier goes to $20K MRR, above Baremetrics' $15K, and paid starts at $29 |
 | Claude costs grow with heavy users | Ask caps per plan, step cache, Haiku for anything repeated |
 | Stripe webhook outages or delays | Store every event once, nightly repair, alerts when webhooks stop arriving |
 | Recover emails land in spam | Send from the team's own domain with SPF, DKIM and DMARC set up during connect |
