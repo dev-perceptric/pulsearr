@@ -17,10 +17,64 @@
   --white: #ffffff;
   --navy-glass: #000522cc;
   --navy-glass-2: #000417cc;
+  --line: #e6e6e9;
+  --muted: #6b6b6b; /* secondary text on white; never use --gray on white */
+
+  /* Status (numbers and states only) */
+  --up: #0b7a4b;
+  --down: #b42318;
+  --warn: #b54708;
+  --up-on-dark: #3fd08a;
+  --down-on-dark: #ff7a6b;
+  --warn-on-dark: #ffb45c;
+  --up-soft: #e7f5ee;
+  --down-soft: #fdecea;
+  --warn-soft: #fef3e6;
+
+  /* Charts */
+  --chart-1: var(--pulse-blue);
+  --chart-2: #5b6cf0;
+  --chart-3: #8fa3c7;
+  --chart-4: #c4ccda;
+  --chart-compare: var(--sky);
+  --chart-grid: var(--hover-gray);
+  --chart-1-dark: var(--sky);
+  --chart-2-dark: #7f8cff;
+  --chart-3-dark: #8fa3c7;
+  --chart-4-dark: #4a5778;
+  --chart-compare-dark: var(--slate);
 
   /* Fonts (stand-ins until GT Canon and GT Standard are licensed) */
   --font-display: "Newsreader", "Source Serif 4", Georgia, serif;
   --font-sans: "Inter", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* App type scale (fixed) */
+  --app-hero-number: 48px;
+  --app-card-number: 28px;
+  --app-page-title: 24px;
+  --app-section-title: 16px;
+  --app-body: 14px;
+  --app-table: 13px;
+  --app-caption: 12px;
+  --app-eyebrow: 11px;
+
+  /* Spacing (app px; the site uses the same steps in em) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-16: 64px;
+  --space-24: 96px;
+  --space-40: 160px;
+
+  /* Floating layers and focus */
+  --shadow-float: 0 8px 24px rgba(0, 5, 34, 0.12);
+  --focus-light: 0 0 0 2px var(--white), 0 0 0 4px var(--pulse-blue);
+  --focus-dark: 0 0 0 2px var(--navy-deep), 0 0 0 4px var(--sky);
 
   /* Type scale, desktop (em of the scaled base) */
   --fs-display: 4.375em;
@@ -38,14 +92,17 @@
 
   /* Shape */
   --radius-control: 0.5rem;
-  --radius-icon: 0.2rem;
+  --radius-icon: 2px;
+  --radius-tag: 2px;
   --radius-card: 0;
 
   /* Motion */
   --ease: cubic-bezier(0.65, 0.05, 0, 1);
   --dur-reveal: 0.735s;
+  --dur-panel: 0.4s;
   --dur-hover: 0.2s;
   --dur-header: 0.4s;
+  --dur-number: 0.8s;
   --blur-glass: 20px;
 
   /* Fluid base size for the marketing site */
