@@ -1,0 +1,94 @@
+/* PulseARR brand tokens. Style pulled from mosaic.pe on 2026-11-10; see docs/brand.md. */
+:root {
+  /* Colors */
+  --navy-deep: #000522;
+  --navy: #131824;
+  --ink: #0e0e0e;
+  --pulse-blue: #131fa7;
+  --pulse-blue-hover: #081170;
+  --pulse-blue-deep: #0f1988;
+  --sky: #aacbff;
+  --ice: #e5efff;
+  --slate: #2d3c60;
+  --slate-fade: #2d3c6066;
+  --paper: #faf8fb;
+  --hover-gray: #eeeeee;
+  --gray: #9c9c9c;
+  --white: #ffffff;
+  --navy-glass: #000522cc;
+  --navy-glass-2: #000417cc;
+
+  /* Fonts (stand-ins until GT Canon and GT Standard are licensed) */
+  --font-display: "Newsreader", "Source Serif 4", Georgia, serif;
+  --font-sans: "Inter", Arial, sans-serif;
+
+  /* Type scale, desktop (em of the scaled base) */
+  --fs-display: 4.375em;
+  --fs-h1: 3.75em;
+  --fs-h2: 3.25em;
+  --fs-h3: 3em;
+  --fs-h4: 2.375em;
+  --fs-large: 2em;
+  --fs-lmedium: 1.875em;
+  --fs-medium: 1.25em;
+  --fs-smedium: 1.125em;
+  --fs-body: 1em;
+  --fs-small: 0.875em;
+  --fs-eyebrow: 0.88em;
+
+  /* Shape */
+  --radius-control: 0.5rem;
+  --radius-icon: 0.2rem;
+  --radius-card: 0;
+
+  /* Motion */
+  --ease: cubic-bezier(0.65, 0.05, 0, 1);
+  --dur-reveal: 0.735s;
+  --dur-hover: 0.2s;
+  --dur-header: 0.4s;
+  --blur-glass: 20px;
+
+  /* Fluid base size for the marketing site */
+  --size-unit: 16;
+  --size-container-ideal: 1440;
+  --size-container-min: 992px;
+  --size-container-max: 1440px;
+  --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
+  --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
+  --container-pad: 4em;
+}
+
+@media (max-width: 991px) {
+  :root {
+    --size-container-ideal: 900;
+    --size-container-min: 768px;
+    --size-container-max: 991px;
+    --container-pad: 1.5em;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --size-container-ideal: 600;
+    --size-container-min: 480px;
+    --size-container-max: 767px;
+    --container-pad: 1em;
+    --fs-display: 3.25em;
+    --fs-h1: 3.25em;
+    --fs-h2: 2.75em;
+    --fs-h3: 2.25em;
+    --fs-h4: 2em;
+    --fs-large: 1.5em;
+    --fs-lmedium: 1.25em;
+    --fs-medium: 0.94em;
+    --fs-smedium: 0.94em;
+  }
+}
+
+@media (max-width: 479px) {
+  :root {
+    --size-container-ideal: 390;
+    --size-container-min: 320px;
+    --size-container-max: 479px;
+  }
+}

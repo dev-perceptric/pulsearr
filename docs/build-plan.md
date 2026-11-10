@@ -172,7 +172,7 @@ Stripe, Braintree, Chargebee, Recurly, Paddle (beta), Rebill (beta), Apple App S
 - **Worker:** a Node worker on the VPS claiming jobs from a Postgres jobs queue (backfills, webhook processing, nightly checks, emails, AI briefs).
 - **AI:** Claude through `@anthropic-ai/sdk`. Haiku for briefs and summaries, Sonnet for Ask. Every call goes through the step cache.
 - **Email:** Resend. **SMS:** Twilio, only once the team turns it on.
-- **Brand:** the shared brand system (Inter at 13px, the green accent, no browser pop-ups or dropdowns, no hidden text).
+- **Brand:** `docs/brand.md` and `docs/brand-tokens.css` (navy and white, one blue accent, serif headlines over Inter). Shared rules still apply: no browser pop-ups or dropdowns, no hidden text.
 
 ### Data model (first pass)
 | Table | Holds |
