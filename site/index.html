@@ -853,18 +853,40 @@ button, input { font: inherit; }
       : 'Type a question first.';
   });
 
-  // Beta form (sample site, nothing is sent)
-  document.getElementById('start-form').addEventListener('submit', function (e) {
+  // Beta form: saves the email to the waitlist in the app
+  var startForm = document.getElementById('start-form');
+  startForm.addEventListener('submit', function (e) {
     e.preventDefault();
     var field = document.getElementById('email');
     var note = document.getElementById('start-note');
-    var ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value.trim());
+    var button = startForm.querySelector('button');
+    var email = field.value.trim();
+    var ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     field.setAttribute('aria-invalid', String(!ok));
-    note.style.color = ok ? token('--muted') : token('--down');
-    note.textContent = ok
-      ? 'This is a sample site, so nothing was sent. The live form will add you to the beta list.'
-      : 'Enter a work email like you@company.com.';
-    if (!ok) field.focus();
+    function say(text, bad) { note.style.color = token(bad ? '--down' : '--muted'); note.textContent = text; }
+    if (!ok) { say('Enter a work email like you@company.com.', true); field.focus(); return; }
+    button.disabled = true;
+    say('Saving...', false);
+    function send(tries) {
+      return fetch('https://app.pulsearr.com/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, source: 'site' })
+      }).then(function (r) {
+        if (r.status >= 500 && tries > 1) {
+          return new Promise(function (res) { setTimeout(res, 1500); }).then(function () { return send(tries - 1); });
+        }
+        return r.json().catch(function () { return {}; }).then(function (b) { return { ok: r.ok, body: b }; });
+      }, function () {
+        if (tries > 1) return new Promise(function (res) { setTimeout(res, 1500); }).then(function () { return send(tries - 1); });
+        return { ok: false, body: { error: "We couldn't reach the server. Try again." } };
+      });
+    }
+    send(3).then(function (res) {
+      button.disabled = false;
+      if (res.ok) { say("You're on the list. We'll email you when your spot opens.", false); field.value = ''; }
+      else say((res.body && res.body.error) || "We couldn't save that. Try again.", true);
+    });
   });
 
   // Billing toggle
