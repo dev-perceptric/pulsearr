@@ -625,7 +625,7 @@ export const WIDE_BODY = "mx-auto w-full max-w-[1328px]";
 /** Two columns for record pages: the story on one side, facts on the other. */
 export const SPLIT = "grid gap-6 p-4 md:p-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]";
 
-export type IconButtonVariant = "primary" | "secondary" | "plain";
+export type IconButtonVariant = "primary" | "secondary" | "plain" | "dark";
 
 /** A button that is only an icon: a 32px square with 8px corners. The label shows as a tooltip on hover and keyboard
  *  focus, and is read by screen readers. */
@@ -643,7 +643,9 @@ export function IconButton({
       ? "border-transparent bg-brand text-white hover:bg-brand-hover"
       : variant === "secondary"
         ? "border-line bg-panel text-ink hover:bg-hover"
-        : "border-transparent text-muted hover:bg-hover hover:text-ink";
+        : variant === "dark"
+          ? "border-transparent text-white hover:bg-slate"
+          : "border-transparent text-muted hover:bg-hover hover:text-ink";
   const ref = useRef<HTMLButtonElement>(null);
   const hover = useTip();
   const at = `${tip}${align === "center" ? "" : `-${align}`}` as "top" | "bottom" | "top-start" | "top-end" | "bottom-start" | "bottom-end";

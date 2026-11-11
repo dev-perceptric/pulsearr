@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-int
 const serif = Newsreader({ subsets: ["latin"], weight: ["400", "500"], display: "swap", variable: "--font-newsreader" });
 
 export const metadata: Metadata = {
-  title: "PulseARR",
+  title: { default: "PulseARR", template: "%s | PulseARR" },
   description: "Revenue you can trust.",
   applicationName: "PulseARR",
 };

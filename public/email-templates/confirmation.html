@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Your PulseARR sign-in code</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=Newsreader:opsz,wght@6..72,500&amp;display=swap" rel="stylesheet">
+</head>
+<body style="margin:0;padding:0;background:#FAF8FB;-webkit-text-size-adjust:100%">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#FAF8FB">Your sign-in code is {{ .Token }}. It works once and expires in 1 hour.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FAF8FB" style="background:#FAF8FB">
+<tr><td align="center" style="padding:32px 16px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px">
+<tr><td bgcolor="#000522" style="background:#000522;padding:20px 40px">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+<td style="vertical-align:middle"><img src="https://app.pulsearr.com/brand/mark-reverse-56.png" width="28" height="28" alt="" style="display:block;border:0"></td>
+<td style="vertical-align:middle;padding-left:14px;font-size:22px;line-height:24px;color:#FFFFFF;white-space:nowrap"><span style="font-family:Newsreader,'Source Serif 4',Georgia,'Times New Roman',serif;font-weight:500">Pulse</span><span style="font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-weight:500;letter-spacing:0.04em">ARR</span></td>
+</tr></table>
+</td></tr>
+<tr><td bgcolor="#FFFFFF" style="background:#FFFFFF;border-left:1px solid #E4E6EE;border-right:1px solid #E4E6EE;padding:40px 40px 32px">
+<p style="margin:0 0 12px;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:11px;line-height:14px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#131FA7">Create your account</p>
+<h1 style="margin:0;font-family:Newsreader,'Source Serif 4',Georgia,'Times New Roman',serif;font-size:28px;line-height:32px;font-weight:500;color:#0E0E0E">Your sign-in code</h1>
+<p style="margin:16px 0 0;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:22px;color:#0E0E0E">Type this code on the sign-in screen, or use the button. Both work once and expire in 1 hour.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 0">
+<tr><td align="center" bgcolor="#FAF8FB" style="background:#FAF8FB;padding:20px 12px;font-family:Newsreader,'Source Serif 4',Georgia,'Times New Roman',serif;font-size:40px;line-height:44px;font-weight:500;letter-spacing:10px;color:#0E0E0E">{{ .Token }}</td></tr></table>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0 0">
+<tr><td align="center" bgcolor="#131FA7" style="border-radius:8px;background:#131FA7">
+<a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;padding:12px 20px;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:20px;font-weight:500;color:#FFFFFF;text-decoration:none;border-radius:8px">Create my account</a>
+</td></tr></table>
+<p style="margin:28px 0 0;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#5D6275">If the button doesn't open, paste this link into your browser:<br>
+<a href="{{ .ConfirmationURL }}" target="_blank" style="color:#5D6275;text-decoration:underline;word-break:break-all">{{ .ConfirmationURL }}</a></p>
+</td></tr>
+<tr><td bgcolor="#FFFFFF" style="background:#FFFFFF;border:1px solid #E4E6EE;border-top:1px solid #E4E6EE;padding:20px 40px 24px;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#5D6275">You got this email because someone used {{ .Email }} to make a PulseARR account. If it wasn't you, you can ignore it.<br>
+<a href="https://pulsearr.com" target="_blank" style="color:#5D6275;text-decoration:underline">pulsearr.com</a></td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>

@@ -1,9 +1,8 @@
-# /docker/sb-pulsearr on the Hostinger VPS: PulseARR's own self-hosted Supabase stack (Postgres, GoTrue, PostgREST and
-# the Envoy gateway), the same images and limits as the other sb-<app> stacks. No storage service until a feature
-# needs files (it would add 256 MB).
+# /docker/sb-pulsearr on the Hostinger VPS: PulseARR's own self-hosted Supabase stack (Postgres, GoTrue, PostgREST,
+# Storage and the Envoy gateway), the same images, limits and shared gateway files as the other sb-<app> stacks.
 #
-# Values come from /docker/sb-pulsearr/.env (see .env.example here) and /opt/sb/pulsearr/auth.env (see
-# auth.env.example). Neither is in the repo.
+# Every value comes from /docker/sb-pulsearr/.env (see .env.example here), written when the project is created
+# through Hostinger's Docker manager. Nothing secret is in the repo.
 #
 # The default network is named sb-pulsearr, so the worker, the migrate runner, the backup and the sb-public Caddy can
 # join it as an external network and reach Postgres at db:5432 and the gateway at sb-pulsearr-api-gw-1:8000.
@@ -42,7 +41,7 @@ services:
       test: ["CMD", "pg_isready", "-U", "postgres", "-h", "localhost"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 20
     logging: *logging
 
   auth:
@@ -52,8 +51,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    # SMTP (Resend), the email templates and subjects, and Google sign-in.
-    env_file: /opt/sb/pulsearr/auth.env
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9999/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     environment:
       GOTRUE_API_HOST: 0.0.0.0
       GOTRUE_API_PORT: 9999
@@ -71,12 +73,33 @@ services:
       GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
       GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: "false"
       GOTRUE_MAILER_AUTOCONFIRM: "false"
+      GOTRUE_MAILER_OTP_LENGTH: "6"
       GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
       GOTRUE_SMS_AUTOCONFIRM: "false"
       GOTRUE_MAILER_URLPATHS_INVITE: /auth/v1/verify
       GOTRUE_MAILER_URLPATHS_CONFIRMATION: /auth/v1/verify
       GOTRUE_MAILER_URLPATHS_RECOVERY: /auth/v1/verify
       GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: /auth/v1/verify
+      # Sign-in emails go out through Resend's SMTP. RESEND_API_KEY is set in .env; until it is, no email is sent.
+      GOTRUE_SMTP_HOST: smtp.resend.com
+      GOTRUE_SMTP_PORT: "465"
+      GOTRUE_SMTP_USER: resend
+      GOTRUE_SMTP_PASS: ${RESEND_API_KEY:-}
+      GOTRUE_SMTP_ADMIN_EMAIL: pulse@pulsearr.com
+      GOTRUE_SMTP_SENDER_NAME: PulseARR
+      GOTRUE_MAILER_SUBJECTS_MAGIC_LINK: Your PulseARR sign-in code
+      GOTRUE_MAILER_SUBJECTS_CONFIRMATION: Your PulseARR sign-in code
+      GOTRUE_MAILER_SUBJECTS_INVITE: You're invited to PulseARR
+      GOTRUE_MAILER_SUBJECTS_EMAIL_CHANGE: Confirm your new email for PulseARR
+      GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: https://app.pulsearr.com/email-templates/magic-link.html
+      GOTRUE_MAILER_TEMPLATES_CONFIRMATION: https://app.pulsearr.com/email-templates/confirmation.html
+      GOTRUE_MAILER_TEMPLATES_INVITE: https://app.pulsearr.com/email-templates/invite.html
+      GOTRUE_MAILER_TEMPLATES_EMAIL_CHANGE: https://app.pulsearr.com/email-templates/email-change.html
+      # Google sign-in, once a Google OAuth client exists. Empty means off.
+      GOTRUE_EXTERNAL_GOOGLE_ENABLED: ${GOOGLE_ENABLED:-false}
+      GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOTRUE_EXTERNAL_GOOGLE_SECRET: ${GOOGLE_SECRET:-}
+      GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI: https://db.pulsearr.com/auth/v1/callback
     logging: *logging
 
   rest:
@@ -99,22 +122,66 @@ services:
       PGRST_APP_SETTINGS_JWT_EXP: ${JWT_EXP}
     logging: *logging
 
-  # The gateway: /auth/v1 → auth:9999, /rest/v1 → rest:3000, on port 8000. The sb-public Caddy points here.
-  # Its config lives on the server, not in the repo. Copy from /docker/sb-arrowsterr on the server if the path differs
-  # (check the api-gw volume and environment in /docker/sb-arrowsterr/docker-compose.yml). If that file holds a
-  # stack's keys rather than reading them from the environment, give PulseARR its own copy with PulseARR's keys.
+  # Kept because the shared gateway files route /storage/v1 to it, like every other stack.
+  storage:
+    image: supabase/storage-api:v1.89.12
+    restart: unless-stopped
+    mem_limit: 256m
+    depends_on:
+      db:
+        condition: service_healthy
+      rest:
+        condition: service_started
+    environment:
+      ANON_KEY: ${ANON_KEY}
+      SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      POSTGREST_URL: http://rest:3000
+      AUTH_JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL: postgres://supabase_storage_admin:${POSTGRES_PASSWORD}@db:5432/postgres
+      STORAGE_PUBLIC_URL: https://db.pulsearr.com
+      REQUEST_ALLOW_X_FORWARDED_PATH: "true"
+      FILE_SIZE_LIMIT: 52428800
+      STORAGE_BACKEND: file
+      GLOBAL_S3_BUCKET: stub
+      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+      TENANT_ID: stub
+      REGION: stub
+      ENABLE_IMAGE_TRANSFORMATION: "false"
+    volumes:
+      - storage-data:/var/lib/storage
+    logging: *logging
+
+  # The gateway: /auth/v1 → auth:9999, /rest/v1 → rest:3000, /storage/v1 → storage:5000, on port 8000.
+  # The config files are shared by every stack on the server and read the keys from the environment.
   api-gw:
     image: envoyproxy/envoy:v1.39.6
     restart: unless-stopped
     mem_limit: 128m
-    depends_on: [auth, rest]
+    depends_on:
+      auth: {condition: service_started}
+      rest: {condition: service_started}
+      storage: {condition: service_started}
+    networks:
+      default:
+        aliases: [envoy, kong]
+    environment:
+      ANON_KEY: ${ANON_KEY}
+      SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
+      SUPABASE_PUBLIC_URL: https://db.pulsearr.com
+      DASHBOARD_USERNAME: supabase
+      DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD}
+    entrypoint: ["/bin/sh", "/docker-entrypoint.sh"]
     volumes:
-      - /opt/sb/files/envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
+      - /opt/sb/files/api/envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
+      - /opt/sb/files/api/envoy/cds.yaml:/etc/envoy/cds.yaml:ro
+      - /opt/sb/files/api/envoy/lds.template.yaml:/etc/envoy/lds.template.yaml:ro
+      - /opt/sb/files/api/envoy/docker-entrypoint.sh:/docker-entrypoint.sh:ro
     logging: *logging
 
 volumes:
   db-data:
   db-config:
+  storage-data:
 
 networks:
   default:

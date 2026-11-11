@@ -1,6 +1,6 @@
-# Merge into /docker/sb-public/docker-compose.yml on the server (the shared project with one Caddy per app).
-# It puts db.pulsearr.com (Traefik, Let's Encrypt) in front of the sb-pulsearr API gateway.
-# Copy the service under the file's services: and the network under its networks:, next to the other apps' entries.
+# /docker/sb-public-pulsearr on the Hostinger VPS: db.pulsearr.com (Traefik, Let's Encrypt) in front of the sb-pulsearr
+# API gateway. Its own project, so adding PulseARR never restarts the shared sb-public Caddy the other apps use.
+name: sb-public-pulsearr
 
 services:
   pulsearr:

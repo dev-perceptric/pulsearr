@@ -12,6 +12,7 @@ import {
   LayoutDashboard as LLayoutDashboard,
   LogOut as LLogOut,
   Mail as LMail,
+  Menu as LMenu,
   Plug as LPlug,
   Plus as LPlus,
   RotateCw as LRotateCw,
@@ -47,6 +48,7 @@ export const Info = line(LInfo, "Info");
 export const LayoutDashboard = line(LLayoutDashboard, "LayoutDashboard");
 export const LogOut = line(LLogOut, "LogOut");
 export const Mail = line(LMail, "Mail");
+export const Menu = line(LMenu, "Menu");
 export const MoreHorizontal = line(LEllipsis, "MoreHorizontal");
 export const Plug = line(LPlug, "Plug");
 export const Plus = line(LPlus, "Plus");
