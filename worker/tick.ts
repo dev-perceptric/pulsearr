@@ -1,10 +1,13 @@
-// Scheduled work, once a minute: clear out old finished jobs (prune_jobs) and log the queue when it has work.
+// Scheduled work, once a minute: clear out old finished jobs (prune_jobs) and stale rate-limit buckets
+// (prune_rate_buckets), and log the queue when it has work.
 
 import { sleep } from "../src/lib/retry.ts";
 import type { Db } from "./pg.ts";
 
 export async function tickOnce(db: Db, log: (msg: string) => void = console.log): Promise<{ pruned: number; counts: Record<string, number> }> {
   const pruned = Number((await db.query<{ n: number | null }>("select public.prune_jobs() as n")).rows[0]?.n ?? 0) || 0;
+  // Rate-limit buckets that are never used again are only cleared here (take_rate clears a bucket when it's used).
+  await db.query("select public.prune_rate_buckets()");
   const { rows } = await db.query<{ status: string; n: string }>(
     "select status, count(*)::text as n from public.jobs where status in ('queued', 'running') group by status",
   );
