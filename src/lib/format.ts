@@ -114,6 +114,12 @@ function compact(n: number, currency: string, fullBelow: number): { text: string
 
 type MoneyOpts = { /** Add the currency code, for when more than one currency is on screen: "€4,200 EUR". */ code?: boolean };
 
+/** Whole units from the minor units a database stores (cents): 4821350 USD is 48213.5, 4200 JPY is 4200. */
+export function fromMinor(n: Num, currency = "USD"): number | null {
+  if (bad(n)) return null;
+  return n / 10 ** minorDigits(currency.toUpperCase());
+}
+
 /** Money on cards and in text: "$8,420" under $10K, "$48.2K" up to $1M, "$1.24M" above. Negatives "−$8,420". */
 export function fmtMoney(n: Num, currency = "USD", o: MoneyOpts = {}) {
   if (bad(n)) return EMPTY;

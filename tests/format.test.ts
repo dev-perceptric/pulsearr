@@ -3,7 +3,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { MINUS, fmtAgo, fmtChange, fmtChartDate, fmtDate, fmtMoney, fmtMoneyChange, fmtMoneyExact, fmtNum, fmtPercent } from "../src/lib/format.ts";
+import { MINUS, fmtAgo, fmtChange, fmtChartDate, fmtDate, fmtMoney, fmtMoneyChange, fmtMoneyExact, fmtNum, fmtPercent, fromMinor } from "../src/lib/format.ts";
 
 const m = (s: string) => s.replace(/-/g, MINUS); // write expected negatives with "-" for readability
 
@@ -166,4 +166,16 @@ test("time ago is plain words", () => {
   assert.equal(ago(-4 * 60), "in 4 min");
   assert.equal(ago(40 * 86400), "Oct 2, 2026");
   assert.equal(fmtAgo(null), "—");
+});
+
+test("minor units turn into whole units by the currency's own digits", () => {
+  assert.equal(fromMinor(4_821_350, "usd"), 48_213.5);
+  assert.equal(fromMinor(-64_000, "USD"), -640);
+  assert.equal(fromMinor(4200, "JPY"), 4200);
+  assert.equal(fromMinor(1234, "kwd"), 1.234);
+  assert.equal(fromMinor(0, "eur"), 0);
+  assert.equal(fromMinor(null), null);
+  assert.equal(fromMinor(NaN), null);
+  // A one-cent loss still shows after the conversion.
+  assert.equal(fmtMoney(fromMinor(-1, "usd")), m("-$0.01"));
 });
