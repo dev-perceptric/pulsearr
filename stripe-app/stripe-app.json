@@ -1,0 +1,22 @@
+{
+  "id": "com.pulsearr.analytics",
+  "version": "0.0.1",
+  "name": "PulseARR",
+  "icon": "./icon.png",
+  "distribution_type": "public",
+  "stripe_api_access_type": "oauth",
+  "allowed_redirect_uris": ["https://app.pulsearr.com/api/stripe/callback"],
+  "permissions": [
+    { "permission": "connected_account_read", "purpose": "Show the connected account's name and default currency in PulseARR." },
+    { "permission": "customer_read", "purpose": "Count active customers and attribute each MRR change to a customer." },
+    { "permission": "subscription_read", "purpose": "Work out MRR, upgrades, downgrades and cancellations from subscriptions." },
+    { "permission": "invoice_read", "purpose": "Rebuild MRR history and detect unpaid invoices from past invoices." },
+    { "permission": "plan_read", "purpose": "Read price amounts and billing intervals to normalize MRR." },
+    { "permission": "product_read", "purpose": "Show plan names next to each customer and metric." },
+    { "permission": "coupon_read", "purpose": "Lower MRR by the discounts customers receive." },
+    { "permission": "charge_read", "purpose": "Show failed payments and refunds in the live feed." },
+    { "permission": "credit_note_read", "purpose": "Account for credits issued against invoices." },
+    { "permission": "event_read", "purpose": "Keep metrics current as subscriptions and invoices change." }
+  ],
+  "ui_extension": []
+}
