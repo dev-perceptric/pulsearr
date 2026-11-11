@@ -12,9 +12,9 @@ export type SettingsNavGroup<T extends string> = { label?: string; items: Settin
  */
 export function SettingsLayout<T extends string>({ label, groups, value, onPick, inset = false, children }: { label: string; groups: SettingsNavGroup<T>[]; value: T | null; onPick: (v: T) => void; inset?: boolean; children: React.ReactNode }) {
   const nav = (
-    <nav aria-label={label} className={inset ? "flex shrink-0 gap-1 overflow-x-auto md:w-44 md:flex-col md:gap-0 md:overflow-visible" : "flex shrink-0 gap-1 overflow-x-auto border-b border-line px-4 py-2 md:w-[240px] md:flex-col md:gap-0 md:overflow-y-auto md:border-r md:border-b-0 md:px-3 md:py-6"}>
+    <nav aria-label={label} className={inset ? "flex shrink-0 gap-1 overflow-x-auto md:w-44 md:flex-col md:gap-0 md:overflow-visible" : "flex shrink-0 flex-wrap gap-1 border-b border-line px-4 py-2 md:w-[240px] md:flex-nowrap md:flex-col md:gap-0 md:overflow-y-auto md:border-r md:border-b-0 md:px-3 md:py-6"}>
       {groups.map((g, gi) => (
-        <div key={g.label ?? gi} className={`flex shrink-0 gap-1 md:flex-col md:gap-0.5 ${groups.length > 1 ? "md:mb-6" : ""}`}>
+        <div key={g.label ?? gi} className={`flex min-w-0 flex-wrap gap-1 md:shrink-0 md:flex-col md:flex-nowrap md:gap-0.5 ${groups.length > 1 ? "md:mb-6" : ""}`}>
           {g.label ? <p className="eyebrow hidden px-3 pb-2 md:block">{g.label}</p> : null}
           {g.items.map((i) => {
             const on = i.value === value;

@@ -212,20 +212,17 @@ function Movements({ rows, error, onRetry, currency, filter, onClear }: { rows: 
         <>
           <ul className="md:hidden" aria-label="Customers">
             {list.slice(0, shown).map((r, i) => (
-              <li key={`${r.source_id}:${r.customer_id}:${r.at}:${r.kind}:${i}`} className="flex items-start gap-3 border-b border-line px-4 py-3 last:border-b-0">
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[14px] leading-5 wrap-anywhere text-ink">{r.customer_name ?? r.customer_email ?? r.customer_id}</span>
-                  <span className="num block text-[12px] leading-4 text-muted">{fmtDate(localDay(r.day))}</span>
-                  <span className="mt-1 block">
-                    <Badge tone={movementTone(r.kind)}>{MOVEMENT_LABEL[r.kind]}</Badge>
-                  </span>
-                </span>
-                <span className="num shrink-0 text-right text-[13px] leading-[18px]">
-                  <span className={`block ${movementTone(r.kind) === "green" ? "text-success" : "text-danger"}`}>{signed(r.amount)}</span>
-                  <span className="block text-[12px] leading-4 text-muted">
-                    {money(r.mrr_before)} → {money(r.mrr_after)}
-                  </span>
-                </span>
+              <li key={`${r.source_id}:${r.customer_id}:${r.at}:${r.kind}:${i}`} className="space-y-1 border-b border-line px-4 py-3 last:border-b-0">
+                <p className="text-[14px] leading-5 wrap-anywhere text-ink">{r.customer_name ?? r.customer_email ?? r.customer_id}</p>
+                {r.customer_name && r.customer_email ? <p className="text-[12px] leading-4 wrap-anywhere text-muted">{r.customer_email}</p> : null}
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
+                  <span className="num text-[12px] leading-4 text-muted">{fmtDate(localDay(r.day))}</span>
+                  <Badge tone={movementTone(r.kind)}>{MOVEMENT_LABEL[r.kind]}</Badge>
+                  <span className={`num ml-auto text-[13px] leading-[18px] ${movementTone(r.kind) === "green" ? "text-success" : "text-danger"}`}>{signed(r.amount)}</span>
+                </div>
+                <p className="num text-right text-[12px] leading-4 text-muted">
+                  {money(r.mrr_before)} → {money(r.mrr_after)}
+                </p>
               </li>
             ))}
           </ul>
