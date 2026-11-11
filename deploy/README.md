@@ -11,7 +11,7 @@ Server: Hostinger KVM 2, `45.90.109.7`. Each folder here is one Docker Compose p
 | `pulsearr-migrate/` | `/docker/pulsearr-migrate` | Runs new migrations from `main` |
 | `pulsearr-web/` | `/docker/pulsearr-web` | The app at `app.pulsearr.com` |
 | `pulsearr-worker/` | `/docker/pulsearr-worker` | The job worker |
-| `pulsearr-backup/` | `/docker/pulsearr-backup` | Nightly database dump, copied to Backblaze B2 |
+| `pulsearr-backup/` | `/docker/pulsearr-backup` | Nightly database dump, copied to Backblaze B2 when set |
 | `uptime/gatus-endpoint.yaml` | added to the `uptime` project's Gatus config | The health check |
 
 Copy a folder with `scp -r deploy/<folder> root@45.90.109.7:/docker/`.
@@ -130,19 +130,16 @@ docker logs --tail 50 pulsearr-worker-worker-1
 
 ## 6. Backups: `/docker/pulsearr-backup`
 
+Created through Hostinger's Docker manager like the migrate runner: `backup.sh` is embedded in the compose file as base64 (run `pulsearr-backup/build.sh` after editing it), and the project's `.env` holds `PGPASSWORD` (the sb-pulsearr Postgres password).
+
+It dumps once when it starts and then every night at 03:15 UTC (`pg_dump -Fc`) into `/opt/backups/pulsearr`, keeping 14 days. The logs show each dump (`Done: <size>`).
+
+To copy dumps off the server too:
+
 1. In Backblaze B2, make a private bucket (for example `pulsearr-backups`) with a lifecycle rule that keeps files 90 days (hide after 90 days, delete 1 day after hiding). Make an application key for that bucket only.
-2. On the server:
-   ```bash
-   scp -r deploy/pulsearr-backup root@45.90.109.7:/docker/
-   mkdir -p /opt/backups/pulsearr
-   cd /docker/pulsearr-backup
-   printf 'B2_KEY_ID=\nB2_APP_KEY=\nB2_BUCKET=pulsearr-backups\n' > .env && chmod 600 .env   # then fill in the key
-   docker compose up -d
-   docker compose exec backup bash /app/backup.sh now   # one dump now, to prove it
-   ls -lh /opt/backups/pulsearr
-   ```
-   It then dumps every night at 03:15 UTC (`pg_dump -Fc`), keeps 14 days on the server, and copies each dump to B2. Without the B2 lines it keeps the server copies only.
-3. Restore test, once: `pg_restore --list /opt/backups/pulsearr/<file>.dump | head` reads the file back.
+2. Add `B2_KEY_ID`, `B2_APP_KEY` and `B2_BUCKET` to the project's environment in hPanel (VPS > Docker Manager > pulsearr-backup) and redeploy it.
+
+Restore test, once: `pg_restore --list /opt/backups/pulsearr/<file>.dump | head` reads the file back.
 
 ## 7. Autodeploy and uptime
 

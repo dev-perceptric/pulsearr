@@ -47,6 +47,8 @@ backup() {
 if [ "${1:-}" = "now" ]; then backup; exit $?; fi
 
 log "Backing up every day at $AT UTC, keeping $KEEP days here"
+# One dump when the container starts, so a new or restarted backup proves itself in the logs right away.
+if [ "${BACKUP_ON_START:-1}" = "1" ]; then backup || log "First backup failed"; fi
 while true; do
   next="$(date -u -d "today $AT" +%s)"
   [ "$next" -le "$(date -u +%s)" ] && next="$(date -u -d "tomorrow $AT" +%s)"

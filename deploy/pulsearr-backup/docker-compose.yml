@@ -1,23 +1,30 @@
-# /docker/pulsearr-backup on the Hostinger VPS: a nightly pg_dump of the PulseARR database, kept 14 days in
-# /opt/backups/pulsearr and copied to Backblaze B2 when B2_* is set in .env here (see backup.sh).
-# Logs: docker logs pulsearr-backup-backup-1
+# /docker/pulsearr-backup on the Hostinger VPS: dumps the PulseARR database every night at BACKUP_AT (UTC), keeps
+# KEEP_DAYS of dumps in /opt/backups/pulsearr on the server, and copies each one to Backblaze B2 when the B2 values are
+# set. backup.sh (next to this file) has the rules. Hostinger's Docker manager can't place files next to a project, so
+# the script is embedded below as base64: after editing backup.sh, regenerate this file with build.sh here.
+# PGPASSWORD (the sb-pulsearr Postgres password) and the optional B2_KEY_ID, B2_APP_KEY, B2_BUCKET are in this
+# project's .env. Logs: docker logs pulsearr-backup-backup-1
 name: pulsearr-backup
 
 services:
   backup:
     image: postgres:17-alpine
-    entrypoint: ["sh", "-c", "apk add --no-cache bash coreutils rclone >/dev/null && exec bash /app/backup.sh"]
-    env_file: .env
+    entrypoint:
+      - sh
+      - -c
+      - apk add --no-cache bash coreutils rclone >/dev/null && echo "$$BACKUP_SH" | base64 -d > /tmp/backup.sh && exec bash /tmp/backup.sh
     environment:
       PGHOST: db
-      # supabase_admin owns Supabase's own schemas, so the dump has everything. Its password is POSTGRES_PASSWORD.
       PGUSER: supabase_admin
       PGDATABASE: postgres
+      PGPASSWORD: ${PGPASSWORD}
+      B2_KEY_ID: ${B2_KEY_ID:-}
+      B2_APP_KEY: ${B2_APP_KEY:-}
+      B2_BUCKET: ${B2_BUCKET:-}
       BACKUP_AT: "03:15"
       KEEP_DAYS: "14"
+      BACKUP_SH: IyEvdXNyL2Jpbi9lbnYgYmFzaAojIE5pZ2h0bHkgYmFja3VwIG9mIHRoZSBQdWxzZUFSUiBkYXRhYmFzZS4gQXQgQkFDS1VQX0FUIChVVEMpIGVhY2ggZGF5IGl0IHdyaXRlcyBwZ19kdW1wIC1GYyB0bwojIC9iYWNrdXBzL3B1bHNlYXJyLVlZWVlNTURELUhITU1TUy5kdW1wICh3cml0dGVuIHRvIGEgLnBhcnQgZmlsZSBmaXJzdCwgc28gYSBoYWxmLXdyaXR0ZW4gZHVtcCBuZXZlciBsb29rcyBkb25lKSwKIyBkZWxldGVzIGxvY2FsIGR1bXBzIG9sZGVyIHRoYW4gS0VFUF9EQVlTLCB0aGVuIGNvcGllcyB0aGUgbmV3IGR1bXAgdG8gQmFja2JsYXplIEIyIHdoZW4gQjJfS0VZX0lELCBCMl9BUFBfS0VZIGFuZAojIEIyX0JVQ0tFVCBhcmUgc2V0LiBCMiBrZWVwcyB0aGVtIDkwIGRheXMgdGhyb3VnaCB0aGUgYnVja2V0J3MgbGlmZWN5Y2xlIHJ1bGUsIG5vdCB0aGlzIHNjcmlwdC4KIyBSdW4gb25jZSBub3c6IGRvY2tlciBjb21wb3NlIGV4ZWMgYmFja3VwIGJhc2ggL2FwcC9iYWNrdXAuc2ggbm93CiMgUmVzdG9yZTogcGdfcmVzdG9yZSAtLWNsZWFuIC0taWYtZXhpc3RzIC0tbm8tb3duZXIgLWggZGIgLVUgc3VwYWJhc2VfYWRtaW4gLWQgcG9zdGdyZXMgPGZpbGU+CnNldCAtdW8gcGlwZWZhaWwKCkFUPSIke0JBQ0tVUF9BVDotMDM6MTV9IgpLRUVQPSIke0tFRVBfREFZUzotMTR9IgpPVVQ9L2JhY2t1cHMKCmxvZygpIHsgcHJpbnRmICclcyAlc1xuJyAiJChkYXRlIC11ICslWS0lbS0lZFQlSDolTTolU1opIiAiJCoiOyB9CgppZiBbIC16ICIke1BHUEFTU1dPUkQ6LX0iIF07IHRoZW4KICBQR1BBU1NXT1JEPSIkKHNlZCAtbiAncy9eUE9TVEdSRVNfUEFTU1dPUkQ9Ly9wJyAvcnVuL3NiLmVudiB8IHRhaWwgLW4gMSB8IHNlZCAtZSAncy9eWyInXCcnXS8vJyAtZSAncy9bIidcJyddJC8vJykiCmZpCmlmIFsgLXogIiRQR1BBU1NXT1JEIiBdOyB0aGVuIGxvZyAiTm8gUE9TVEdSRVNfUEFTU1dPUkQgaW4gL3J1bi9zYi5lbnYiOyBleGl0IDE7IGZpCmV4cG9ydCBQR1BBU1NXT1JECgpiYWNrdXAoKSB7CiAgbG9jYWwgbmFtZSBmaWxlCiAgbmFtZT0icHVsc2VhcnItJChkYXRlIC11ICslWSVtJWQtJUglTSVTKS5kdW1wIgogIGZpbGU9IiRPVVQvJG5hbWUiCiAgbG9nICJEdW1waW5nIHRvICRmaWxlIgogIGlmICEgcGdfZHVtcCAtRmMgLWYgIiRmaWxlLnBhcnQiOyB0aGVuCiAgICBsb2cgIkZBSUxFRDogcGdfZHVtcCI7IHJtIC1mICIkZmlsZS5wYXJ0IjsgcmV0dXJuIDEKICBmaQogIG12ICIkZmlsZS5wYXJ0IiAiJGZpbGUiCiAgbG9nICJEb25lOiAkKGR1IC1oICIkZmlsZSIgfCBjdXQgLWYxKSIKICBmaW5kICIkT1VUIiAtbWF4ZGVwdGggMSAtbmFtZSAncHVsc2VhcnItKi5kdW1wJyAtbXRpbWUgKyIkKChLRUVQIC0gMSkpIiAtcHJpbnQgLWRlbGV0ZSB8IHNlZCAncy9eL0RlbGV0ZWQgLycKCiAgaWYgWyAtbiAiJHtCMl9LRVlfSUQ6LX0iIF0gJiYgWyAtbiAiJHtCMl9BUFBfS0VZOi19IiBdICYmIFsgLW4gIiR7QjJfQlVDS0VUOi19IiBdOyB0aGVuCiAgICAjIHJjbG9uZSByZWFkcyB0aGUgQjIgcmVtb3RlIGZyb20gdGhlc2UgdmFyaWFibGVzLCBzbyBubyBjb25maWcgZmlsZSBpcyBuZWVkZWQuCiAgICBleHBvcnQgUkNMT05FX0NPTkZJR19CMl9UWVBFPWIyIFJDTE9ORV9DT05GSUdfQjJfQUNDT1VOVD0iJEIyX0tFWV9JRCIgUkNMT05FX0NPTkZJR19CMl9LRVk9IiRCMl9BUFBfS0VZIgogICAgaWYgcmNsb25lIGNvcHkgLS1yZXRyaWVzIDUgIiRmaWxlIiAiYjI6JEIyX0JVQ0tFVC8ke0IyX1BSRUZJWDotcHVsc2VhcnJ9LyI7IHRoZW4KICAgICAgbG9nICJDb3BpZWQgdG8gQjI6ICRCMl9CVUNLRVQvJHtCMl9QUkVGSVg6LXB1bHNlYXJyfS8kbmFtZSIKICAgIGVsc2UKICAgICAgbG9nICJGQUlMRUQ6IGNvcHkgdG8gQjIgKHRoZSBsb2NhbCBkdW1wIGlzIGtlcHQpIjsgcmV0dXJuIDEKICAgIGZpCiAgZWxzZQogICAgbG9nICJCMiBub3Qgc2V0LCBrZXB0IG9uIHRoZSBzZXJ2ZXIgb25seSIKICBmaQp9CgppZiBbICIkezE6LX0iID0gIm5vdyIgXTsgdGhlbiBiYWNrdXA7IGV4aXQgJD87IGZpCgpsb2cgIkJhY2tpbmcgdXAgZXZlcnkgZGF5IGF0ICRBVCBVVEMsIGtlZXBpbmcgJEtFRVAgZGF5cyBoZXJlIgojIE9uZSBkdW1wIHdoZW4gdGhlIGNvbnRhaW5lciBzdGFydHMsIHNvIGEgbmV3IG9yIHJlc3RhcnRlZCBiYWNrdXAgcHJvdmVzIGl0c2VsZiBpbiB0aGUgbG9ncyByaWdodCBhd2F5LgppZiBbICIke0JBQ0tVUF9PTl9TVEFSVDotMX0iID0gIjEiIF07IHRoZW4gYmFja3VwIHx8IGxvZyAiRmlyc3QgYmFja3VwIGZhaWxlZCI7IGZpCndoaWxlIHRydWU7IGRvCiAgbmV4dD0iJChkYXRlIC11IC1kICJ0b2RheSAkQVQiICslcykiCiAgWyAiJG5leHQiIC1sZSAiJChkYXRlIC11ICslcykiIF0gJiYgbmV4dD0iJChkYXRlIC11IC1kICJ0b21vcnJvdyAkQVQiICslcykiCiAgc2xlZXAgIiQoKG5leHQgLSAkKGRhdGUgLXUgKyVzKSkpIgogIGJhY2t1cCB8fCBsb2cgIkJhY2t1cCBmYWlsZWQ7IG5leHQgdHJ5IHRvbW9ycm93Igpkb25lCg==
     volumes:
-      - ./backup.sh:/app/backup.sh:ro
-      - /docker/sb-pulsearr/.env:/run/sb.env:ro
       - /opt/backups/pulsearr:/backups
     networks: [sb]
     restart: unless-stopped
