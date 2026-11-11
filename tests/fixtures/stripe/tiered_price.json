@@ -1,0 +1,558 @@
+{
+  "name": "tiered_price",
+  "notes": [
+    "Graduated tiers: units 1-10 at $5 plus a $20 flat fee, 11-50 at $4, 51 and up at $3. 25 units from Jan 1 2026:",
+    "10 x 500 + 2000 + 15 x 400 = 13000 (the invoice line says 13000).",
+    "Feb 14 08:00: 57 units, no proration, so the subscription as it is now prices it: 10 x 500 + 2000 + 40 x 400 + 7 x 300 = 25100.",
+    "Jan 1 new +13000; Feb 14 expansion +12100. MRR on Feb 20: 25100."
+  ],
+  "currency": "usd",
+  "asOf": "2026-02-20",
+  "stripe": {
+    "customer": {
+      "id": "cus_tier",
+      "object": "customer",
+      "address": null,
+      "balance": 0,
+      "created": 1767225540,
+      "currency": "usd",
+      "default_source": null,
+      "delinquent": false,
+      "description": null,
+      "discount": null,
+      "email": "ap@signalpeak.example",
+      "invoice_prefix": "TIER",
+      "invoice_settings": {
+        "custom_fields": null,
+        "default_payment_method": "pm_tier",
+        "footer": null,
+        "rendering_options": null
+      },
+      "livemode": false,
+      "metadata": {},
+      "name": "Signal Peak",
+      "phone": null,
+      "preferred_locales": [],
+      "shipping": null,
+      "tax_exempt": "none",
+      "test_clock": null
+    },
+    "subscriptions": [
+      {
+        "id": "sub_tier",
+        "object": "subscription",
+        "application": null,
+        "automatic_tax": {
+          "enabled": false,
+          "liability": null
+        },
+        "billing_cycle_anchor": 1767225600,
+        "billing_thresholds": null,
+        "cancel_at": null,
+        "cancel_at_period_end": false,
+        "canceled_at": null,
+        "cancellation_details": {
+          "comment": null,
+          "feedback": null,
+          "reason": null
+        },
+        "collection_method": "charge_automatically",
+        "created": 1767225600,
+        "currency": "usd",
+        "current_period_end": 1772323200,
+        "current_period_start": 1769904000,
+        "customer": "cus_tier",
+        "days_until_due": null,
+        "default_payment_method": null,
+        "description": null,
+        "discount": null,
+        "discounts": [],
+        "ended_at": null,
+        "items": {
+          "object": "list",
+          "data": [
+            {
+              "id": "si_tier",
+              "object": "subscription_item",
+              "billing_thresholds": null,
+              "created": 1767225600,
+              "discounts": [],
+              "metadata": {},
+              "plan": null,
+              "price": {
+                "id": "price_api_tiered",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "tiered",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "API",
+                "product": "prod_api",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "month",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": "graduated",
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": null,
+                "unit_amount_decimal": null,
+                "tiers": [
+                  {
+                    "flat_amount": 2000,
+                    "flat_amount_decimal": "2000",
+                    "unit_amount": 500,
+                    "unit_amount_decimal": "500",
+                    "up_to": 10
+                  },
+                  {
+                    "flat_amount": null,
+                    "flat_amount_decimal": null,
+                    "unit_amount": 400,
+                    "unit_amount_decimal": "400",
+                    "up_to": 50
+                  },
+                  {
+                    "flat_amount": null,
+                    "flat_amount_decimal": null,
+                    "unit_amount": 300,
+                    "unit_amount_decimal": "300",
+                    "up_to": null
+                  }
+                ]
+              },
+              "quantity": 57,
+              "subscription": "sub_tier",
+              "tax_rates": []
+            }
+          ],
+          "has_more": false,
+          "total_count": 1,
+          "url": "/v1/subscription_items?subscription=sub_tier"
+        },
+        "latest_invoice": null,
+        "livemode": false,
+        "metadata": {},
+        "pause_collection": null,
+        "payment_settings": {
+          "payment_method_options": null,
+          "payment_method_types": null,
+          "save_default_payment_method": "off"
+        },
+        "pending_update": null,
+        "schedule": null,
+        "start_date": 1767225600,
+        "status": "active",
+        "test_clock": null,
+        "trial_end": null,
+        "trial_settings": {
+          "end_behavior": {
+            "missing_payment_method": "create_invoice"
+          }
+        },
+        "trial_start": null
+      }
+    ],
+    "invoices": [
+      {
+        "id": "in_tier_1",
+        "object": "invoice",
+        "account_country": "US",
+        "account_name": "Acme Analytics",
+        "amount_due": 13000,
+        "amount_paid": 13000,
+        "amount_remaining": 0,
+        "attempt_count": 1,
+        "attempted": true,
+        "billing_reason": "subscription_create",
+        "charge": null,
+        "collection_method": "charge_automatically",
+        "created": 1767225600,
+        "currency": "usd",
+        "customer": "cus_tier",
+        "discount": null,
+        "discounts": [],
+        "due_date": null,
+        "ending_balance": 0,
+        "hosted_invoice_url": null,
+        "lines": {
+          "object": "list",
+          "data": [
+            {
+              "id": "il_tier_1",
+              "object": "line_item",
+              "amount": 13000,
+              "amount_excluding_tax": 13000,
+              "currency": "usd",
+              "description": "25 × API (at $0.00 / month)",
+              "discount_amounts": [],
+              "discountable": true,
+              "discounts": [],
+              "invoice": "in_tier_1",
+              "livemode": false,
+              "metadata": {},
+              "period": {
+                "end": 1769904000,
+                "start": 1767225600
+              },
+              "plan": null,
+              "price": {
+                "id": "price_api_tiered",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "tiered",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "API",
+                "product": "prod_api",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "month",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": "graduated",
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": null,
+                "unit_amount_decimal": null,
+                "tiers": [
+                  {
+                    "flat_amount": 2000,
+                    "flat_amount_decimal": "2000",
+                    "unit_amount": 500,
+                    "unit_amount_decimal": "500",
+                    "up_to": 10
+                  },
+                  {
+                    "flat_amount": null,
+                    "flat_amount_decimal": null,
+                    "unit_amount": 400,
+                    "unit_amount_decimal": "400",
+                    "up_to": 50
+                  },
+                  {
+                    "flat_amount": null,
+                    "flat_amount_decimal": null,
+                    "unit_amount": 300,
+                    "unit_amount_decimal": "300",
+                    "up_to": null
+                  }
+                ]
+              },
+              "proration": false,
+              "proration_details": {
+                "credited_items": null
+              },
+              "quantity": 25,
+              "subscription": "sub_tier",
+              "subscription_item": "si_tier",
+              "tax_amounts": [],
+              "tax_rates": [],
+              "type": "subscription",
+              "unit_amount_excluding_tax": "0"
+            }
+          ],
+          "has_more": false,
+          "total_count": 1,
+          "url": "/v1/invoices/in_tier_1/lines"
+        },
+        "livemode": false,
+        "metadata": {},
+        "number": "TIER-0001",
+        "paid": true,
+        "paid_out_of_band": false,
+        "period_end": 1767225600,
+        "period_start": 1767225600,
+        "status": "paid",
+        "status_transitions": {
+          "finalized_at": 1767229200,
+          "marked_uncollectible_at": null,
+          "paid_at": 1767229320,
+          "voided_at": null
+        },
+        "subscription": "sub_tier",
+        "subtotal": 13000,
+        "subtotal_excluding_tax": 13000,
+        "tax": null,
+        "total": 13000,
+        "total_discount_amounts": [],
+        "total_excluding_tax": 13000
+      },
+      {
+        "id": "in_tier_2",
+        "object": "invoice",
+        "account_country": "US",
+        "account_name": "Acme Analytics",
+        "amount_due": 13000,
+        "amount_paid": 13000,
+        "amount_remaining": 0,
+        "attempt_count": 1,
+        "attempted": true,
+        "billing_reason": "subscription_cycle",
+        "charge": null,
+        "collection_method": "charge_automatically",
+        "created": 1769904000,
+        "currency": "usd",
+        "customer": "cus_tier",
+        "discount": null,
+        "discounts": [],
+        "due_date": null,
+        "ending_balance": 0,
+        "hosted_invoice_url": null,
+        "lines": {
+          "object": "list",
+          "data": [
+            {
+              "id": "il_tier_2",
+              "object": "line_item",
+              "amount": 13000,
+              "amount_excluding_tax": 13000,
+              "currency": "usd",
+              "description": "25 × API (at $0.00 / month)",
+              "discount_amounts": [],
+              "discountable": true,
+              "discounts": [],
+              "invoice": "in_tier_2",
+              "livemode": false,
+              "metadata": {},
+              "period": {
+                "end": 1772323200,
+                "start": 1769904000
+              },
+              "plan": null,
+              "price": {
+                "id": "price_api_tiered",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "tiered",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "API",
+                "product": "prod_api",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "month",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": "graduated",
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": null,
+                "unit_amount_decimal": null,
+                "tiers": [
+                  {
+                    "flat_amount": 2000,
+                    "flat_amount_decimal": "2000",
+                    "unit_amount": 500,
+                    "unit_amount_decimal": "500",
+                    "up_to": 10
+                  },
+                  {
+                    "flat_amount": null,
+                    "flat_amount_decimal": null,
+                    "unit_amount": 400,
+                    "unit_amount_decimal": "400",
+                    "up_to": 50
+                  },
+                  {
+                    "flat_amount": null,
+                    "flat_amount_decimal": null,
+                    "unit_amount": 300,
+                    "unit_amount_decimal": "300",
+                    "up_to": null
+                  }
+                ]
+              },
+              "proration": false,
+              "proration_details": {
+                "credited_items": null
+              },
+              "quantity": 25,
+              "subscription": "sub_tier",
+              "subscription_item": "si_tier",
+              "tax_amounts": [],
+              "tax_rates": [],
+              "type": "subscription",
+              "unit_amount_excluding_tax": "0"
+            }
+          ],
+          "has_more": false,
+          "total_count": 1,
+          "url": "/v1/invoices/in_tier_2/lines"
+        },
+        "livemode": false,
+        "metadata": {},
+        "number": "TIER-0002",
+        "paid": true,
+        "paid_out_of_band": false,
+        "period_end": 1769904000,
+        "period_start": 1769904000,
+        "status": "paid",
+        "status_transitions": {
+          "finalized_at": 1769907600,
+          "marked_uncollectible_at": null,
+          "paid_at": 1769907720,
+          "voided_at": null
+        },
+        "subscription": "sub_tier",
+        "subtotal": 13000,
+        "subtotal_excluding_tax": 13000,
+        "tax": null,
+        "total": 13000,
+        "total_discount_amounts": [],
+        "total_excluding_tax": 13000
+      }
+    ],
+    "prices": [
+      {
+        "id": "price_api_tiered",
+        "object": "price",
+        "active": true,
+        "billing_scheme": "tiered",
+        "created": 1748736000,
+        "currency": "usd",
+        "custom_unit_amount": null,
+        "livemode": false,
+        "lookup_key": null,
+        "metadata": {},
+        "nickname": "API",
+        "product": "prod_api",
+        "recurring": {
+          "aggregate_usage": null,
+          "interval": "month",
+          "interval_count": 1,
+          "meter": null,
+          "trial_period_days": null,
+          "usage_type": "licensed"
+        },
+        "tax_behavior": "exclusive",
+        "tiers_mode": "graduated",
+        "transform_quantity": null,
+        "type": "recurring",
+        "unit_amount": null,
+        "unit_amount_decimal": null,
+        "tiers": [
+          {
+            "flat_amount": 2000,
+            "flat_amount_decimal": "2000",
+            "unit_amount": 500,
+            "unit_amount_decimal": "500",
+            "up_to": 10
+          },
+          {
+            "flat_amount": null,
+            "flat_amount_decimal": null,
+            "unit_amount": 400,
+            "unit_amount_decimal": "400",
+            "up_to": 50
+          },
+          {
+            "flat_amount": null,
+            "flat_amount_decimal": null,
+            "unit_amount": 300,
+            "unit_amount_decimal": "300",
+            "up_to": null
+          }
+        ]
+      }
+    ],
+    "coupons": [],
+    "charges": [],
+    "refunds": [],
+    "events": [
+      {
+        "id": "evt_tier_1",
+        "object": "event",
+        "api_version": "2024-06-20",
+        "created": 1771056000,
+        "data": {
+          "object": {
+            "id": "sub_tier",
+            "object": "subscription",
+            "customer": "cus_tier",
+            "status": "active"
+          },
+          "previous_attributes": {
+            "items": {
+              "data": [
+                {
+                  "id": "si_tier",
+                  "quantity": 25
+                }
+              ]
+            },
+            "quantity": 25
+          }
+        },
+        "livemode": false,
+        "pending_webhooks": 0,
+        "request": {
+          "id": "req_tier_1",
+          "idempotency_key": null
+        },
+        "type": "customer.subscription.updated"
+      }
+    ]
+  },
+  "fx": [],
+  "expected": {
+    "mrr": 25100,
+    "movements": [
+      {
+        "day": "2026-01-01",
+        "kind": "new",
+        "amount": 13000,
+        "cause": {
+          "type": "invoice",
+          "id": "in_tier_1"
+        }
+      },
+      {
+        "day": "2026-02-14",
+        "kind": "expansion",
+        "amount": 12100,
+        "cause": {
+          "type": "event",
+          "id": "evt_tier_1"
+        }
+      }
+    ],
+    "feed": [
+      {
+        "kind": "signup",
+        "day": "2026-01-01",
+        "amount": 13000
+      },
+      {
+        "kind": "upgrade",
+        "day": "2026-02-14",
+        "amount": 12100
+      }
+    ]
+  }
+}

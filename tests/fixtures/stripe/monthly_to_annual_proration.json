@@ -1,0 +1,965 @@
+{
+  "name": "monthly_to_annual_proration",
+  "notes": [
+    "Pro monthly $30 from Jan 1 2026 with a one-time $100 setup fee on the first invoice (one-time: counts 0).",
+    "Mar 16 12:00 the same item switches to Pro annual $300/year. Stripe resets the cycle: credit for unused March (proration, ignored) and the full annual line.",
+    "MRR: $30.00 until Mar 15, then 30000/12 = 2500 cents. Jan 1 new +3000; Mar 16 contraction 2500 - 3000 = -500. MRR on Jun 30: 2500."
+  ],
+  "currency": "usd",
+  "asOf": "2026-06-30",
+  "stripe": {
+    "customer": {
+      "id": "cus_m2a",
+      "object": "customer",
+      "address": null,
+      "balance": 0,
+      "created": 1767225000,
+      "currency": "usd",
+      "default_source": null,
+      "delinquent": false,
+      "description": null,
+      "discount": null,
+      "email": "billing@northwind.example",
+      "invoice_prefix": "M2A",
+      "invoice_settings": {
+        "custom_fields": null,
+        "default_payment_method": "pm_m2a",
+        "footer": null,
+        "rendering_options": null
+      },
+      "livemode": false,
+      "metadata": {},
+      "name": "Northwind Labs",
+      "phone": null,
+      "preferred_locales": [],
+      "shipping": null,
+      "tax_exempt": "none",
+      "test_clock": null
+    },
+    "subscriptions": [
+      {
+        "id": "sub_m2a",
+        "object": "subscription",
+        "application": null,
+        "automatic_tax": {
+          "enabled": false,
+          "liability": null
+        },
+        "billing_cycle_anchor": 1773662400,
+        "billing_thresholds": null,
+        "cancel_at": null,
+        "cancel_at_period_end": false,
+        "canceled_at": null,
+        "cancellation_details": {
+          "comment": null,
+          "feedback": null,
+          "reason": null
+        },
+        "collection_method": "charge_automatically",
+        "created": 1767225600,
+        "currency": "usd",
+        "current_period_end": 1805198400,
+        "current_period_start": 1773662400,
+        "customer": "cus_m2a",
+        "days_until_due": null,
+        "default_payment_method": null,
+        "description": null,
+        "discount": null,
+        "discounts": [],
+        "ended_at": null,
+        "items": {
+          "object": "list",
+          "data": [
+            {
+              "id": "si_m2a",
+              "object": "subscription_item",
+              "billing_thresholds": null,
+              "created": 1767225600,
+              "discounts": [],
+              "metadata": {},
+              "plan": null,
+              "price": {
+                "id": "price_pro_annual",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "per_unit",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "Pro annual",
+                "product": "prod_pro",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "year",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": null,
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": 30000,
+                "unit_amount_decimal": "30000"
+              },
+              "quantity": 1,
+              "subscription": "sub_m2a",
+              "tax_rates": []
+            }
+          ],
+          "has_more": false,
+          "total_count": 1,
+          "url": "/v1/subscription_items?subscription=sub_m2a"
+        },
+        "latest_invoice": null,
+        "livemode": false,
+        "metadata": {},
+        "pause_collection": null,
+        "payment_settings": {
+          "payment_method_options": null,
+          "payment_method_types": null,
+          "save_default_payment_method": "off"
+        },
+        "pending_update": null,
+        "schedule": null,
+        "start_date": 1767225600,
+        "status": "active",
+        "test_clock": null,
+        "trial_end": null,
+        "trial_settings": {
+          "end_behavior": {
+            "missing_payment_method": "create_invoice"
+          }
+        },
+        "trial_start": null
+      }
+    ],
+    "invoices": [
+      {
+        "id": "in_m2a_1",
+        "object": "invoice",
+        "account_country": "US",
+        "account_name": "Acme Analytics",
+        "amount_due": 13000,
+        "amount_paid": 13000,
+        "amount_remaining": 0,
+        "attempt_count": 1,
+        "attempted": true,
+        "billing_reason": "subscription_create",
+        "charge": null,
+        "collection_method": "charge_automatically",
+        "created": 1767225600,
+        "currency": "usd",
+        "customer": "cus_m2a",
+        "discount": null,
+        "discounts": [],
+        "due_date": null,
+        "ending_balance": 0,
+        "hosted_invoice_url": null,
+        "lines": {
+          "object": "list",
+          "data": [
+            {
+              "id": "il_m2a_1",
+              "object": "line_item",
+              "amount": 3000,
+              "amount_excluding_tax": 3000,
+              "currency": "usd",
+              "description": "1 × Pro (at $30.00 / month)",
+              "discount_amounts": [],
+              "discountable": true,
+              "discounts": [],
+              "invoice": "in_m2a_1",
+              "livemode": false,
+              "metadata": {},
+              "period": {
+                "end": 1769904000,
+                "start": 1767225600
+              },
+              "plan": null,
+              "price": {
+                "id": "price_pro_monthly",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "per_unit",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "Pro",
+                "product": "prod_pro",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "month",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": null,
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": 3000,
+                "unit_amount_decimal": "3000"
+              },
+              "proration": false,
+              "proration_details": {
+                "credited_items": null
+              },
+              "quantity": 1,
+              "subscription": "sub_m2a",
+              "subscription_item": "si_m2a",
+              "tax_amounts": [],
+              "tax_rates": [],
+              "type": "subscription",
+              "unit_amount_excluding_tax": "3000"
+            },
+            {
+              "id": "il_m2a_setup",
+              "object": "line_item",
+              "amount": 10000,
+              "amount_excluding_tax": 10000,
+              "currency": "usd",
+              "description": "Setup fee",
+              "discount_amounts": [],
+              "discountable": true,
+              "discounts": [],
+              "invoice": "in_m2a_1",
+              "invoice_item": "ii_m2a_setup",
+              "livemode": false,
+              "metadata": {},
+              "period": {
+                "end": 1767225600,
+                "start": 1767225600
+              },
+              "plan": null,
+              "price": {
+                "id": "price_setup_fee",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "per_unit",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "Setup fee",
+                "product": "prod_setup",
+                "recurring": null,
+                "tax_behavior": "exclusive",
+                "tiers_mode": null,
+                "transform_quantity": null,
+                "type": "one_time",
+                "unit_amount": 10000,
+                "unit_amount_decimal": "10000"
+              },
+              "proration": false,
+              "proration_details": {
+                "credited_items": null
+              },
+              "quantity": 1,
+              "subscription": null,
+              "subscription_item": null,
+              "tax_amounts": [],
+              "tax_rates": [],
+              "type": "invoiceitem",
+              "unit_amount_excluding_tax": "10000"
+            }
+          ],
+          "has_more": false,
+          "total_count": 2,
+          "url": "/v1/invoices/in_m2a_1/lines"
+        },
+        "livemode": false,
+        "metadata": {},
+        "number": "M2A-0001",
+        "paid": true,
+        "paid_out_of_band": false,
+        "period_end": 1767225600,
+        "period_start": 1767225600,
+        "status": "paid",
+        "status_transitions": {
+          "finalized_at": 1767229200,
+          "marked_uncollectible_at": null,
+          "paid_at": 1767229320,
+          "voided_at": null
+        },
+        "subscription": "sub_m2a",
+        "subtotal": 13000,
+        "subtotal_excluding_tax": 13000,
+        "tax": null,
+        "total": 13000,
+        "total_discount_amounts": [],
+        "total_excluding_tax": 13000
+      },
+      {
+        "id": "in_m2a_2",
+        "object": "invoice",
+        "account_country": "US",
+        "account_name": "Acme Analytics",
+        "amount_due": 3000,
+        "amount_paid": 3000,
+        "amount_remaining": 0,
+        "attempt_count": 1,
+        "attempted": true,
+        "billing_reason": "subscription_cycle",
+        "charge": null,
+        "collection_method": "charge_automatically",
+        "created": 1769904000,
+        "currency": "usd",
+        "customer": "cus_m2a",
+        "discount": null,
+        "discounts": [],
+        "due_date": null,
+        "ending_balance": 0,
+        "hosted_invoice_url": null,
+        "lines": {
+          "object": "list",
+          "data": [
+            {
+              "id": "il_m2a_2",
+              "object": "line_item",
+              "amount": 3000,
+              "amount_excluding_tax": 3000,
+              "currency": "usd",
+              "description": "1 × Pro (at $30.00 / month)",
+              "discount_amounts": [],
+              "discountable": true,
+              "discounts": [],
+              "invoice": "in_m2a_2",
+              "livemode": false,
+              "metadata": {},
+              "period": {
+                "end": 1772323200,
+                "start": 1769904000
+              },
+              "plan": null,
+              "price": {
+                "id": "price_pro_monthly",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "per_unit",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "Pro",
+                "product": "prod_pro",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "month",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": null,
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": 3000,
+                "unit_amount_decimal": "3000"
+              },
+              "proration": false,
+              "proration_details": {
+                "credited_items": null
+              },
+              "quantity": 1,
+              "subscription": "sub_m2a",
+              "subscription_item": "si_m2a",
+              "tax_amounts": [],
+              "tax_rates": [],
+              "type": "subscription",
+              "unit_amount_excluding_tax": "3000"
+            }
+          ],
+          "has_more": false,
+          "total_count": 1,
+          "url": "/v1/invoices/in_m2a_2/lines"
+        },
+        "livemode": false,
+        "metadata": {},
+        "number": "M2A-0002",
+        "paid": true,
+        "paid_out_of_band": false,
+        "period_end": 1769904000,
+        "period_start": 1769904000,
+        "status": "paid",
+        "status_transitions": {
+          "finalized_at": 1769907600,
+          "marked_uncollectible_at": null,
+          "paid_at": 1769907720,
+          "voided_at": null
+        },
+        "subscription": "sub_m2a",
+        "subtotal": 3000,
+        "subtotal_excluding_tax": 3000,
+        "tax": null,
+        "total": 3000,
+        "total_discount_amounts": [],
+        "total_excluding_tax": 3000
+      },
+      {
+        "id": "in_m2a_3",
+        "object": "invoice",
+        "account_country": "US",
+        "account_name": "Acme Analytics",
+        "amount_due": 3000,
+        "amount_paid": 3000,
+        "amount_remaining": 0,
+        "attempt_count": 1,
+        "attempted": true,
+        "billing_reason": "subscription_cycle",
+        "charge": null,
+        "collection_method": "charge_automatically",
+        "created": 1772323200,
+        "currency": "usd",
+        "customer": "cus_m2a",
+        "discount": null,
+        "discounts": [],
+        "due_date": null,
+        "ending_balance": 0,
+        "hosted_invoice_url": null,
+        "lines": {
+          "object": "list",
+          "data": [
+            {
+              "id": "il_m2a_3",
+              "object": "line_item",
+              "amount": 3000,
+              "amount_excluding_tax": 3000,
+              "currency": "usd",
+              "description": "1 × Pro (at $30.00 / month)",
+              "discount_amounts": [],
+              "discountable": true,
+              "discounts": [],
+              "invoice": "in_m2a_3",
+              "livemode": false,
+              "metadata": {},
+              "period": {
+                "end": 1775001600,
+                "start": 1772323200
+              },
+              "plan": null,
+              "price": {
+                "id": "price_pro_monthly",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "per_unit",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "Pro",
+                "product": "prod_pro",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "month",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": null,
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": 3000,
+                "unit_amount_decimal": "3000"
+              },
+              "proration": false,
+              "proration_details": {
+                "credited_items": null
+              },
+              "quantity": 1,
+              "subscription": "sub_m2a",
+              "subscription_item": "si_m2a",
+              "tax_amounts": [],
+              "tax_rates": [],
+              "type": "subscription",
+              "unit_amount_excluding_tax": "3000"
+            }
+          ],
+          "has_more": false,
+          "total_count": 1,
+          "url": "/v1/invoices/in_m2a_3/lines"
+        },
+        "livemode": false,
+        "metadata": {},
+        "number": "M2A-0003",
+        "paid": true,
+        "paid_out_of_band": false,
+        "period_end": 1772323200,
+        "period_start": 1772323200,
+        "status": "paid",
+        "status_transitions": {
+          "finalized_at": 1772326800,
+          "marked_uncollectible_at": null,
+          "paid_at": 1772326920,
+          "voided_at": null
+        },
+        "subscription": "sub_m2a",
+        "subtotal": 3000,
+        "subtotal_excluding_tax": 3000,
+        "tax": null,
+        "total": 3000,
+        "total_discount_amounts": [],
+        "total_excluding_tax": 3000
+      },
+      {
+        "id": "in_m2a_4",
+        "object": "invoice",
+        "account_country": "US",
+        "account_name": "Acme Analytics",
+        "amount_due": 28500,
+        "amount_paid": 28500,
+        "amount_remaining": 0,
+        "attempt_count": 1,
+        "attempted": true,
+        "billing_reason": "subscription_update",
+        "charge": null,
+        "collection_method": "charge_automatically",
+        "created": 1773662400,
+        "currency": "usd",
+        "customer": "cus_m2a",
+        "discount": null,
+        "discounts": [],
+        "due_date": null,
+        "ending_balance": 0,
+        "hosted_invoice_url": null,
+        "lines": {
+          "object": "list",
+          "data": [
+            {
+              "id": "il_m2a_4a",
+              "object": "line_item",
+              "amount": -1500,
+              "amount_excluding_tax": -1500,
+              "currency": "usd",
+              "description": "Unused time on Pro after 16 Mar 2026",
+              "discount_amounts": [],
+              "discountable": true,
+              "discounts": [],
+              "invoice": "in_m2a_4",
+              "invoice_item": "ii_m2a_4a",
+              "livemode": false,
+              "metadata": {},
+              "period": {
+                "end": 1775001600,
+                "start": 1773662400
+              },
+              "plan": null,
+              "price": {
+                "id": "price_pro_monthly",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "per_unit",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "Pro",
+                "product": "prod_pro",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "month",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": null,
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": 3000,
+                "unit_amount_decimal": "3000"
+              },
+              "proration": true,
+              "proration_details": {
+                "credited_items": null
+              },
+              "quantity": 1,
+              "subscription": "sub_m2a",
+              "subscription_item": "si_m2a",
+              "tax_amounts": [],
+              "tax_rates": [],
+              "type": "invoiceitem",
+              "unit_amount_excluding_tax": "3000"
+            },
+            {
+              "id": "il_m2a_4b",
+              "object": "line_item",
+              "amount": 30000,
+              "amount_excluding_tax": 30000,
+              "currency": "usd",
+              "description": "1 × Pro annual (at $300.00 / year)",
+              "discount_amounts": [],
+              "discountable": true,
+              "discounts": [],
+              "invoice": "in_m2a_4",
+              "livemode": false,
+              "metadata": {},
+              "period": {
+                "end": 1805198400,
+                "start": 1773662400
+              },
+              "plan": null,
+              "price": {
+                "id": "price_pro_annual",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "per_unit",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "Pro annual",
+                "product": "prod_pro",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "year",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": null,
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": 30000,
+                "unit_amount_decimal": "30000"
+              },
+              "proration": false,
+              "proration_details": {
+                "credited_items": null
+              },
+              "quantity": 1,
+              "subscription": "sub_m2a",
+              "subscription_item": "si_m2a",
+              "tax_amounts": [],
+              "tax_rates": [],
+              "type": "subscription",
+              "unit_amount_excluding_tax": "30000"
+            }
+          ],
+          "has_more": false,
+          "total_count": 2,
+          "url": "/v1/invoices/in_m2a_4/lines"
+        },
+        "livemode": false,
+        "metadata": {},
+        "number": null,
+        "paid": true,
+        "paid_out_of_band": false,
+        "period_end": 1773662400,
+        "period_start": 1773662400,
+        "status": "paid",
+        "status_transitions": {
+          "finalized_at": 1773662400,
+          "marked_uncollectible_at": null,
+          "paid_at": 1773662520,
+          "voided_at": null
+        },
+        "subscription": "sub_m2a",
+        "subtotal": 28500,
+        "subtotal_excluding_tax": 28500,
+        "tax": null,
+        "total": 28500,
+        "total_discount_amounts": [],
+        "total_excluding_tax": 28500
+      }
+    ],
+    "prices": [
+      {
+        "id": "price_pro_monthly",
+        "object": "price",
+        "active": true,
+        "billing_scheme": "per_unit",
+        "created": 1748736000,
+        "currency": "usd",
+        "custom_unit_amount": null,
+        "livemode": false,
+        "lookup_key": null,
+        "metadata": {},
+        "nickname": "Pro",
+        "product": "prod_pro",
+        "recurring": {
+          "aggregate_usage": null,
+          "interval": "month",
+          "interval_count": 1,
+          "meter": null,
+          "trial_period_days": null,
+          "usage_type": "licensed"
+        },
+        "tax_behavior": "exclusive",
+        "tiers_mode": null,
+        "transform_quantity": null,
+        "type": "recurring",
+        "unit_amount": 3000,
+        "unit_amount_decimal": "3000"
+      },
+      {
+        "id": "price_pro_annual",
+        "object": "price",
+        "active": true,
+        "billing_scheme": "per_unit",
+        "created": 1748736000,
+        "currency": "usd",
+        "custom_unit_amount": null,
+        "livemode": false,
+        "lookup_key": null,
+        "metadata": {},
+        "nickname": "Pro annual",
+        "product": "prod_pro",
+        "recurring": {
+          "aggregate_usage": null,
+          "interval": "year",
+          "interval_count": 1,
+          "meter": null,
+          "trial_period_days": null,
+          "usage_type": "licensed"
+        },
+        "tax_behavior": "exclusive",
+        "tiers_mode": null,
+        "transform_quantity": null,
+        "type": "recurring",
+        "unit_amount": 30000,
+        "unit_amount_decimal": "30000"
+      },
+      {
+        "id": "price_setup_fee",
+        "object": "price",
+        "active": true,
+        "billing_scheme": "per_unit",
+        "created": 1748736000,
+        "currency": "usd",
+        "custom_unit_amount": null,
+        "livemode": false,
+        "lookup_key": null,
+        "metadata": {},
+        "nickname": "Setup fee",
+        "product": "prod_setup",
+        "recurring": null,
+        "tax_behavior": "exclusive",
+        "tiers_mode": null,
+        "transform_quantity": null,
+        "type": "one_time",
+        "unit_amount": 10000,
+        "unit_amount_decimal": "10000"
+      }
+    ],
+    "coupons": [],
+    "charges": [
+      {
+        "id": "ch_m2a_1",
+        "object": "charge",
+        "amount": 13000,
+        "amount_captured": 13000,
+        "amount_refunded": 0,
+        "balance_transaction": "txn_m2a_1",
+        "captured": true,
+        "created": 1767229320,
+        "currency": "usd",
+        "customer": "cus_m2a",
+        "description": "Subscription update",
+        "failure_code": null,
+        "failure_message": null,
+        "invoice": "in_m2a_1",
+        "livemode": false,
+        "metadata": {},
+        "outcome": {
+          "network_status": "approved_by_network",
+          "reason": null,
+          "risk_level": "normal",
+          "seller_message": "Payment complete.",
+          "type": "authorized"
+        },
+        "paid": true,
+        "payment_intent": "pi_m2a_1",
+        "refunded": false,
+        "status": "succeeded"
+      },
+      {
+        "id": "ch_m2a_2",
+        "object": "charge",
+        "amount": 3000,
+        "amount_captured": 3000,
+        "amount_refunded": 0,
+        "balance_transaction": "txn_m2a_2",
+        "captured": true,
+        "created": 1769907720,
+        "currency": "usd",
+        "customer": "cus_m2a",
+        "description": "Subscription update",
+        "failure_code": null,
+        "failure_message": null,
+        "invoice": "in_m2a_2",
+        "livemode": false,
+        "metadata": {},
+        "outcome": {
+          "network_status": "approved_by_network",
+          "reason": null,
+          "risk_level": "normal",
+          "seller_message": "Payment complete.",
+          "type": "authorized"
+        },
+        "paid": true,
+        "payment_intent": "pi_m2a_2",
+        "refunded": false,
+        "status": "succeeded"
+      },
+      {
+        "id": "ch_m2a_3",
+        "object": "charge",
+        "amount": 3000,
+        "amount_captured": 3000,
+        "amount_refunded": 0,
+        "balance_transaction": "txn_m2a_3",
+        "captured": true,
+        "created": 1772326920,
+        "currency": "usd",
+        "customer": "cus_m2a",
+        "description": "Subscription update",
+        "failure_code": null,
+        "failure_message": null,
+        "invoice": "in_m2a_3",
+        "livemode": false,
+        "metadata": {},
+        "outcome": {
+          "network_status": "approved_by_network",
+          "reason": null,
+          "risk_level": "normal",
+          "seller_message": "Payment complete.",
+          "type": "authorized"
+        },
+        "paid": true,
+        "payment_intent": "pi_m2a_3",
+        "refunded": false,
+        "status": "succeeded"
+      },
+      {
+        "id": "ch_m2a_4",
+        "object": "charge",
+        "amount": 28500,
+        "amount_captured": 28500,
+        "amount_refunded": 0,
+        "balance_transaction": "txn_m2a_4",
+        "captured": true,
+        "created": 1773662520,
+        "currency": "usd",
+        "customer": "cus_m2a",
+        "description": "Subscription update",
+        "failure_code": null,
+        "failure_message": null,
+        "invoice": "in_m2a_4",
+        "livemode": false,
+        "metadata": {},
+        "outcome": {
+          "network_status": "approved_by_network",
+          "reason": null,
+          "risk_level": "normal",
+          "seller_message": "Payment complete.",
+          "type": "authorized"
+        },
+        "paid": true,
+        "payment_intent": "pi_m2a_4",
+        "refunded": false,
+        "status": "succeeded"
+      }
+    ],
+    "refunds": [],
+    "events": [
+      {
+        "id": "evt_m2a_1",
+        "object": "event",
+        "api_version": "2024-06-20",
+        "created": 1773662400,
+        "data": {
+          "object": {
+            "id": "sub_m2a",
+            "object": "subscription",
+            "customer": "cus_m2a",
+            "status": "active"
+          },
+          "previous_attributes": {
+            "items": {
+              "data": [
+                {
+                  "id": "si_m2a",
+                  "price": {
+                    "id": "price_pro_monthly"
+                  }
+                }
+              ]
+            },
+            "plan": {
+              "id": "price_pro_monthly"
+            },
+            "current_period_start": 1772323200
+          }
+        },
+        "livemode": false,
+        "pending_webhooks": 0,
+        "request": {
+          "id": "req_m2a_1",
+          "idempotency_key": null
+        },
+        "type": "customer.subscription.updated"
+      }
+    ]
+  },
+  "fx": [],
+  "expected": {
+    "mrr": 2500,
+    "movements": [
+      {
+        "day": "2026-01-01",
+        "kind": "new",
+        "amount": 3000,
+        "cause": {
+          "type": "invoice",
+          "id": "in_m2a_1"
+        }
+      },
+      {
+        "day": "2026-03-16",
+        "kind": "contraction",
+        "amount": -500,
+        "cause": {
+          "type": "invoice",
+          "id": "in_m2a_4"
+        }
+      }
+    ],
+    "feed": [
+      {
+        "kind": "signup",
+        "day": "2026-01-01",
+        "amount": 3000
+      },
+      {
+        "kind": "downgrade",
+        "day": "2026-03-16",
+        "amount": -500
+      }
+    ]
+  }
+}

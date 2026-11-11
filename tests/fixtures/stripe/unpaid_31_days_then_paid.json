@@ -1,0 +1,1070 @@
+{
+  "name": "unpaid_31_days_then_paid",
+  "notes": [
+    "Pro monthly $30 from Jan 1 2026, charged automatically. The Mar 1 invoice (finalized Mar 1 01:00, so due Mar 1) fails three times.",
+    "Still unpaid after 30 days: churn on day 31, Apr 1 (-3000). The customer pays it Apr 10 15:00: reactivation (+3000).",
+    "The Apr 1 invoice is paid Apr 10, within 30 days of its due date, so it adds nothing. MRR on May 20: 3000."
+  ],
+  "currency": "usd",
+  "asOf": "2026-05-20",
+  "stripe": {
+    "customer": {
+      "id": "cus_unpaid",
+      "object": "customer",
+      "address": null,
+      "balance": 0,
+      "created": 1767224700,
+      "currency": "usd",
+      "default_source": null,
+      "delinquent": false,
+      "description": null,
+      "discount": null,
+      "email": "ar@halcyon.example",
+      "invoice_prefix": "UNPAID",
+      "invoice_settings": {
+        "custom_fields": null,
+        "default_payment_method": "pm_unpaid",
+        "footer": null,
+        "rendering_options": null
+      },
+      "livemode": false,
+      "metadata": {},
+      "name": "Halcyon Freight",
+      "phone": null,
+      "preferred_locales": [],
+      "shipping": null,
+      "tax_exempt": "none",
+      "test_clock": null
+    },
+    "subscriptions": [
+      {
+        "id": "sub_un",
+        "object": "subscription",
+        "application": null,
+        "automatic_tax": {
+          "enabled": false,
+          "liability": null
+        },
+        "billing_cycle_anchor": 1767225600,
+        "billing_thresholds": null,
+        "cancel_at": null,
+        "cancel_at_period_end": false,
+        "canceled_at": null,
+        "cancellation_details": {
+          "comment": null,
+          "feedback": null,
+          "reason": null
+        },
+        "collection_method": "charge_automatically",
+        "created": 1767225600,
+        "currency": "usd",
+        "current_period_end": 1780272000,
+        "current_period_start": 1777593600,
+        "customer": "cus_unpaid",
+        "days_until_due": null,
+        "default_payment_method": null,
+        "description": null,
+        "discount": null,
+        "discounts": [],
+        "ended_at": null,
+        "items": {
+          "object": "list",
+          "data": [
+            {
+              "id": "si_un",
+              "object": "subscription_item",
+              "billing_thresholds": null,
+              "created": 1767225600,
+              "discounts": [],
+              "metadata": {},
+              "plan": null,
+              "price": {
+                "id": "price_pro_monthly",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "per_unit",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "Pro",
+                "product": "prod_pro",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "month",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": null,
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": 3000,
+                "unit_amount_decimal": "3000"
+              },
+              "quantity": 1,
+              "subscription": "sub_un",
+              "tax_rates": []
+            }
+          ],
+          "has_more": false,
+          "total_count": 1,
+          "url": "/v1/subscription_items?subscription=sub_un"
+        },
+        "latest_invoice": null,
+        "livemode": false,
+        "metadata": {},
+        "pause_collection": null,
+        "payment_settings": {
+          "payment_method_options": null,
+          "payment_method_types": null,
+          "save_default_payment_method": "off"
+        },
+        "pending_update": null,
+        "schedule": null,
+        "start_date": 1767225600,
+        "status": "active",
+        "test_clock": null,
+        "trial_end": null,
+        "trial_settings": {
+          "end_behavior": {
+            "missing_payment_method": "create_invoice"
+          }
+        },
+        "trial_start": null
+      }
+    ],
+    "invoices": [
+      {
+        "id": "in_un_1",
+        "object": "invoice",
+        "account_country": "US",
+        "account_name": "Acme Analytics",
+        "amount_due": 3000,
+        "amount_paid": 3000,
+        "amount_remaining": 0,
+        "attempt_count": 1,
+        "attempted": true,
+        "billing_reason": "subscription_create",
+        "charge": null,
+        "collection_method": "charge_automatically",
+        "created": 1767225600,
+        "currency": "usd",
+        "customer": "cus_unpaid",
+        "discount": null,
+        "discounts": [],
+        "due_date": null,
+        "ending_balance": 0,
+        "hosted_invoice_url": null,
+        "lines": {
+          "object": "list",
+          "data": [
+            {
+              "id": "il_un_1",
+              "object": "line_item",
+              "amount": 3000,
+              "amount_excluding_tax": 3000,
+              "currency": "usd",
+              "description": "1 × Pro (at $30.00 / month)",
+              "discount_amounts": [],
+              "discountable": true,
+              "discounts": [],
+              "invoice": "in_un_1",
+              "livemode": false,
+              "metadata": {},
+              "period": {
+                "end": 1769904000,
+                "start": 1767225600
+              },
+              "plan": null,
+              "price": {
+                "id": "price_pro_monthly",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "per_unit",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "Pro",
+                "product": "prod_pro",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "month",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": null,
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": 3000,
+                "unit_amount_decimal": "3000"
+              },
+              "proration": false,
+              "proration_details": {
+                "credited_items": null
+              },
+              "quantity": 1,
+              "subscription": "sub_un",
+              "subscription_item": "si_un",
+              "tax_amounts": [],
+              "tax_rates": [],
+              "type": "subscription",
+              "unit_amount_excluding_tax": "3000"
+            }
+          ],
+          "has_more": false,
+          "total_count": 1,
+          "url": "/v1/invoices/in_un_1/lines"
+        },
+        "livemode": false,
+        "metadata": {},
+        "number": "UN-0001",
+        "paid": true,
+        "paid_out_of_band": false,
+        "period_end": 1767225600,
+        "period_start": 1767225600,
+        "status": "paid",
+        "status_transitions": {
+          "finalized_at": 1767229200,
+          "marked_uncollectible_at": null,
+          "paid_at": 1767229320,
+          "voided_at": null
+        },
+        "subscription": "sub_un",
+        "subtotal": 3000,
+        "subtotal_excluding_tax": 3000,
+        "tax": null,
+        "total": 3000,
+        "total_discount_amounts": [],
+        "total_excluding_tax": 3000
+      },
+      {
+        "id": "in_un_2",
+        "object": "invoice",
+        "account_country": "US",
+        "account_name": "Acme Analytics",
+        "amount_due": 3000,
+        "amount_paid": 3000,
+        "amount_remaining": 0,
+        "attempt_count": 1,
+        "attempted": true,
+        "billing_reason": "subscription_cycle",
+        "charge": null,
+        "collection_method": "charge_automatically",
+        "created": 1769904000,
+        "currency": "usd",
+        "customer": "cus_unpaid",
+        "discount": null,
+        "discounts": [],
+        "due_date": null,
+        "ending_balance": 0,
+        "hosted_invoice_url": null,
+        "lines": {
+          "object": "list",
+          "data": [
+            {
+              "id": "il_un_2",
+              "object": "line_item",
+              "amount": 3000,
+              "amount_excluding_tax": 3000,
+              "currency": "usd",
+              "description": "1 × Pro (at $30.00 / month)",
+              "discount_amounts": [],
+              "discountable": true,
+              "discounts": [],
+              "invoice": "in_un_2",
+              "livemode": false,
+              "metadata": {},
+              "period": {
+                "end": 1772323200,
+                "start": 1769904000
+              },
+              "plan": null,
+              "price": {
+                "id": "price_pro_monthly",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "per_unit",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "Pro",
+                "product": "prod_pro",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "month",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": null,
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": 3000,
+                "unit_amount_decimal": "3000"
+              },
+              "proration": false,
+              "proration_details": {
+                "credited_items": null
+              },
+              "quantity": 1,
+              "subscription": "sub_un",
+              "subscription_item": "si_un",
+              "tax_amounts": [],
+              "tax_rates": [],
+              "type": "subscription",
+              "unit_amount_excluding_tax": "3000"
+            }
+          ],
+          "has_more": false,
+          "total_count": 1,
+          "url": "/v1/invoices/in_un_2/lines"
+        },
+        "livemode": false,
+        "metadata": {},
+        "number": "UN-0002",
+        "paid": true,
+        "paid_out_of_band": false,
+        "period_end": 1769904000,
+        "period_start": 1769904000,
+        "status": "paid",
+        "status_transitions": {
+          "finalized_at": 1769907600,
+          "marked_uncollectible_at": null,
+          "paid_at": 1769907720,
+          "voided_at": null
+        },
+        "subscription": "sub_un",
+        "subtotal": 3000,
+        "subtotal_excluding_tax": 3000,
+        "tax": null,
+        "total": 3000,
+        "total_discount_amounts": [],
+        "total_excluding_tax": 3000
+      },
+      {
+        "id": "in_un_3",
+        "object": "invoice",
+        "account_country": "US",
+        "account_name": "Acme Analytics",
+        "amount_due": 3000,
+        "amount_paid": 3000,
+        "amount_remaining": 0,
+        "attempt_count": 1,
+        "attempted": true,
+        "billing_reason": "subscription_cycle",
+        "charge": null,
+        "collection_method": "charge_automatically",
+        "created": 1772323200,
+        "currency": "usd",
+        "customer": "cus_unpaid",
+        "discount": null,
+        "discounts": [],
+        "due_date": null,
+        "ending_balance": 0,
+        "hosted_invoice_url": null,
+        "lines": {
+          "object": "list",
+          "data": [
+            {
+              "id": "il_un_3",
+              "object": "line_item",
+              "amount": 3000,
+              "amount_excluding_tax": 3000,
+              "currency": "usd",
+              "description": "1 × Pro (at $30.00 / month)",
+              "discount_amounts": [],
+              "discountable": true,
+              "discounts": [],
+              "invoice": "in_un_3",
+              "livemode": false,
+              "metadata": {},
+              "period": {
+                "end": 1775001600,
+                "start": 1772323200
+              },
+              "plan": null,
+              "price": {
+                "id": "price_pro_monthly",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "per_unit",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "Pro",
+                "product": "prod_pro",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "month",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": null,
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": 3000,
+                "unit_amount_decimal": "3000"
+              },
+              "proration": false,
+              "proration_details": {
+                "credited_items": null
+              },
+              "quantity": 1,
+              "subscription": "sub_un",
+              "subscription_item": "si_un",
+              "tax_amounts": [],
+              "tax_rates": [],
+              "type": "subscription",
+              "unit_amount_excluding_tax": "3000"
+            }
+          ],
+          "has_more": false,
+          "total_count": 1,
+          "url": "/v1/invoices/in_un_3/lines"
+        },
+        "livemode": false,
+        "metadata": {},
+        "number": "UN-0003",
+        "paid": true,
+        "paid_out_of_band": false,
+        "period_end": 1772323200,
+        "period_start": 1772323200,
+        "status": "paid",
+        "status_transitions": {
+          "finalized_at": 1772326800,
+          "marked_uncollectible_at": null,
+          "paid_at": 1775833200,
+          "voided_at": null
+        },
+        "subscription": "sub_un",
+        "subtotal": 3000,
+        "subtotal_excluding_tax": 3000,
+        "tax": null,
+        "total": 3000,
+        "total_discount_amounts": [],
+        "total_excluding_tax": 3000
+      },
+      {
+        "id": "in_un_4",
+        "object": "invoice",
+        "account_country": "US",
+        "account_name": "Acme Analytics",
+        "amount_due": 3000,
+        "amount_paid": 3000,
+        "amount_remaining": 0,
+        "attempt_count": 1,
+        "attempted": true,
+        "billing_reason": "subscription_cycle",
+        "charge": null,
+        "collection_method": "charge_automatically",
+        "created": 1775001600,
+        "currency": "usd",
+        "customer": "cus_unpaid",
+        "discount": null,
+        "discounts": [],
+        "due_date": null,
+        "ending_balance": 0,
+        "hosted_invoice_url": null,
+        "lines": {
+          "object": "list",
+          "data": [
+            {
+              "id": "il_un_4",
+              "object": "line_item",
+              "amount": 3000,
+              "amount_excluding_tax": 3000,
+              "currency": "usd",
+              "description": "1 × Pro (at $30.00 / month)",
+              "discount_amounts": [],
+              "discountable": true,
+              "discounts": [],
+              "invoice": "in_un_4",
+              "livemode": false,
+              "metadata": {},
+              "period": {
+                "end": 1777593600,
+                "start": 1775001600
+              },
+              "plan": null,
+              "price": {
+                "id": "price_pro_monthly",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "per_unit",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "Pro",
+                "product": "prod_pro",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "month",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": null,
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": 3000,
+                "unit_amount_decimal": "3000"
+              },
+              "proration": false,
+              "proration_details": {
+                "credited_items": null
+              },
+              "quantity": 1,
+              "subscription": "sub_un",
+              "subscription_item": "si_un",
+              "tax_amounts": [],
+              "tax_rates": [],
+              "type": "subscription",
+              "unit_amount_excluding_tax": "3000"
+            }
+          ],
+          "has_more": false,
+          "total_count": 1,
+          "url": "/v1/invoices/in_un_4/lines"
+        },
+        "livemode": false,
+        "metadata": {},
+        "number": "UN-0004",
+        "paid": true,
+        "paid_out_of_band": false,
+        "period_end": 1775001600,
+        "period_start": 1775001600,
+        "status": "paid",
+        "status_transitions": {
+          "finalized_at": 1775005200,
+          "marked_uncollectible_at": null,
+          "paid_at": 1775833500,
+          "voided_at": null
+        },
+        "subscription": "sub_un",
+        "subtotal": 3000,
+        "subtotal_excluding_tax": 3000,
+        "tax": null,
+        "total": 3000,
+        "total_discount_amounts": [],
+        "total_excluding_tax": 3000
+      },
+      {
+        "id": "in_un_5",
+        "object": "invoice",
+        "account_country": "US",
+        "account_name": "Acme Analytics",
+        "amount_due": 3000,
+        "amount_paid": 3000,
+        "amount_remaining": 0,
+        "attempt_count": 1,
+        "attempted": true,
+        "billing_reason": "subscription_cycle",
+        "charge": null,
+        "collection_method": "charge_automatically",
+        "created": 1777593600,
+        "currency": "usd",
+        "customer": "cus_unpaid",
+        "discount": null,
+        "discounts": [],
+        "due_date": null,
+        "ending_balance": 0,
+        "hosted_invoice_url": null,
+        "lines": {
+          "object": "list",
+          "data": [
+            {
+              "id": "il_un_5",
+              "object": "line_item",
+              "amount": 3000,
+              "amount_excluding_tax": 3000,
+              "currency": "usd",
+              "description": "1 × Pro (at $30.00 / month)",
+              "discount_amounts": [],
+              "discountable": true,
+              "discounts": [],
+              "invoice": "in_un_5",
+              "livemode": false,
+              "metadata": {},
+              "period": {
+                "end": 1780272000,
+                "start": 1777593600
+              },
+              "plan": null,
+              "price": {
+                "id": "price_pro_monthly",
+                "object": "price",
+                "active": true,
+                "billing_scheme": "per_unit",
+                "created": 1748736000,
+                "currency": "usd",
+                "custom_unit_amount": null,
+                "livemode": false,
+                "lookup_key": null,
+                "metadata": {},
+                "nickname": "Pro",
+                "product": "prod_pro",
+                "recurring": {
+                  "aggregate_usage": null,
+                  "interval": "month",
+                  "interval_count": 1,
+                  "meter": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "tax_behavior": "exclusive",
+                "tiers_mode": null,
+                "transform_quantity": null,
+                "type": "recurring",
+                "unit_amount": 3000,
+                "unit_amount_decimal": "3000"
+              },
+              "proration": false,
+              "proration_details": {
+                "credited_items": null
+              },
+              "quantity": 1,
+              "subscription": "sub_un",
+              "subscription_item": "si_un",
+              "tax_amounts": [],
+              "tax_rates": [],
+              "type": "subscription",
+              "unit_amount_excluding_tax": "3000"
+            }
+          ],
+          "has_more": false,
+          "total_count": 1,
+          "url": "/v1/invoices/in_un_5/lines"
+        },
+        "livemode": false,
+        "metadata": {},
+        "number": "UN-0005",
+        "paid": true,
+        "paid_out_of_band": false,
+        "period_end": 1777593600,
+        "period_start": 1777593600,
+        "status": "paid",
+        "status_transitions": {
+          "finalized_at": 1777597200,
+          "marked_uncollectible_at": null,
+          "paid_at": 1777597320,
+          "voided_at": null
+        },
+        "subscription": "sub_un",
+        "subtotal": 3000,
+        "subtotal_excluding_tax": 3000,
+        "tax": null,
+        "total": 3000,
+        "total_discount_amounts": [],
+        "total_excluding_tax": 3000
+      }
+    ],
+    "prices": [
+      {
+        "id": "price_pro_monthly",
+        "object": "price",
+        "active": true,
+        "billing_scheme": "per_unit",
+        "created": 1748736000,
+        "currency": "usd",
+        "custom_unit_amount": null,
+        "livemode": false,
+        "lookup_key": null,
+        "metadata": {},
+        "nickname": "Pro",
+        "product": "prod_pro",
+        "recurring": {
+          "aggregate_usage": null,
+          "interval": "month",
+          "interval_count": 1,
+          "meter": null,
+          "trial_period_days": null,
+          "usage_type": "licensed"
+        },
+        "tax_behavior": "exclusive",
+        "tiers_mode": null,
+        "transform_quantity": null,
+        "type": "recurring",
+        "unit_amount": 3000,
+        "unit_amount_decimal": "3000"
+      }
+    ],
+    "coupons": [],
+    "charges": [
+      {
+        "id": "ch_un_1",
+        "object": "charge",
+        "amount": 3000,
+        "amount_captured": 3000,
+        "amount_refunded": 0,
+        "balance_transaction": "txn_un_1",
+        "captured": true,
+        "created": 1767229320,
+        "currency": "usd",
+        "customer": "cus_unpaid",
+        "description": "Subscription update",
+        "failure_code": null,
+        "failure_message": null,
+        "invoice": "in_un_1",
+        "livemode": false,
+        "metadata": {},
+        "outcome": {
+          "network_status": "approved_by_network",
+          "reason": null,
+          "risk_level": "normal",
+          "seller_message": "Payment complete.",
+          "type": "authorized"
+        },
+        "paid": true,
+        "payment_intent": "pi_un_1",
+        "refunded": false,
+        "status": "succeeded"
+      },
+      {
+        "id": "ch_un_2",
+        "object": "charge",
+        "amount": 3000,
+        "amount_captured": 3000,
+        "amount_refunded": 0,
+        "balance_transaction": "txn_un_2",
+        "captured": true,
+        "created": 1769907720,
+        "currency": "usd",
+        "customer": "cus_unpaid",
+        "description": "Subscription update",
+        "failure_code": null,
+        "failure_message": null,
+        "invoice": "in_un_2",
+        "livemode": false,
+        "metadata": {},
+        "outcome": {
+          "network_status": "approved_by_network",
+          "reason": null,
+          "risk_level": "normal",
+          "seller_message": "Payment complete.",
+          "type": "authorized"
+        },
+        "paid": true,
+        "payment_intent": "pi_un_2",
+        "refunded": false,
+        "status": "succeeded"
+      },
+      {
+        "id": "ch_un_3a",
+        "object": "charge",
+        "amount": 3000,
+        "amount_captured": 0,
+        "amount_refunded": 0,
+        "balance_transaction": null,
+        "captured": false,
+        "created": 1772326800,
+        "currency": "usd",
+        "customer": "cus_unpaid",
+        "description": "Subscription update",
+        "failure_code": "card_declined",
+        "failure_message": "Your card was declined.",
+        "invoice": "in_un_3",
+        "livemode": false,
+        "metadata": {},
+        "outcome": {
+          "network_status": "declined_by_network",
+          "reason": null,
+          "risk_level": "normal",
+          "seller_message": "The bank did not return any further details with this decline.",
+          "type": "issuer_declined"
+        },
+        "paid": false,
+        "payment_intent": "pi_un_3a",
+        "refunded": false,
+        "status": "failed"
+      },
+      {
+        "id": "ch_un_3b",
+        "object": "charge",
+        "amount": 3000,
+        "amount_captured": 0,
+        "amount_refunded": 0,
+        "balance_transaction": null,
+        "captured": false,
+        "created": 1772629200,
+        "currency": "usd",
+        "customer": "cus_unpaid",
+        "description": "Subscription update",
+        "failure_code": "card_declined",
+        "failure_message": "Your card was declined.",
+        "invoice": "in_un_3",
+        "livemode": false,
+        "metadata": {},
+        "outcome": {
+          "network_status": "declined_by_network",
+          "reason": null,
+          "risk_level": "normal",
+          "seller_message": "The bank did not return any further details with this decline.",
+          "type": "issuer_declined"
+        },
+        "paid": false,
+        "payment_intent": "pi_un_3b",
+        "refunded": false,
+        "status": "failed"
+      },
+      {
+        "id": "ch_un_3c",
+        "object": "charge",
+        "amount": 3000,
+        "amount_captured": 0,
+        "amount_refunded": 0,
+        "balance_transaction": null,
+        "captured": false,
+        "created": 1772974800,
+        "currency": "usd",
+        "customer": "cus_unpaid",
+        "description": "Subscription update",
+        "failure_code": "card_declined",
+        "failure_message": "Your card was declined.",
+        "invoice": "in_un_3",
+        "livemode": false,
+        "metadata": {},
+        "outcome": {
+          "network_status": "declined_by_network",
+          "reason": null,
+          "risk_level": "normal",
+          "seller_message": "The bank did not return any further details with this decline.",
+          "type": "issuer_declined"
+        },
+        "paid": false,
+        "payment_intent": "pi_un_3c",
+        "refunded": false,
+        "status": "failed"
+      },
+      {
+        "id": "ch_un_3d",
+        "object": "charge",
+        "amount": 3000,
+        "amount_captured": 3000,
+        "amount_refunded": 0,
+        "balance_transaction": "txn_un_3d",
+        "captured": true,
+        "created": 1775833200,
+        "currency": "usd",
+        "customer": "cus_unpaid",
+        "description": "Subscription update",
+        "failure_code": null,
+        "failure_message": null,
+        "invoice": "in_un_3",
+        "livemode": false,
+        "metadata": {},
+        "outcome": {
+          "network_status": "approved_by_network",
+          "reason": null,
+          "risk_level": "normal",
+          "seller_message": "Payment complete.",
+          "type": "authorized"
+        },
+        "paid": true,
+        "payment_intent": "pi_un_3d",
+        "refunded": false,
+        "status": "succeeded"
+      },
+      {
+        "id": "ch_un_4",
+        "object": "charge",
+        "amount": 3000,
+        "amount_captured": 3000,
+        "amount_refunded": 0,
+        "balance_transaction": "txn_un_4",
+        "captured": true,
+        "created": 1775833500,
+        "currency": "usd",
+        "customer": "cus_unpaid",
+        "description": "Subscription update",
+        "failure_code": null,
+        "failure_message": null,
+        "invoice": "in_un_4",
+        "livemode": false,
+        "metadata": {},
+        "outcome": {
+          "network_status": "approved_by_network",
+          "reason": null,
+          "risk_level": "normal",
+          "seller_message": "Payment complete.",
+          "type": "authorized"
+        },
+        "paid": true,
+        "payment_intent": "pi_un_4",
+        "refunded": false,
+        "status": "succeeded"
+      },
+      {
+        "id": "ch_un_5",
+        "object": "charge",
+        "amount": 3000,
+        "amount_captured": 3000,
+        "amount_refunded": 0,
+        "balance_transaction": "txn_un_5",
+        "captured": true,
+        "created": 1777597320,
+        "currency": "usd",
+        "customer": "cus_unpaid",
+        "description": "Subscription update",
+        "failure_code": null,
+        "failure_message": null,
+        "invoice": "in_un_5",
+        "livemode": false,
+        "metadata": {},
+        "outcome": {
+          "network_status": "approved_by_network",
+          "reason": null,
+          "risk_level": "normal",
+          "seller_message": "Payment complete.",
+          "type": "authorized"
+        },
+        "paid": true,
+        "payment_intent": "pi_un_5",
+        "refunded": false,
+        "status": "succeeded"
+      }
+    ],
+    "refunds": [],
+    "events": [
+      {
+        "id": "evt_un_1",
+        "object": "event",
+        "api_version": "2024-06-20",
+        "created": 1772326805,
+        "data": {
+          "object": {
+            "id": "sub_un",
+            "object": "subscription",
+            "customer": "cus_unpaid",
+            "status": "past_due"
+          },
+          "previous_attributes": {
+            "status": "active"
+          }
+        },
+        "livemode": false,
+        "pending_webhooks": 0,
+        "request": {
+          "id": "req_un_1",
+          "idempotency_key": null
+        },
+        "type": "customer.subscription.updated"
+      },
+      {
+        "id": "evt_un_2",
+        "object": "event",
+        "api_version": "2024-06-20",
+        "created": 1775833205,
+        "data": {
+          "object": {
+            "id": "sub_un",
+            "object": "subscription",
+            "customer": "cus_unpaid",
+            "status": "active"
+          },
+          "previous_attributes": {
+            "status": "past_due"
+          }
+        },
+        "livemode": false,
+        "pending_webhooks": 0,
+        "request": {
+          "id": "req_un_2",
+          "idempotency_key": null
+        },
+        "type": "customer.subscription.updated"
+      }
+    ]
+  },
+  "fx": [],
+  "expected": {
+    "mrr": 3000,
+    "movements": [
+      {
+        "day": "2026-01-01",
+        "kind": "new",
+        "amount": 3000,
+        "cause": {
+          "type": "invoice",
+          "id": "in_un_1"
+        }
+      },
+      {
+        "day": "2026-04-01",
+        "kind": "churn",
+        "amount": -3000,
+        "cause": {
+          "type": "invoice",
+          "id": "in_un_3"
+        }
+      },
+      {
+        "day": "2026-04-10",
+        "kind": "reactivation",
+        "amount": 3000,
+        "cause": {
+          "type": "invoice",
+          "id": "in_un_3"
+        }
+      }
+    ],
+    "feed": [
+      {
+        "kind": "signup",
+        "day": "2026-01-01",
+        "amount": 3000
+      },
+      {
+        "kind": "failed_payment",
+        "day": "2026-03-01",
+        "amount": 3000
+      },
+      {
+        "kind": "failed_payment",
+        "day": "2026-03-04",
+        "amount": 3000
+      },
+      {
+        "kind": "failed_payment",
+        "day": "2026-03-08",
+        "amount": 3000
+      },
+      {
+        "kind": "cancel",
+        "day": "2026-04-01",
+        "amount": -3000
+      },
+      {
+        "kind": "reactivation",
+        "day": "2026-04-10",
+        "amount": 3000
+      }
+    ]
+  }
+}
