@@ -1,1 +1,298 @@
 @import "tailwindcss";
+
+/*
+ * PulseARR's look (docs/brand.md, docs/brand-tokens.css): white work area on a navy-deep sidebar, ink text with
+ * navy-tinted grays, pulse blue as the one accent on light (about 3% of a screen), sky as the one accent on dark.
+ * Newsreader for page titles and big numbers, Inter 14px for everything else. Cards, panels, sheets and tables are
+ * square; buttons, inputs, menus, tooltips and dialogs have 8px corners; tags 2px. No pills. No shadows on cards: depth
+ * comes from navy against white and paper against white. Only floating layers (menus, tooltips, dialogs) cast a shadow.
+ * One light theme for the app in M0.
+ *
+ * The raw tokens keep the brand's names (--navy-deep, --pulse-blue...). The Tailwind names (ink, panel, line, brand...)
+ * map onto them in @theme, so every screen reads the same tokens. Tailwind's own palette, corners and shadows are
+ * cleared, so a class outside the brand draws nothing.
+ */
+
+:root {
+  /* Core palette */
+  --navy-deep: #000522;
+  --navy: #131824;
+  --ink: #0e0e0e;
+  --pulse-blue: #131fa7;
+  --pulse-blue-hover: #081170;
+  --pulse-blue-deep: #0f1988;
+  --sky: #aacbff;
+  --ice: #e5efff;
+  --slate: #2d3c60;
+  --slate-fade: #2d3c6066;
+  --paper: #faf8fb;
+  --hover-gray: #eceef4;
+  --line: #e4e6ee;
+  --line-strong: #c4ccda;
+  --muted: #5d6275; /* secondary text on white */
+  --gray: #9aa0b4; /* secondary text on dark only: fails on white */
+  --white: #ffffff;
+  --wash: rgba(0, 5, 34, 0.04);
+  --scrim: rgba(0, 5, 34, 0.4);
+
+  /* Status (numbers and states only) */
+  --up: #0b7a4b;
+  --down: #b42318;
+  --warn: #b54708;
+  --up-soft: #e7f5ee;
+  --down-soft: #fdecea;
+  --warn-soft: #fef3e6;
+  --up-on-dark: #3fd08a;
+  --down-on-dark: #ff7a6b;
+  --warn-on-dark: #ffb45c;
+
+  /* Charts */
+  --chart-1: var(--pulse-blue);
+  --chart-2: #5b6cf0;
+  --chart-3: #8fa3c7;
+  --chart-4: #c4ccda;
+  --chart-compare: var(--sky);
+  --chart-grid: var(--hover-gray);
+
+  /* Floating layers and focus */
+  --shadow-float: 0 8px 24px rgba(0, 5, 34, 0.12);
+  --focus-light: 0 0 0 2px var(--white), 0 0 0 4px var(--pulse-blue);
+  --focus-dark: 0 0 0 2px var(--navy-deep), 0 0 0 4px var(--sky);
+
+  /* Motion */
+  --ease: cubic-bezier(0.65, 0.05, 0, 1);
+  --dur-instant: 120ms;
+  --dur-hover: 200ms;
+  --dur-panel: 400ms;
+  --dur-reveal: 735ms;
+  --dur-number: 800ms;
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --rail-width: 320px;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), "Inter", Arial, sans-serif;
+  --font-serif: var(--font-newsreader), "Newsreader", "Source Serif 4", Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Only the brand's colors exist. */
+  --color-*: initial;
+  --color-white: var(--white);
+  --color-black: #000000;
+
+  /* Text */
+  --color-ink: var(--ink);
+  --color-body: var(--ink);
+  --color-muted: var(--muted);
+  /* Counts, placeholders and quiet icons on white. The brand's lighter gray fails on white, so it stays muted. */
+  --color-faint: var(--muted);
+  --color-inverted: var(--white);
+  /* Secondary text on navy only */
+  --color-dim: var(--gray);
+
+  /* Surfaces */
+  --color-panel: var(--white);
+  --color-canvas: var(--paper);
+  --color-paper: var(--paper);
+  --color-shell: var(--navy-deep);
+  --color-side: var(--navy-deep);
+  --color-navy-deep: var(--navy-deep);
+  --color-navy: var(--navy);
+  --color-hover: var(--hover-gray);
+  --color-wash: var(--wash);
+  --color-pressed: var(--line);
+  --color-scrim: var(--scrim);
+
+  /* Lines */
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  /* The accent */
+  --color-brand: var(--pulse-blue);
+  --color-brand-hover: var(--pulse-blue-hover);
+  --color-brand-deep: var(--pulse-blue-deep);
+  --color-brand-soft: var(--ice);
+  --color-ice: var(--ice);
+  --color-sky: var(--sky);
+  --color-slate: var(--slate);
+  --color-slate-fade: var(--slate-fade);
+
+  /* Status: deep text on its soft fill */
+  --color-success: var(--up);
+  --color-success-soft: var(--up-soft);
+  --color-success-on-dark: var(--up-on-dark);
+  --color-danger: var(--down);
+  --color-danger-soft: var(--down-soft);
+  --color-danger-on-dark: var(--down-on-dark);
+  --color-warning: var(--warn);
+  --color-warning-soft: var(--warn-soft);
+  --color-warning-on-dark: var(--warn-on-dark);
+
+  /* Corners: cards, panels, sheets and tables are square (no class, or rounded-none). Tags 2px (rounded-xs),
+     buttons, inputs, menus, tooltips and dialogs 8px (rounded-md). rounded-full is only for the 8px status dot. */
+  --radius-*: initial;
+  --radius-xs: 2px;
+  --radius-sm: 2px;
+  --radius-md: 8px;
+
+  /* Shadows: floating layers only (menus and tooltips: pop; dialogs and sheets: modal), plus the focus ring. */
+  --shadow-*: initial;
+  --shadow-pop: var(--shadow-float);
+  --shadow-modal: var(--shadow-float);
+  --shadow-focus: var(--focus-light);
+}
+
+html,
+body {
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 500;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  b,
+  strong {
+    font-weight: 600;
+  }
+  :focus-visible {
+    outline: 2px solid var(--pulse-blue);
+    outline-offset: 2px;
+  }
+  ::placeholder {
+    color: var(--muted);
+  }
+  code,
+  kbd,
+  samp {
+    font-family: var(--font-mono);
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* Focus on navy: the sky ring. */
+.on-dark :focus-visible {
+  outline-color: var(--sky);
+}
+
+::selection {
+  background: var(--ice);
+  color: var(--ink);
+}
+
+@layer components {
+  /* Eyebrow: 11px uppercase, the only uppercase text. */
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  /* Caption */
+  .fig {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--muted);
+  }
+}
+
+/* Numbers line up in tables, charts and number cards. */
+.num,
+table {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Thin scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--pulse-blue);
+}
+
+/* Table rows: hover on paper, the picked row on ice. */
+tr.row-hover:hover > td {
+  background: var(--paper);
+}
+tr.row-sel > td {
+  background: var(--ice);
+}
+
+/* Motion (docs/brand.md section 11): one curve, transform and opacity only. Motion answers what people do or shows
+   a first load. */
+
+/* The loader: four squares blinking in turn. */
+.loader {
+  display: inline-grid;
+  grid-template-columns: repeat(2, var(--l, 6px));
+  gap: calc(var(--l, 6px) / 3);
+  flex-shrink: 0;
+}
+.loader > i {
+  width: var(--l, 6px);
+  height: var(--l, 6px);
+  background: currentColor;
+  animation: loader-blink 1.2s var(--ease) infinite;
+}
+.loader > i:nth-child(2) { animation-delay: 0.15s; }
+.loader > i:nth-child(4) { animation-delay: 0.3s; }
+.loader > i:nth-child(3) { animation-delay: 0.45s; }
+@keyframes loader-blink { 50% { opacity: 0.2; } }
+
+/* Skeleton blocks while a screen loads: plain hover-gray, square, still. */
+.bone {
+  display: inline-block;
+  background: var(--hover-gray);
+}
+
+/* Things arriving: a fade and a 4px rise. */
+.rise { animation: rise var(--dur-panel) var(--ease) both; animation-delay: var(--d, 0ms); }
+@keyframes rise { from { opacity: 0; transform: translateY(4px); } }
+
+/* A value that changed flashes ice for 0.6s. */
+.flash { animation: flash 600ms var(--ease); }
+@keyframes flash { from { background: var(--ice); } }
+
+/* Big moments only (something launched): small squares burst out. */
+.burst-bit { position: fixed; z-index: 120; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+  .loader > i,
+  .rise,
+  .flash {
+    animation: none !important;
+  }
+}
