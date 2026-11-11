@@ -138,13 +138,15 @@ The logo has not been drawn yet. This section is the brief for it and the rules 
 | `--slate` | `#2D3C60` | Quiet buttons and lines on dark |
 | `--slate-fade` | `#2D3C6066` | Icon buttons on dark cards |
 | `--paper` | `#FAF8FB` | Light cards on white |
-| `--hover-gray` | `#EEEEEE` | White button hover, arrow chip, gridlines on white |
-| `--line` | `#E6E6E9` | Borders and dividers on white |
-| `--muted` | `#6B6B6B` | Secondary text on white (labels, captions, timestamps) |
-| `--gray` | `#9C9C9C` | Secondary text on dark only, footer labels |
+| `--hover-gray` | `#ECEEF4` | White button hover, arrow chip, gridlines on white |
+| `--line` | `#E4E6EE` | Borders and dividers on white |
+| `--muted` | `#5D6275` | Secondary text on white (labels, captions, timestamps) |
+| `--gray` | `#9AA0B4` | Secondary text on dark only, footer labels |
 | `--white` | `#FFFFFF` | Light sections, text on dark |
 | `--navy-glass` | `#000522CC` | Sticky header after scroll (with 20px blur) |
 | `--navy-glass-2` | `#000417CC` | Footer (with 20px blur) |
+
+Grays are tinted toward the navy so they belong to the palette.
 
 ### Status colors (numbers and states only)
 | Token | Hex on light | Token | Hex on dark | Means |
@@ -183,9 +185,9 @@ Navy hero, white feature rows, navy product panels, white quotes, navy trust row
 | `--sky` | `--navy` | 10.7 | AAA |
 | black | `--sky` | 12.7 | AAA |
 | white | `--slate` | 10.9 | AAA |
-| `--muted` | white | 5.3 | AA |
-| `--gray` | `--navy-deep` | 7.3 | AAA |
-| `--gray` | white | 2.75 | **Fails. Never use `--gray` text on white.** |
+| `--muted` | white | 6.05 | AA |
+| `--gray` | `--navy-deep` | 7.7 | AAA |
+| `--gray` | white | 2.61 | **Fails. Never use `--gray` text on white.** |
 | `--up` | white | 5.4 | AA |
 | `--down` | white | 6.6 | AA |
 | `--warn` | white | 5.4 | AA |

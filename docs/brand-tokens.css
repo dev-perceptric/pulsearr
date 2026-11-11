@@ -12,13 +12,13 @@
   --slate: #2d3c60;
   --slate-fade: #2d3c6066;
   --paper: #faf8fb;
-  --hover-gray: #eeeeee;
-  --gray: #9c9c9c;
+  --hover-gray: #eceef4;
+  --gray: #9aa0b4;
   --white: #ffffff;
   --navy-glass: #000522cc;
   --navy-glass-2: #000417cc;
-  --line: #e6e6e9;
-  --muted: #6b6b6b; /* secondary text on white; never use --gray on white */
+  --line: #e4e6ee;
+  --muted: #5d6275; /* secondary text on white; never use --gray on white */
 
   /* Status (numbers and states only) */
   --up: #0b7a4b;

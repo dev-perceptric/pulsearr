@@ -1,69 +1,95 @@
 <title>PulseARR</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="PulseARR turns Stripe into clear numbers, explains every change and wins back failed payments. Free up to $20K MRR.">
+<meta name="description" content="PulseARR turns Stripe into numbers you can check and explains every change in plain English. Free up to $20K MRR.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
 <style>
-/* Layout: navy and white bands taking turns, a 1440px fluid container, two-column feature rows that switch sides, square cards on white. Single look by design (docs/brand.md). */
+/* Layout: navy and white bands taking turns on a 1440px fluid container; feature rows switch sides; square panels on white.
+   One fixed look by design (docs/brand.md), so every color is set explicitly and there is no dark-theme swap. */
 :root {
   color-scheme: light;
+
+  /* Brand colors */
   --navy-deep: #000522;
   --navy: #131824;
+  --navy-lift: #1a2238;
   --ink: #0e0e0e;
   --pulse-blue: #131fa7;
   --pulse-blue-hover: #081170;
-  --pulse-blue-deep: #0f1988;
   --sky: #aacbff;
   --ice: #e5efff;
   --slate: #2d3c60;
   --slate-fade: #2d3c6066;
   --paper: #faf8fb;
-  --hover-gray: #eeeeee;
-  --line: #e6e6e9;
-  --muted: #6b6b6b;
-  --gray: #9c9c9c;
   --white: #ffffff;
   --navy-glass: #000522cc;
-  --up: #0b7a4b;
-  --down: #b42318;
-  --up-on-dark: #3fd08a;
-  --down-on-dark: #ff7a6b;
 
+  /* Neutrals, tinted toward the navy */
+  --muted: #5d6275;      /* text on light, 6.05:1 on white */
+  --gray: #9aa0b4;       /* text on dark only, 7.72:1 on navy */
+  --line: #e4e6ee;
+  --hover-gray: #eceef4;
+
+  /* Status */
+  --up: #0b7a4b;
+  --up-soft: #e7f5ee;
+  --down: #b42318;
+  --down-soft: #fdecea;
+
+  /* MRR movement colors (good above zero, bad below) */
+  --mv-new: #0b7a4b;
+  --mv-expansion: #4fa57e;
+  --mv-reactivation: #93cdb0;
+  --mv-contraction: #e48a80;
+  --mv-churn: #b42318;
+
+  /* Type */
   --font-display: "Newsreader", "Source Serif 4", Georgia, serif;
   --font-sans: "Inter", Arial, Helvetica, sans-serif;
 
+  /* Motion */
   --ease: cubic-bezier(0.65, 0.05, 0, 1);
   --dur-reveal: 0.735s;
   --dur-hover: 0.2s;
 
-  --size-unit: 16;
+  /* Fluid base size: container width / (design width / 16) */
   --size-container-ideal: 1440;
   --size-container-min: 992px;
   --size-container-max: 1440px;
   --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
-  --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
+  --size-font: calc(var(--size-container) / (var(--size-container-ideal) / 16));
   --pad: 4em;
 
+  /* Type scale */
   --fs-display: 4.375em;
-  --fs-h1: 3.75em;
   --fs-h2: 3.25em;
   --fs-h3: 2.5em;
+  --fs-h4: 1.6em;
   --fs-lead: 1.25em;
+  --fs-small: 0.875em;
+  --fs-eyebrow: 0.82em;
+
+  /* Section rhythm */
+  --section-y: 6.25em;
+  --stack-lg: 4em;
+  --stack-md: 2em;
+  --stack-sm: 1.2em;
 }
 @media (max-width: 991px) {
   :root { --size-container-ideal: 900; --size-container-min: 768px; --size-container-max: 991px; --pad: 1.5em; }
 }
 @media (max-width: 767px) {
   :root { --size-container-ideal: 600; --size-container-min: 480px; --size-container-max: 767px; --pad: 1em;
-    --fs-display: 3.25em; --fs-h1: 3em; --fs-h2: 2.5em; --fs-h3: 2.1em; --fs-lead: 1.05em; }
+    --fs-display: 3.1em; --fs-h2: 2.5em; --fs-h3: 2.1em; --fs-lead: 1.05em; --section-y: 4em; --stack-lg: 2.5em; }
 }
 @media (max-width: 479px) {
-  :root { --size-container-ideal: 390; --size-container-min: 320px; --size-container-max: 479px; --fs-h1: 2.6em; --fs-h2: 2.2em; --fs-h3: 1.9em; }
+  :root { --size-container-ideal: 390; --size-container-min: 320px; --size-container-max: 479px;
+    --fs-display: 2.6em; --fs-h2: 2.2em; --fs-h3: 1.9em; }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; scroll-padding-top: 5em; }
 body {
   margin: 0;
   background: var(--white);
@@ -73,10 +99,11 @@ body {
   line-height: 1.3;
 }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--navy-deep); }
-h1, h2, h3, p { margin: 0; }
+h1, h2, h3, p, ol, ul { margin: 0; }
+ol, ul { padding: 0; list-style: none; }
 a { color: inherit; }
-img, svg, canvas { max-width: 100%; }
-button { font: inherit; }
+svg, canvas { display: block; max-width: 100%; }
+button, input { font: inherit; }
 
 .wrap {
   max-width: var(--size-container);
@@ -84,459 +111,509 @@ button { font: inherit; }
   padding-left: max(var(--pad), 16px, env(safe-area-inset-left, 0px));
   padding-right: max(var(--pad), 16px, env(safe-area-inset-right, 0px));
 }
-.band-navy { background: var(--navy-deep); color: var(--white); }
-.band-obsidian { background: var(--navy); color: var(--white); }
-.band-white { background: var(--white); color: var(--ink); }
+.dark { background: var(--navy-deep); color: var(--white); }
+.dark-2 { background: var(--navy); color: var(--white); }
+.light { background: var(--white); color: var(--ink); }
+.section { padding-block: var(--section-y); }
 
 /* Type */
-.display, .h1, .h2, .h3 { font-family: var(--font-display); font-weight: 500; line-height: 1; text-wrap: balance; }
-.h1 { font-size: var(--fs-h1); letter-spacing: -0.02em; }
+.h1, .h2, .h3, .h4 { font-family: var(--font-display); font-weight: 500; line-height: 1; text-wrap: balance; }
+.h1 { font-size: var(--fs-display); letter-spacing: -0.02em; }
 .h2 { font-size: var(--fs-h2); letter-spacing: -0.01em; }
 .h3 { font-size: var(--fs-h3); letter-spacing: -0.01em; }
-.lead { font-size: var(--fs-lead); line-height: 1.4; letter-spacing: -0.01em; text-wrap: pretty; }
-.body { font-size: 1em; letter-spacing: 0.01em; line-height: 1.45; text-wrap: pretty; }
-.small { font-size: 0.875em; line-height: 1.4; }
-.eyebrow { font-size: 0.82em; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--pulse-blue); }
-.band-navy .eyebrow, .band-obsidian .eyebrow { color: var(--sky); }
+.h4 { font-size: var(--fs-h4); line-height: 1.1; }
+.lead { font-size: var(--fs-lead); line-height: 1.4; letter-spacing: -0.01em; text-wrap: pretty; max-width: 34em; }
+.text { line-height: 1.5; letter-spacing: 0.01em; text-wrap: pretty; max-width: 38em; }
+.small { font-size: var(--fs-small); line-height: 1.45; }
+.eyebrow { font-size: var(--fs-eyebrow); font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--pulse-blue); }
+.eyebrow-sm { font-size: 0.68em; }
 .accent { color: var(--pulse-blue); }
-.band-navy .accent, .band-obsidian .accent { color: var(--sky); }
 .muted { color: var(--muted); }
-.band-navy .muted, .band-obsidian .muted { color: var(--gray); }
+.dark .eyebrow, .dark-2 .eyebrow, .dark .accent, .dark-2 .accent { color: var(--sky); }
+.dark .muted, .dark-2 .muted { color: var(--gray); }
 .num { font-variant-numeric: tabular-nums; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 /* Buttons */
 .btn {
-  display: inline-flex; align-items: center; gap: 0.6em;
-  padding: 0.84em 1.1em; border-radius: 0.5rem; border: 0;
-  font-family: var(--font-sans); font-size: 1em; font-weight: 500; letter-spacing: 0.01em;
-  text-decoration: none; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.6em;
+  min-height: 2.75em; padding: 0.75em 1.1em; border-radius: 0.5rem; border: 0;
+  font-weight: 500; letter-spacing: 0.01em; text-decoration: none; cursor: pointer;
   transition: background-color var(--dur-hover), color var(--dur-hover);
 }
 .btn-primary { background: var(--pulse-blue); color: var(--white); }
 .btn-primary:hover { background: var(--pulse-blue-hover); }
 .btn-white { background: var(--white); color: var(--ink); }
 .btn-white:hover { background: var(--hover-gray); }
-.btn-sky { background: var(--sky); color: var(--ink); }
-.btn-sky:hover { background: var(--ice); }
 .btn-slate { background: var(--slate); color: var(--white); }
-.btn-slate:hover { background: var(--navy); }
+.btn-slate:hover { background: var(--navy-lift); }
 .btn-ice { background: var(--ice); color: var(--ink); }
 .btn-ice:hover { background: var(--sky); }
 :focus-visible { outline: 2px solid var(--pulse-blue); outline-offset: 2px; }
-.band-navy :focus-visible, .band-obsidian :focus-visible, .header :focus-visible { outline-color: var(--sky); }
+.dark :focus-visible, .dark-2 :focus-visible, .header :focus-visible { outline-color: var(--sky); }
 
-.arrow-link { display: inline-flex; align-items: center; gap: 0.63em; color: var(--pulse-blue); font-weight: 600; text-decoration: none; }
+.arrow-link { display: inline-flex; align-items: center; gap: 0.63em; min-height: 2.75em; color: var(--pulse-blue); font-weight: 600; text-decoration: none; }
 .arrow-chip { width: 1.5em; height: 1.5em; display: grid; place-items: center; background: var(--hover-gray); border-radius: 2px; transition: background-color var(--dur-hover); }
-.arrow-link:hover .arrow-chip { background: var(--sky); }
 .arrow-chip svg { width: 0.8em; height: 0.8em; }
+.arrow-link:hover .arrow-chip { background: var(--sky); }
+
+/* Logo */
+.brand { display: inline-flex; align-items: center; gap: 0.6em; text-decoration: none; min-height: 2.75em; }
+.brand-mark { width: 2em; height: 2em; flex: none; }
+.brand-word { font-size: 1.35em; line-height: 1; white-space: nowrap; }
+.brand-word .w1 { font-family: var(--font-display); font-weight: 500; }
+.brand-word .w2 { font-weight: 500; letter-spacing: 0.04em; font-size: 0.8em; }
 
 /* Banner and header */
-.banner { background: var(--navy-deep); color: var(--white); border-bottom: 1px solid var(--slate); }
-.banner .wrap { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75em; padding-block: 0.75em; font-size: 0.875em; text-align: center; }
+.banner { border-bottom: 1px solid var(--slate); }
+.banner .wrap { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.25em 0.75em; padding-block: 0.7em; font-size: var(--fs-small); text-align: center; }
 .banner a { text-decoration: underline; text-underline-offset: 3px; }
 .header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; color: var(--white); background: var(--navy-deep); transition: background-color 0.4s var(--ease); }
 .header.is-scrolled { background: var(--navy-glass); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
-.header .wrap { display: flex; align-items: center; gap: 1.5em; padding-block: 1em; }
-.brand { display: inline-flex; align-items: center; gap: 0.6em; text-decoration: none; }
-.brand-mark { width: 2em; height: 2em; flex: none; }
-.brand-word { font-size: 1.35em; line-height: 1; white-space: nowrap; }
-.brand-word .w-pulse { font-family: var(--font-display); font-weight: 500; }
-.brand-word .w-arr { font-family: var(--font-sans); font-weight: 500; letter-spacing: 0.04em; font-size: 0.8em; }
+.header-row { display: flex; align-items: center; gap: 1.5em; padding-block: 0.8em; }
 .nav { display: flex; gap: 0.25em; margin-left: 1em; }
-.nav a { padding: 0.75em 0.9em; text-decoration: none; border-radius: 0.5rem; transition: background-color var(--dur-hover); }
+.nav a { display: inline-flex; align-items: center; min-height: 2.75em; padding: 0 0.9em; text-decoration: none; border-radius: 0.5rem; transition: background-color var(--dur-hover); }
 .nav a:hover { background: var(--slate-fade); }
-.header-actions { margin-left: auto; display: flex; gap: 0.6em; align-items: center; }
-@media (max-width: 991px) { .nav { display: none; } }
-@media (max-width: 479px) { .header-actions .btn-slate { display: none; } }
+.header-actions { margin-left: auto; display: flex; gap: 0.5em; align-items: center; }
+.menu-btn { display: none; width: 2.75em; height: 2.75em; border: 0; border-radius: 0.5rem; background: var(--slate-fade); color: var(--white); cursor: pointer; place-items: center; }
+.menu-btn svg { width: 1.25em; height: 1.25em; }
+.mobile-nav { border-top: 1px solid var(--slate); }
+.mobile-nav ul { display: grid; padding-block: 0.5em 1em; }
+.mobile-nav a { display: flex; align-items: center; min-height: 3em; text-decoration: none; border-bottom: 1px solid var(--slate); }
+@media (max-width: 991px) { .nav { display: none; } .menu-btn { display: grid; } }
+@media (min-width: 992px) { .mobile-nav { display: none; } }
 
 /* Hero */
 .hero { position: relative; overflow: hidden; }
 .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.hero .wrap { position: relative; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 4em; align-items: center; padding-block: 6.25em 5em; }
+.hero-grid { position: relative; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: var(--stack-lg); align-items: center; padding-block: var(--section-y) 5em; }
 .hero-copy { display: grid; gap: 1.6em; min-width: 0; }
-.hero-copy .h1 { font-size: var(--fs-display); letter-spacing: -0.02em; }
 .hero-buttons { display: flex; flex-wrap: wrap; gap: 0.75em; }
-.hero-note { color: var(--gray); font-size: 0.875em; }
-@media (max-width: 991px) { .hero .wrap { grid-template-columns: 1fr; gap: 3em; padding-block: 4em 3.5em; } }
+@media (max-width: 991px) { .hero-grid { grid-template-columns: 1fr; padding-block: 4em 3.5em; } }
 
-/* Product mock in hero */
-.mock { background: var(--white); color: var(--ink); border: 1px solid var(--slate); min-width: 0; }
-.mock-bar { display: flex; align-items: center; justify-content: space-between; gap: 1em; padding: 0.8em 1.2em; border-bottom: 1px solid var(--line); font-size: 0.8em; color: var(--muted); }
+/* Sample dashboard in the hero */
+.mock { background: var(--white); color: var(--ink); min-width: 0; }
+.mock-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5em 1em; padding: 0.8em 1.2em; border-bottom: 1px solid var(--line); font-size: 0.8em; color: var(--muted); }
 .mock-bar strong { color: var(--ink); font-weight: 600; }
+.mock-meta { display: flex; flex-wrap: wrap; gap: 0.5em 1em; align-items: center; }
 .live { display: inline-flex; align-items: center; gap: 0.45em; }
 .live::before { content: ""; width: 0.5em; height: 0.5em; background: var(--up); border-radius: 50%; }
-.mock-body { padding: 1.4em 1.2em; display: grid; gap: 1.2em; }
-.mock-metric { display: grid; gap: 0.35em; }
-.mock-metric .big { font-family: var(--font-display); font-weight: 500; font-size: 3em; line-height: 1; letter-spacing: -0.02em; }
-.delta-up { color: var(--up); font-size: 0.875em; }
-.spark { width: 100%; height: 5em; display: block; }
-.mock-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
-.mock-grid > div { padding: 0.9em 1.2em; display: grid; gap: 0.3em; border-right: 1px solid var(--line); min-width: 0; }
-.mock-grid > div:last-child { border-right: 0; }
-.mock-grid .label { font-size: 0.68em; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
-.mock-grid .val { font-family: var(--font-display); font-size: 1.5em; font-weight: 500; }
+.mock-body { padding: 1.4em 1.2em; display: grid; gap: 1.1em; }
+.metric { display: grid; gap: 0.35em; }
+.metric-value { font-family: var(--font-display); font-weight: 500; font-size: 3em; line-height: 1; letter-spacing: -0.02em; }
+.delta-up { color: var(--up); font-size: var(--fs-small); }
+.spark { width: 100%; height: 5em; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
+.stats > div { padding: 0.9em 1.2em; display: grid; gap: 0.3em; border-right: 1px solid var(--line); min-width: 0; }
+.stats > div:last-child { border-right: 0; }
+.stat-label { font-size: 0.68em; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.stat-value { font-family: var(--font-display); font-size: 1.5em; font-weight: 500; }
 .brief { background: var(--paper); padding: 1em 1.1em; display: grid; gap: 0.5em; }
-.brief .eyebrow { font-size: 0.68em; }
 .brief p { font-size: 0.9em; line-height: 1.45; }
-@media (max-width: 479px) { .mock-grid { grid-template-columns: 1fr; } .mock-grid > div { border-right: 0; border-bottom: 1px solid var(--line); } .mock-grid > div:last-child { border-bottom: 0; } }
+@media (max-width: 479px) { .stats { grid-template-columns: 1fr; } .stats > div { border-right: 0; border-bottom: 1px solid var(--line); } .stats > div:last-child { border-bottom: 0; } }
 
 /* Works-with strip */
 .works { border-top: 1px solid var(--slate); }
-.works .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75em 2.5em; padding-block: 1.6em; color: var(--gray); font-size: 0.9em; }
-.works .label { letter-spacing: 0.15em; text-transform: uppercase; font-size: 0.82em; font-weight: 500; }
-.works span.tool { color: var(--white); font-weight: 500; }
-.works span.soon { color: var(--gray); }
+.works ul { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75em 2.5em; padding-block: 1.6em; color: var(--gray); font-size: 0.9em; }
+.works .label { letter-spacing: 0.15em; text-transform: uppercase; font-size: var(--fs-eyebrow); font-weight: 500; }
+.works .now { color: var(--white); font-weight: 500; }
 
-/* Sections */
-.section { padding-block: 6.25em; }
-.section-head { display: grid; gap: 1.1em; max-width: 46em; margin-bottom: 4em; }
-@media (max-width: 767px) { .section { padding-block: 4em; } .section-head { margin-bottom: 2.5em; } }
+/* Section heads */
+.section-head { display: grid; gap: var(--stack-sm); margin-bottom: var(--stack-lg); }
 
 /* Feature rows */
 .rows { display: grid; gap: 6em; }
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 4em; align-items: center; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--stack-lg); align-items: center; }
 .row.flip .row-copy { order: 2; }
 .row-copy { display: grid; gap: 1.4em; max-width: 30em; min-width: 0; }
-.row-visual { background: var(--paper); padding: 2.5em; min-width: 0; min-height: 26em; display: grid; align-content: center; }
-@media (max-width: 991px) { .row { grid-template-columns: 1fr; gap: 2em; } .row.flip .row-copy { order: 0; } .row-visual { order: -1; min-height: 0; padding: 1.5em; } .rows { gap: 4em; } }
+.row-visual { background: var(--paper); padding: 2.5em; min-width: 0; }
+@media (max-width: 991px) { .rows { gap: 4em; } .row { grid-template-columns: 1fr; gap: var(--stack-md); } .row.flip .row-copy { order: 0; } .row-visual { order: -1; padding: 1.25em; } }
 
-.panel { background: var(--white); border: 1px solid var(--line); }
-.panel-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5em 1em; padding: 1em 1.2em; border-bottom: 1px solid var(--line); }
-.panel-head .t { font-weight: 600; font-size: 0.95em; }
-.panel-head .s { color: var(--muted); font-size: 0.8em; }
-.chart-wrap { padding: 1em 1.2em 0.8em; }
-.chart { width: 100%; height: auto; display: block; }
+.panel { background: var(--white); border: 1px solid var(--line); min-width: 0; }
+.panel-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.4em 1em; padding: 1em 1.2em; border-bottom: 1px solid var(--line); }
+.panel-title { font-weight: 600; font-size: 0.95em; }
+.panel-note { color: var(--muted); font-size: 0.8em; }
+.chart-wrap { padding: 1em 1.2em 0.6em; }
+.chart { width: 100%; height: auto; }
+.chart text { font-family: var(--font-sans); }
 .legend { display: flex; flex-wrap: wrap; gap: 0.5em 1.2em; padding: 0 1.2em 1.1em; font-size: 0.78em; color: var(--muted); }
-.legend i { display: inline-block; width: 0.7em; height: 0.7em; margin-right: 0.4em; vertical-align: -0.05em; }
+.legend span { display: inline-flex; align-items: center; gap: 0.4em; }
+.swatch { width: 0.7em; height: 0.7em; }
+.sw-new { background: var(--mv-new); } .sw-exp { background: var(--mv-expansion); } .sw-react { background: var(--mv-reactivation); }
+.sw-contr { background: var(--mv-contraction); } .sw-churn { background: var(--mv-churn); }
+.sw-net { height: 2px; width: 1em; background: var(--ink); }
 
 .ask { display: grid; gap: 0.9em; }
 .ask-q { justify-self: end; background: var(--navy-deep); color: var(--white); padding: 0.75em 1em; border-radius: 0.5rem; font-size: 0.9em; max-width: 85%; }
-.ask-a { background: var(--white); border: 1px solid var(--line); padding: 1em 1.1em; display: grid; gap: 0.7em; font-size: 0.9em; line-height: 1.45; }
-.ask-a .eyebrow { font-size: 0.68em; }
+.ask-a { background: var(--white); border: 1px solid var(--line); padding: 1em 1.1em; display: grid; gap: 0.7em; font-size: 0.9em; line-height: 1.45; min-width: 0; }
+.table-scroll { overflow-x: auto; }
 .ask-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
-.ask-table th { text-align: left; font-weight: 500; color: var(--muted); font-size: 0.85em; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.4em 0; border-bottom: 1px solid var(--line); }
-.ask-table td { padding: 0.5em 0; border-bottom: 1px solid var(--line); }
-.ask-table td.r, .ask-table th.r { text-align: right; }
-.ask-input { display: flex; gap: 0.5em; }
-.ask-input label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.ask-input input { flex: 1; min-width: 0; padding: 0.75em 0.9em; border: 1px solid var(--line); border-radius: 0.5rem; font: inherit; font-size: 0.9em; background: var(--white); color: var(--ink); }
+.ask-table th { text-align: left; font-weight: 500; color: var(--muted); font-size: 0.85em; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.4em 0.75em 0.4em 0; border-bottom: 1px solid var(--line); }
+.ask-table td { padding: 0.55em 0.75em 0.55em 0; border-bottom: 1px solid var(--line); }
+.ask-table .r { text-align: right; padding-right: 0; }
+.field-row { display: flex; flex-wrap: wrap; gap: 0.5em; }
+.field-row input { flex: 1 1 12em; min-width: 0; min-height: 2.75em; padding: 0.7em 0.9em; border: 1px solid var(--line); border-radius: 0.5rem; background: var(--white); color: var(--ink); font-size: 0.95em; }
+.field-row input:focus-visible { outline: 2px solid var(--pulse-blue); outline-offset: 0; border-color: var(--pulse-blue); }
+.field-label { font-size: 0.85em; font-weight: 500; }
+.note { min-height: 1.45em; }
 
-.tl { list-style: none; margin: 0; padding: 0; }
-.tl li { display: grid; grid-template-columns: 4.2em 1fr auto; gap: 1em; align-items: center; padding: 0.85em 1.2em; border-bottom: 1px solid var(--line); font-size: 0.88em; }
-.tl li:last-child { border-bottom: 0; }
-.tl .day { color: var(--muted); font-size: 0.85em; letter-spacing: 0.08em; text-transform: uppercase; }
+.timeline li { display: grid; grid-template-columns: 4.2em 1fr auto; gap: 1em; align-items: center; padding: 0.85em 1.2em; border-bottom: 1px solid var(--line); font-size: 0.88em; }
+.timeline li:last-child { border-bottom: 0; }
+.day { color: var(--muted); font-size: 0.85em; letter-spacing: 0.08em; text-transform: uppercase; }
 .tag { display: inline-block; padding: 0.2em 0.55em; border-radius: 2px; font-size: 0.78em; font-weight: 500; white-space: nowrap; }
-.tag-up { background: #e7f5ee; color: var(--up); }
-.tag-ice { background: var(--ice); color: var(--pulse-blue); }
-.tag-down { background: #fdecea; color: var(--down); }
-.recover-total { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5em 1em; padding: 1.1em 1.2em; border-top: 1px solid var(--line); }
-.recover-total .big { font-family: var(--font-display); font-size: 2.2em; font-weight: 500; color: var(--up); }
+.tag-up { background: var(--up-soft); color: var(--up); }
+.tag-info { background: var(--ice); color: var(--pulse-blue); }
+.tag-down { background: var(--down-soft); color: var(--down); }
+.panel-foot { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5em 1em; padding: 1.1em 1.2em; border-top: 1px solid var(--line); }
+.panel-foot .value { font-family: var(--font-display); font-size: 2.2em; font-weight: 500; color: var(--up); }
+@media (max-width: 479px) { .timeline li { grid-template-columns: 1fr auto; } .timeline .day { grid-column: 1 / -1; } }
 
 /* Product panels */
 .products { display: grid; gap: 1px; background: var(--slate); }
-.product { background: var(--navy); display: grid; grid-template-columns: 1fr auto; gap: 2em; align-items: center; padding: 4em 6em; text-decoration: none; color: var(--white); transition: background-color var(--dur-hover); }
-.product:hover { background: #18203a; }
-.product-copy { display: grid; gap: 1em; max-width: 40em; min-width: 0; }
-.square-btn { width: 2.75em; height: 2.75em; background: var(--slate-fade); border-radius: 0.5rem; display: grid; place-items: center; transition: background-color var(--dur-hover); }
-.product:hover .square-btn { background: var(--sky); }
-.product:hover .square-btn svg { stroke: var(--navy-deep); }
-.square-btn svg { width: 1.1em; height: 1.1em; stroke: var(--white); }
-@media (max-width: 767px) { .product { padding: 2.5em 1.5em; grid-template-columns: 1fr; } }
+.product { background: var(--navy); padding: 4em 0; }
+.product .wrap { display: grid; grid-template-columns: 1fr 1.2fr; gap: var(--stack-md) var(--stack-lg); align-items: start; }
+.product-copy { display: grid; gap: 1em; min-width: 0; }
+.product-points { display: grid; gap: 0.75em; padding-top: 0.4em; min-width: 0; }
+.product-points li { display: grid; grid-template-columns: 1.2em 1fr; gap: 0.6em; line-height: 1.45; color: var(--gray); }
+.product-points li strong { color: var(--white); font-weight: 500; }
+.product-points svg { width: 1em; height: 1em; margin-top: 0.2em; stroke: var(--sky); }
+@media (max-width: 767px) { .product { padding: 3em 0; } .product .wrap { grid-template-columns: 1fr; } }
 
 /* Rules */
 .rules { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
 .rule { padding: 2em; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); display: grid; gap: 0.8em; align-content: start; min-width: 0; }
-.rule .k { font-family: var(--font-display); font-size: 1.6em; font-weight: 500; line-height: 1.1; }
-.rule .ex { font-size: 0.85em; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rule .example { font-size: 0.85em; color: var(--muted); }
 @media (max-width: 991px) { .rules { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 600px) { .rules { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .rules { grid-template-columns: 1fr; } .rule { padding: 1.5em; } }
 
-/* Trust */
-.trust { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--slate); }
-.trust > div { padding: 3.5em 2em; display: grid; gap: 1.2em; justify-items: center; text-align: center; border-right: 1px solid var(--slate); }
-.trust > div:last-child { border-right: 0; }
-.trust svg { width: 2.2em; height: 2.2em; stroke: var(--sky); }
-@media (max-width: 767px) { .trust { grid-template-columns: 1fr; } .trust > div { border-right: 0; border-bottom: 1px solid var(--slate); } .trust > div:last-child { border-bottom: 0; } }
-.security-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 2em; padding-block: 6.25em 3em; }
-.security-head > div { display: grid; gap: 1.1em; max-width: 36em; }
-@media (max-width: 767px) { .security-head { padding-block: 4em 2em; } }
+/* Security */
+.security-head { display: grid; gap: var(--stack-sm); max-width: 40em; padding-block: var(--section-y) 3em; }
+.trust { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--slate); margin-bottom: var(--section-y); }
+.trust li { padding: 3em 2em; display: grid; gap: 1em; align-content: start; border-right: 1px solid var(--slate); min-width: 0; }
+.trust li:last-child { border-right: 0; }
+.trust svg { width: 2em; height: 2em; stroke: var(--sky); }
+.trust .h4 { color: var(--white); }
+@media (max-width: 767px) { .trust { grid-template-columns: 1fr; } .trust li { border-right: 0; border-bottom: 1px solid var(--slate); padding: 2em 0; } .trust li:last-child { border-bottom: 0; } }
 
 /* Pricing */
 .billing { justify-self: start; display: inline-flex; border: 1px solid var(--line); border-radius: 0.5rem; padding: 0.25em; gap: 0.25em; }
-.billing button { border: 0; background: transparent; padding: 0.55em 1em; border-radius: 0.4rem; cursor: pointer; color: var(--muted); font-size: 0.9em; }
+.billing button { border: 0; background: transparent; min-height: 2.5em; padding: 0 1em; border-radius: 0.4rem; cursor: pointer; color: var(--muted); font-size: 0.9em; }
 .billing button[aria-pressed="true"] { background: var(--ice); color: var(--pulse-blue); font-weight: 500; }
-.plans { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); margin-top: 2.5em; }
+.plans { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
 .plan { padding: 2em; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); display: grid; gap: 1.2em; align-content: start; min-width: 0; }
 .plan.featured { background: var(--paper); }
-.plan .name { display: flex; justify-content: space-between; align-items: center; gap: 0.5em; font-weight: 600; }
+.plan-name { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5em; font-family: var(--font-sans); font-size: 1em; font-weight: 600; }
 .price { display: flex; align-items: baseline; gap: 0.3em; }
-.price .amt { font-family: var(--font-display); font-size: 3em; font-weight: 500; line-height: 1; letter-spacing: -0.02em; }
-.price .per { color: var(--muted); font-size: 0.9em; }
-.plan .range { font-size: 0.85em; color: var(--muted); }
-.plan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6em; font-size: 0.9em; }
-.plan li { display: grid; grid-template-columns: 1.1em 1fr; gap: 0.5em; }
+.price-amount { font-family: var(--font-display); font-size: 3em; font-weight: 500; line-height: 1; letter-spacing: -0.02em; }
+.price-per, .plan-range { color: var(--muted); font-size: 0.875em; }
+.plan ul { display: grid; gap: 0.6em; font-size: 0.9em; }
+.plan li { display: grid; grid-template-columns: 1.1em 1fr; gap: 0.5em; line-height: 1.4; }
 .plan li svg { width: 1em; height: 1em; stroke: var(--pulse-blue); margin-top: 0.15em; }
-.plan .btn { justify-content: center; }
 @media (max-width: 1100px) { .plans { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 600px) { .plans { grid-template-columns: 1fr; } }
-.compare { margin-top: 2em; display: flex; flex-wrap: wrap; gap: 0.5em 2em; justify-content: space-between; align-items: baseline; background: var(--ice); padding: 1.4em 1.6em; }
-.compare strong { font-family: var(--font-display); font-weight: 500; font-size: 1.4em; }
+.compare { margin-top: var(--stack-md); display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.compare > div { background: var(--white); padding: 1.4em 1.6em; display: grid; gap: 0.3em; }
+.compare > div.ours { background: var(--ice); }
+.compare-price { font-family: var(--font-display); font-weight: 500; font-size: 2em; }
+.compare-source { grid-column: 1 / -1; background: var(--white); padding: 0.8em 1.6em; }
+@media (max-width: 600px) { .compare { grid-template-columns: 1fr; } }
 
-/* Link panels */
-.links { display: grid; grid-template-columns: 1fr 1fr; }
-.link-panel { padding: 5em 5em 5em 6em; display: grid; gap: 1.8em; align-content: start; background: var(--paper); }
-.link-panel.ice { background: var(--ice); }
-@media (max-width: 767px) { .links { grid-template-columns: 1fr; } .link-panel { padding: 3em 1.5em; } }
+/* Start */
+.start { display: grid; grid-template-columns: 1fr 1fr; }
+.start-panel { padding: 5em max(var(--pad), 16px); display: grid; gap: 1.6em; align-content: start; background: var(--paper); min-width: 0; }
+.start-panel.alt { background: var(--ice); }
+.start-form { display: grid; gap: 0.5em; max-width: 30em; }
+.steps { display: grid; gap: 0; counter-reset: step; max-width: 32em; }
+.steps li { counter-increment: step; display: grid; grid-template-columns: 2.25em 1fr; gap: 1em; padding: 1.1em 0; border-bottom: 1px solid var(--sky); }
+.steps li:last-child { border-bottom: 0; }
+.steps li::before { content: counter(step); width: 2.25em; height: 2.25em; display: grid; place-items: center; background: var(--white); color: var(--pulse-blue); font-weight: 600; font-variant-numeric: tabular-nums; border-radius: 2px; }
+.steps strong { display: block; font-weight: 600; margin-bottom: 0.25em; }
+@media (max-width: 767px) { .start { grid-template-columns: 1fr; } .start-panel { padding-block: 3em; } }
 
-/* CTA and footer */
-.cta { text-align: center; display: grid; gap: 1.8em; justify-items: center; max-width: 41em; margin-inline: auto; padding-block: 8em; }
-.footer { background: var(--navy-deep); color: var(--white); border-top: 1px solid var(--slate); }
-.footer .wrap { display: grid; grid-template-columns: 1.2fr repeat(4, 1fr); gap: 2.5em; padding-block: 4em 3em; }
-.footer h4 { margin: 0 0 1.2em; font-size: 0.78em; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gray); }
-.footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9em; font-size: 0.85em; }
-.footer a { text-decoration: none; }
-.footer a:hover { color: var(--sky); }
-.footer .legal { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1em; padding-top: 2em; border-top: 1px solid var(--slate); color: var(--gray); font-size: 0.8em; }
-@media (max-width: 991px) { .footer .wrap { grid-template-columns: 1fr 1fr; } .footer .about { grid-column: 1 / -1; } }
+/* Footer */
+.footer { border-top: 1px solid var(--slate); }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2.5em; padding-block: 4em 2.5em; }
+.footer-title { margin-bottom: 1em; font-family: var(--font-sans); font-size: 0.78em; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gray); }
+.footer ul { display: grid; gap: 0.25em; font-size: 0.9em; }
+.footer ul a { display: inline-flex; align-items: center; min-height: 2.5em; text-decoration: none; }
+.footer ul a:hover { color: var(--sky); }
+.legal { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1em; padding-block: 1.5em 2.5em; border-top: 1px solid var(--slate); color: var(--gray); font-size: 0.8em; }
+@media (max-width: 767px) { .footer-grid { grid-template-columns: 1fr 1fr; } .footer-about { grid-column: 1 / -1; } }
 
-/* Motion */
+/* Motion: content is visible at rest; the hero only slides into place on load */
 .rise { animation: rise var(--dur-reveal) var(--ease) both; }
-.rise.d1 { animation-delay: 80ms; } .rise.d2 { animation-delay: 160ms; } .rise.d3 { animation-delay: 240ms; }
-@keyframes rise { from { transform: translateY(16px); opacity: 0.001; } to { transform: none; opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .rise { animation: none; } * { transition: none !important; } }
+.rise-1 { animation-delay: 80ms; } .rise-2 { animation-delay: 160ms; } .rise-3 { animation-delay: 240ms; }
+@keyframes rise { from { transform: translateY(16px); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .rise { animation: none; }
+  .header, .btn, .arrow-chip, .nav a { transition: none; }
+}
 </style>
 
-<div class="banner">
-  <div class="wrap"><span>PulseARR is in private beta. Free up to $20K MRR for every team.</span><a href="#pricing">See pricing</a></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="m3 8 3 3 7-7" fill="none" stroke-width="1.8"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 12 12"><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="i-mark" viewBox="0 0 24 24"><rect width="24" height="24" style="fill: var(--sky)"/><path d="M3.5 16.5H9L11.5 6l2.2 8.2L15.5 11.5H20.5" style="fill: none; stroke: var(--navy-deep); stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter"/></symbol>
+</svg>
+
+<div class="banner dark">
+  <div class="wrap"><span>PulseARR is in private beta, free up to $20K MRR.</span><a href="#start">Join the beta</a></div>
 </div>
 
 <header class="header" id="top">
-  <div class="wrap">
+  <div class="wrap header-row">
     <a class="brand" href="#top" aria-label="PulseARR home">
-      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" fill="#aacbff"/><path d="M3.5 16.5H9L11.5 6l2.2 8.2L15.5 11.5H20.5" fill="none" stroke="#000522" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"/></svg>
-      <span class="brand-word"><span class="w-pulse">Pulse</span><span class="w-arr">ARR</span></span>
+      <svg class="brand-mark" aria-hidden="true"><use href="#i-mark"/></svg>
+      <span class="brand-word"><span class="w1">Pulse</span><span class="w2">ARR</span></span>
     </a>
     <nav class="nav" aria-label="Main">
       <a href="#platform">Platform</a>
-      <a href="#products">Recover</a>
+      <a href="#recover">Recover</a>
       <a href="#rules">How we count</a>
       <a href="#security">Security</a>
       <a href="#pricing">Pricing</a>
     </nav>
     <div class="header-actions">
-      <a class="btn btn-slate" href="#cta">Log in</a>
-      <a class="btn btn-white" href="#cta">Connect Stripe</a>
+      <a class="btn btn-white" href="#start">Join the beta</a>
+      <button class="menu-btn" type="button" id="menu-btn" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
     </div>
   </div>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Main" hidden>
+    <div class="wrap">
+      <ul>
+        <li><a href="#platform">Platform</a></li>
+        <li><a href="#recover">Recover</a></li>
+        <li><a href="#rules">How we count</a></li>
+        <li><a href="#security">Security</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+      </ul>
+    </div>
+  </nav>
 </header>
 
 <main>
-  <section class="hero band-navy" aria-labelledby="hero-title">
+  <section class="hero dark" aria-labelledby="hero-title">
     <canvas id="pulse-canvas" aria-hidden="true"></canvas>
-    <div class="wrap">
+    <div class="wrap hero-grid">
       <div class="hero-copy">
-        <div class="eyebrow rise">Revenue analytics for Stripe</div>
-        <h1 class="h1 rise d1" id="hero-title"><span class="accent">Revenue you can trust,</span> every single time.</h1>
-        <p class="lead rise d2">PulseARR turns Stripe into clear numbers, explains every change in plain English and wins back failed payments.</p>
-        <div class="hero-buttons rise d3">
-          <a class="btn btn-white" href="#cta">Connect Stripe</a>
+        <p class="eyebrow rise">Revenue analytics for Stripe</p>
+        <h1 class="h1 rise rise-1" id="hero-title"><span class="accent">Revenue you can trust,</span> every single time.</h1>
+        <p class="lead rise rise-2">PulseARR turns Stripe into numbers you can check, then explains every change in plain English.</p>
+        <div class="hero-buttons rise rise-3">
+          <a class="btn btn-white" href="#start">Join the beta</a>
           <a class="btn btn-slate" href="#platform">See how it works</a>
         </div>
-        <p class="hero-note">Read-only access. First numbers in about 60 seconds.</p>
+        <p class="small muted">Read-only Stripe access. First numbers about 60 seconds after you connect.</p>
       </div>
 
-      <div class="mock rise d2" aria-label="Sample PulseARR dashboard">
-        <div class="mock-bar"><strong>Northwind Labs</strong><span class="live">Updated 4 min ago</span></div>
+      <figure class="mock rise rise-2" aria-labelledby="mock-caption" style="margin:0">
+        <div class="mock-bar">
+          <strong id="mock-caption">Northwind Labs, sample data</strong>
+          <span class="mock-meta"><span class="live">Updated 4 min ago</span></span>
+        </div>
         <div class="mock-body">
-          <div class="mock-metric">
-            <div class="eyebrow" style="font-size:0.7em">MRR</div>
-            <div class="big num">$48.2K</div>
-            <div class="delta-up num">+4.2% vs. last 30 days</div>
+          <div class="metric">
+            <p class="eyebrow eyebrow-sm">MRR</p>
+            <p class="metric-value num">$48.2K</p>
+            <p class="delta-up num">+4.2% vs. last 30 days</p>
           </div>
           <svg class="spark" id="spark" viewBox="0 0 400 80" preserveAspectRatio="none" role="img" aria-label="MRR over the last 12 months, rising from $31.6K to $48.2K"></svg>
           <div class="brief">
-            <div class="eyebrow">Pulse, 9:00 AM</div>
+            <p class="eyebrow eyebrow-sm">Pulse, 9:00 AM</p>
             <p>MRR is $48.2K, up $640 since yesterday. One expansion from Acme ($400) and two new Starter plans. Nothing needs you today.</p>
           </div>
         </div>
-        <div class="mock-grid">
-          <div><span class="label">Churn</span><span class="val num">2.1%</span></div>
-          <div><span class="label">NRR</span><span class="val num">108%</span></div>
-          <div><span class="label">Recovered</span><span class="val num">$3.9K</span></div>
+        <div class="stats">
+          <div><span class="stat-label">Churn</span><span class="stat-value num">2.1%</span></div>
+          <div><span class="stat-label">NRR</span><span class="stat-value num">108%</span></div>
+          <div><span class="stat-label">Recovered</span><span class="stat-value num">$3,940</span></div>
         </div>
-      </div>
+      </figure>
     </div>
     <div class="works">
-      <div class="wrap">
-        <span class="label">Works with</span>
-        <span class="tool">Stripe</span>
-        <span class="soon">Paddle (soon)</span>
-        <span class="soon">Chargebee (soon)</span>
-        <span class="soon">Lemon Squeezy (soon)</span>
-        <span class="soon">App Store (soon)</span>
-        <span class="soon">Google Play (soon)</span>
-      </div>
+      <ul class="wrap" aria-label="Billing tools">
+        <li class="label">Works with</li>
+        <li class="now">Stripe</li>
+        <li>Paddle (soon)</li>
+        <li>Chargebee (soon)</li>
+        <li>Lemon Squeezy (soon)</li>
+        <li>App Store (soon)</li>
+        <li>Google Play (soon)</li>
+      </ul>
     </div>
   </section>
 
-  <section class="section band-white" id="platform" aria-labelledby="platform-title">
+  <section class="section light" id="platform" aria-labelledby="platform-title">
     <div class="wrap">
       <div class="section-head">
-        <div class="eyebrow">Platform</div>
-        <h2 class="h2" id="platform-title"><span class="accent">Accuracy, answers</span> and money back</h2>
+        <p class="eyebrow">Platform</p>
+        <h2 class="h2" id="platform-title"><span class="accent">Clear numbers</span> and money back</h2>
       </div>
 
       <div class="rows">
-        <div class="row">
+        <article class="row" aria-labelledby="row1-title">
           <div class="row-copy">
-            <h3 class="h3"><span class="accent">Numbers you can trust,</span> every single time</h3>
-            <p class="body muted">Every change in MRR is one row tied to the Stripe event that caused it. New, expansion, reactivation, contraction and churn add up to the cent, and a nightly check against Stripe fixes any gap.</p>
-            <a class="arrow-link" href="#rules"><span class="arrow-chip"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5"/></svg></span>See how we count MRR</a>
+            <h3 class="h3" id="row1-title"><span class="accent">Numbers you can trust,</span> every single time</h3>
+            <p class="text muted">Every change in MRR is one record tied to the Stripe event that caused it. The movements add up to the cent, and a nightly check against Stripe fixes any gap.</p>
+            <a class="arrow-link" href="#rules"><span class="arrow-chip"><svg aria-hidden="true"><use href="#i-arrow"/></svg></span>See how we count MRR</a>
           </div>
           <div class="row-visual">
-            <div class="panel">
-              <div class="panel-head"><span class="t">MRR movements</span><span class="s">Jun–Nov 2026, from Stripe, sample data</span></div>
-              <div class="chart-wrap"><svg class="chart" id="movements" viewBox="0 0 520 260" role="img" aria-label="Monthly MRR movements from June to November 2026"></svg></div>
+            <figure class="panel" style="margin:0" aria-labelledby="chart-title">
+              <div class="panel-head"><span class="panel-title" id="chart-title">MRR movements</span><span class="panel-note">Jun–Nov 2026, from Stripe, sample data</span></div>
+              <div class="chart-wrap"><svg class="chart" id="movements" viewBox="0 0 520 260" role="img" aria-label="Monthly MRR movements from June to November 2026. Net new MRR was positive every month and highest in November at $3,100."></svg></div>
               <div class="legend">
-                <span><i style="background:#0b7a4b"></i>New</span>
-                <span><i style="background:#5bb38a"></i>Expansion</span>
-                <span><i style="background:#9fd3b8"></i>Reactivation</span>
-                <span><i style="background:#e48a80"></i>Contraction</span>
-                <span><i style="background:#b42318"></i>Churn</span>
-                <span><i style="background:#0e0e0e;height:2px;vertical-align:0.2em"></i>Net new</span>
+                <span><i class="swatch sw-new"></i>New</span>
+                <span><i class="swatch sw-exp"></i>Expansion</span>
+                <span><i class="swatch sw-react"></i>Reactivation</span>
+                <span><i class="swatch sw-contr"></i>Contraction</span>
+                <span><i class="swatch sw-churn"></i>Churn</span>
+                <span><i class="swatch sw-net"></i>Net new</span>
               </div>
-            </div>
+            </figure>
           </div>
-        </div>
+        </article>
 
-        <div class="row flip">
+        <article class="row flip" aria-labelledby="row2-title">
           <div class="row-copy">
-            <h3 class="h3"><span class="accent">Every morning,</span> what moved and why</h3>
-            <p class="body muted">Pulse reads your numbers overnight and sends a short brief by email and Slack. Ask anything in plain English and get the answer with the customers and payments behind it.</p>
-            <a class="arrow-link" href="#cta"><span class="arrow-chip"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5"/></svg></span>Meet Pulse</a>
+            <h3 class="h3" id="row2-title"><span class="accent">Every morning,</span> what moved and why</h3>
+            <p class="text muted">Pulse reads your numbers overnight and sends a short brief by email and Slack. Ask a question in plain English and get the answer with the customers and payments behind it.</p>
           </div>
           <div class="row-visual">
             <div class="ask">
-              <div class="ask-q">Why did churn jump in October?</div>
+              <p class="ask-q">Why did churn jump in October?</p>
               <div class="ask-a">
-                <div class="eyebrow">Pulse</div>
+                <p class="eyebrow eyebrow-sm">Pulse</p>
                 <p>Churned MRR was <strong class="num">$1,860</strong> in October, 2.3x the 90-day average. Four of six cancels were on Starter and named price.</p>
-                <table class="ask-table">
-                  <thead><tr><th>Customer</th><th>Plan</th><th class="r">MRR lost</th></tr></thead>
-                  <tbody class="num">
-                    <tr><td>Fennel Studio</td><td>Starter</td><td class="r">$490</td></tr>
-                    <tr><td>Orbit Notes</td><td>Starter</td><td class="r">$390</td></tr>
-                    <tr><td>Cedar Health</td><td>Growth</td><td class="r">$380</td></tr>
-                  </tbody>
-                </table>
-                <p class="muted small">Sample data. 3 of 6 rows shown.</p>
+                <div class="table-scroll">
+                  <table class="ask-table">
+                    <thead><tr><th scope="col">Customer</th><th scope="col">Plan</th><th scope="col" class="r">MRR lost</th></tr></thead>
+                    <tbody class="num">
+                      <tr><td>Fennel Studio</td><td>Starter</td><td class="r">$490</td></tr>
+                      <tr><td>Orbit Notes</td><td>Starter</td><td class="r">$390</td></tr>
+                      <tr><td>Cedar Health</td><td>Growth</td><td class="r">$380</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p class="small muted">Sample data. 3 of 6 cancels shown.</p>
               </div>
-              <form class="ask-input" id="ask-form">
-                <label for="ask-field">Ask Pulse</label>
-                <input id="ask-field" type="text" placeholder="Ask about your revenue" autocomplete="off">
-                <button class="btn btn-primary" type="submit">Ask</button>
+              <form class="field-row" id="ask-form" novalidate>
+                <label class="visually-hidden" for="ask-field">Question for Pulse</label>
+                <input id="ask-field" name="question" type="text" placeholder="Which plan has the most churn?" autocomplete="off">
+                <button class="btn btn-primary" type="submit">Ask Pulse</button>
               </form>
-              <p class="small muted" id="ask-note" aria-live="polite"></p>
+              <p class="small muted note" id="ask-note" aria-live="polite"></p>
             </div>
           </div>
-        </div>
+        </article>
 
-        <div class="row">
+        <article class="row" id="recover" aria-labelledby="row3-title">
           <div class="row-copy">
-            <h3 class="h3"><span class="accent">Every failed card,</span> followed up for you</h3>
-            <p class="body muted">Recover works with Stripe's own retries. It sends a timed sequence of emails and texts in your brand, shows a banner in your app and gives customers a one-click page to update their card.</p>
-            <a class="arrow-link" href="#products"><span class="arrow-chip"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5"/></svg></span>See Recover</a>
+            <h3 class="h3" id="row3-title"><span class="accent">Every failed card,</span> followed up for you</h3>
+            <p class="text muted">Recover works alongside Stripe's own retries. It sends timed emails and texts in your brand, shows a banner in your app and gives customers a one-click page to update their card.</p>
           </div>
           <div class="row-visual">
             <div class="panel">
-              <div class="panel-head"><span class="t">Failed payment: Juniper CRM, $240</span><span class="s">Sample data</span></div>
-              <ol class="tl">
+              <div class="panel-head"><span class="panel-title">Failed payment: Juniper CRM, $240</span><span class="panel-note">Sample data</span></div>
+              <ol class="timeline">
                 <li><span class="day">Day 0</span><span>Card declined. Stripe retry scheduled.</span><span class="tag tag-down">Failed</span></li>
-                <li><span class="day">Day 0</span><span>Email: "Your card didn't go through"</span><span class="tag tag-ice">Sent</span></li>
-                <li><span class="day">Day 2</span><span>In-app banner shown to the account owner</span><span class="tag tag-ice">Shown</span></li>
-                <li><span class="day">Day 3</span><span>Text with the card update link</span><span class="tag tag-ice">Sent</span></li>
+                <li><span class="day">Day 0</span><span>Email: "Your card didn't go through"</span><span class="tag tag-info">Sent</span></li>
+                <li><span class="day">Day 2</span><span>Banner shown in the app to the account owner</span><span class="tag tag-info">Shown</span></li>
+                <li><span class="day">Day 3</span><span>Text with the card update link</span><span class="tag tag-info">Sent</span></li>
                 <li><span class="day">Day 3</span><span>New card saved to Stripe and charged</span><span class="tag tag-up">Recovered</span></li>
               </ol>
-              <div class="recover-total"><span class="small muted">Recovered this month</span><span class="big num">$3,940</span></div>
+              <div class="panel-foot"><span class="small muted">Recovered this month</span><span class="value num">$3,940</span></div>
             </div>
           </div>
-        </div>
+        </article>
       </div>
     </div>
   </section>
 
-  <section class="band-obsidian" id="products" aria-label="Products">
+  <section class="dark-2" aria-label="Products">
     <div class="products">
-      <a class="product" href="#cta">
-        <div class="product-copy">
-          <div class="eyebrow">Recover</div>
-          <h2 class="h2">Win back failed payments</h2>
-          <p class="body muted">Seven timed emails, optional texts, an in-app banner and a branded card page. If it doesn't recover more than your plan costs, next month is free.</p>
+      <article class="product" aria-labelledby="p1">
+        <div class="wrap">
+          <div class="product-copy">
+            <p class="eyebrow">Recover</p>
+            <h2 class="h2" id="p1">Win back failed payments</h2>
+          </div>
+          <ul class="product-points">
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>Seven timed emails</strong> you can edit, plus optional texts</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>A banner in your app</strong> and a paywall after a grace period you set</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>A card page in your brand</strong> that saves the new card to Stripe</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>Next month free</strong> if it recovers less than your plan costs</span></li>
+          </ul>
         </div>
-        <span class="square-btn" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-      <a class="product" href="#cta">
-        <div class="product-copy">
-          <div class="eyebrow">Cancel Flow</div>
-          <h2 class="h2">Learn why customers leave</h2>
-          <p class="body muted">A short survey at cancel time, an offer for each reason as a Stripe coupon or a pause, and follow-up emails with timing you pick.</p>
+      </article>
+      <article class="product" aria-labelledby="p2">
+        <div class="wrap">
+          <div class="product-copy">
+            <p class="eyebrow">Cancel Flow</p>
+            <h2 class="h2" id="p2">Learn why customers leave</h2>
+          </div>
+          <ul class="product-points">
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>A short survey</strong> at cancel time, in your app or by email</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>An offer for each reason,</strong> as a Stripe coupon or a pause</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>Follow-up emails</strong> with timing you pick</span></li>
+          </ul>
         </div>
-        <span class="square-btn" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-      <a class="product" href="#cta">
-        <div class="product-copy">
-          <div class="eyebrow">Revenue by Source</div>
-          <h2 class="h2">See which deals, campaigns and AI answers pay</h2>
-          <p class="body muted">Tie MRR to the rep and deal in your CRM, the campaign and first page from your site, and visitors who came from ChatGPT, Perplexity and Google AI answers.</p>
+      </article>
+      <article class="product" aria-labelledby="p3">
+        <div class="wrap">
+          <div class="product-copy">
+            <p class="eyebrow">Revenue by Source</p>
+            <h2 class="h2" id="p3">See where your revenue comes from</h2>
+          </div>
+          <ul class="product-points">
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>MRR by rep and deal</strong> from your CRM</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>MRR by campaign</strong> and the first page a customer saw</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>Signups from AI answers</strong> in ChatGPT, Perplexity and Google</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>Unsure matches marked as unsure,</strong> never guessed</span></li>
+          </ul>
         </div>
-        <span class="square-btn" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
+      </article>
     </div>
   </section>
 
-  <section class="section band-white" id="rules" aria-labelledby="rules-title">
+  <section class="section light" id="rules" aria-labelledby="rules-title">
     <div class="wrap">
       <div class="section-head">
-        <div class="eyebrow">How we count</div>
+        <p class="eyebrow">How we count</p>
         <h2 class="h2" id="rules-title"><span class="accent">The same rules,</span> written down and tested</h2>
-        <p class="lead muted">Every number on your dashboard follows these rules. A test suite of hard billing cases runs on every release and fails if any MRR is off by one cent.</p>
+        <p class="lead muted">A test suite of hard billing cases runs on every release and fails if any MRR is off by one cent.</p>
       </div>
       <div class="rules">
-        <div class="rule"><div class="k">Annual plans</div><p class="body">Count as one twelfth each month. Quarterly plans count as one third.</p><p class="ex">$1,200 a year = $100 MRR</p></div>
-        <div class="rule"><div class="k">Coupons</div><p class="body">Lower MRR while they last. A 100% coupon counts as zero.</p><p class="ex">$100 plan, 50% off for 3 months = $50 MRR</p></div>
-        <div class="rule"><div class="k">Trials and one-time fees</div><p class="body">Count as zero MRR. Trials show up in their own trial metrics.</p><p class="ex">$500 setup fee = $0 MRR, $500 other revenue</p></div>
-        <div class="rule"><div class="k">Past due</div><p class="body">A customer more than 30 days past due counts as churned. Paying later counts as a reactivation.</p><p class="ex">Day 31 unpaid = churn, paid on day 40 = reactivation</p></div>
-        <div class="rule"><div class="k">Weekly plans</div><p class="body">Count at 52 ÷ 12 = 4.33 weeks a month.</p><p class="ex">$30 a week = $130 MRR</p></div>
-        <div class="rule"><div class="k">Currencies</div><p class="body">Turned into your currency at that day's rate. The rate used is stored with the number.</p><p class="ex">€92 on Nov 10 at 1.087 = $100.00</p></div>
+        <div class="rule"><h3 class="h4">Annual plans</h3><p class="text">Count as one twelfth each month. Quarterly plans count as one third.</p><p class="example num">$1,200 a year = $100 MRR</p></div>
+        <div class="rule"><h3 class="h4">Coupons</h3><p class="text">Lower MRR while they last. A 100% coupon counts as zero.</p><p class="example num">$100 plan at 50% off = $50 MRR</p></div>
+        <div class="rule"><h3 class="h4">Trials and one-time fees</h3><p class="text">Count as zero MRR. Trials have their own metrics.</p><p class="example num">$500 setup fee = $0 MRR</p></div>
+        <div class="rule"><h3 class="h4">Past due</h3><p class="text">More than 30 days past due counts as churn. Paying later counts as a reactivation.</p><p class="example num">Unpaid on day 31 = churn</p></div>
+        <div class="rule"><h3 class="h4">Weekly plans</h3><p class="text">Count at 52 ÷ 12 = 4.33 weeks a month.</p><p class="example num">$30 a week = $130 MRR</p></div>
+        <div class="rule"><h3 class="h4">Currencies</h3><p class="text">Turned into your currency at that day's rate, and the rate is stored with the number.</p><p class="example num">€92 at 1.087 = $100.00</p></div>
       </div>
     </div>
   </section>
 
-  <section class="band-navy" id="security" aria-labelledby="security-title">
+  <section class="dark" id="security" aria-labelledby="security-title">
     <div class="wrap">
       <div class="security-head">
-        <div>
-          <div class="eyebrow">Security</div>
-          <h2 class="h2" id="security-title"><span class="accent">Built for trust,</span> from the first click</h2>
-          <p class="body muted">PulseARR reads your billing data and never moves money. Each team's data is fenced off from every other team.</p>
-        </div>
-        <a class="btn btn-sky" href="#cta">Read about security</a>
+        <p class="eyebrow">Security</p>
+        <h2 class="h2" id="security-title"><span class="accent">Built for trust</span> from the first click</h2>
+        <p class="text muted">PulseARR reads your billing data and never moves money. Each team's data is fenced off from every other team.</p>
       </div>
+      <ul class="trust">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg><h3 class="h4">Read-only access</h3><p class="small muted">PulseARR can read Stripe and can't change it.</p></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" aria-hidden="true"><rect x="3" y="6" width="18" height="13"/><path d="M3 10h18M7 15h4"/></svg><h3 class="h4">No card numbers</h3><p class="small muted">The card page uses Stripe's own fields, so card numbers never reach our servers.</p></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg><h3 class="h4">Delete any time</h3><p class="small muted">Disconnecting a source or deleting your team removes the data for real.</p></li>
+      </ul>
     </div>
-    <div class="wrap">
-      <div class="trust">
-        <div><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg><span>Read-only Stripe access</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><rect x="3" y="6" width="18" height="13"/><path d="M3 10h18M7 15h4"/></svg><span>Card numbers never touch our servers</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg><span>Delete your data any time</span></div>
-      </div>
-    </div>
-    <div style="height:6.25em"></div>
   </section>
 
-  <section class="section band-white" id="pricing" aria-labelledby="pricing-title">
+  <section class="section light" id="pricing" aria-labelledby="pricing-title">
     <div class="wrap">
-      <div class="section-head" style="margin-bottom:0">
-        <div class="eyebrow">Pricing</div>
+      <div class="section-head">
+        <p class="eyebrow">Pricing</p>
         <h2 class="h2" id="pricing-title"><span class="accent">Free up to</span> $20K MRR</h2>
         <p class="lead muted">Recover and Cancel Flow come with every paid plan.</p>
         <div class="billing" role="group" aria-label="Billing period">
@@ -546,113 +623,138 @@ button { font: inherit; }
       </div>
       <div class="plans">
         <div class="plan">
-          <div class="name">Free</div>
-          <div class="price"><span class="amt num" data-month="0">$0</span><span class="per">/mo</span></div>
-          <div class="range">Up to $20K MRR</div>
-          <a class="btn btn-ice" href="#cta">Start free</a>
+          <h3 class="plan-name">Free</h3>
+          <p class="price"><span class="price-amount num" data-month="0">$0</span><span class="price-per">a month</span></p>
+          <p class="plan-range">Up to $20K MRR</p>
+          <a class="btn btn-ice" href="#start">Join the beta</a>
           <ul>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>All metrics and cohorts</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>Dashboard and live feed</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>Weekly email</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>1 billing source</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>All metrics and cohorts</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>Dashboard and live feed</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>Weekly email</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>1 billing source</li>
           </ul>
         </div>
         <div class="plan">
-          <div class="name">Starter</div>
-          <div class="price"><span class="amt num" data-month="29">$29</span><span class="per">/mo</span></div>
-          <div class="range">$20K–50K MRR</div>
-          <a class="btn btn-ice" href="#cta">Start trial</a>
+          <h3 class="plan-name">Starter</h3>
+          <p class="price"><span class="price-amount num" data-month="29">$29</span><span class="price-per">a month</span></p>
+          <p class="plan-range">$20K–50K MRR</p>
+          <a class="btn btn-ice" href="#start">Join the beta</a>
           <ul>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>Pulse briefs and 100 questions a month</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>Recover and Cancel Flow</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>Segments and Slack alerts</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>Daily email</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>Pulse briefs and 100 questions a month</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>Recover and Cancel Flow</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>Segments and Slack alerts</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>Daily email</li>
           </ul>
         </div>
         <div class="plan featured">
-          <div class="name">Growth <span class="eyebrow" style="font-size:0.68em">Most teams</span></div>
-          <div class="price"><span class="amt num" data-month="79">$79</span><span class="per">/mo</span></div>
-          <div class="range">$50K–250K MRR</div>
-          <a class="btn btn-primary" href="#cta">Start trial</a>
+          <h3 class="plan-name">Growth <span class="eyebrow eyebrow-sm">Recommended</span></h3>
+          <p class="price"><span class="price-amount num" data-month="79">$79</span><span class="price-per">a month</span></p>
+          <p class="plan-range">$50K–250K MRR</p>
+          <a class="btn btn-primary" href="#start">Join the beta</a>
           <ul>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>Revenue by Source</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>500 questions a month</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>Unlimited billing sources</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>Goals, API and MCP</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>Revenue by Source</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>500 questions a month</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>Unlimited billing sources</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>Goals, API and MCP</li>
           </ul>
         </div>
         <div class="plan">
-          <div class="name">Scale</div>
-          <div class="price"><span class="amt num" data-month="199">$199</span><span class="per">/mo</span></div>
-          <div class="range">Over $250K MRR</div>
-          <a class="btn btn-ice" href="#cta">Talk to us</a>
+          <h3 class="plan-name">Scale</h3>
+          <p class="price"><span class="price-amount num" data-month="199">$199</span><span class="price-per">a month</span></p>
+          <p class="plan-range">Over $250K MRR</p>
+          <a class="btn btn-ice" href="#start">Join the beta</a>
           <ul>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>Forecasts and scenarios</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>Benchmarks</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>2,000 questions a month</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="m3 8 3 3 7-7"/></svg>SSO and priority support</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>Forecasts and scenarios</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>Benchmarks</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>2,000 questions a month</li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>SSO and priority support</li>
           </ul>
         </div>
       </div>
-      <div class="compare">
-        <span class="body">Baremetrics Launch with Recover and Cancellation Insights: <strong class="num">$333/mo</strong></span>
-        <span class="body">PulseARR Starter: <strong class="num accent">$29/mo</strong></span>
-        <span class="small muted">Prices from baremetrics.com, checked Nov 10, 2026</span>
+      <div class="compare" aria-label="Price comparison">
+        <div><p class="small muted">Baremetrics Launch with Recover and Cancellation Insights</p><p class="compare-price num">$333 a month</p></div>
+        <div class="ours"><p class="small muted">PulseARR Starter, Recover and Cancel Flow included</p><p class="compare-price num accent">$29 a month</p></div>
+        <p class="compare-source small muted">Baremetrics prices from baremetrics.com/pricing, checked Nov 10, 2026.</p>
       </div>
     </div>
   </section>
 
-  <section class="links" aria-label="Get started">
-    <div class="link-panel">
-      <h2 class="h2"><span class="accent">Free up to</span> $20K MRR</h2>
-      <p class="body muted">All metrics, the live feed and a weekly email, with no card and no time limit.</p>
-      <div><a class="btn btn-primary" href="#cta">Connect Stripe</a></div>
+  <section class="start" id="start" aria-labelledby="start-title">
+    <div class="start-panel">
+      <p class="eyebrow">Private beta</p>
+      <h2 class="h2" id="start-title"><span class="accent">Join the beta</span> and connect Stripe first</h2>
+      <p class="text muted">We're letting teams in each week. Free up to $20K MRR, with no card and no time limit.</p>
+      <form class="start-form" id="start-form" novalidate>
+        <label class="field-label" for="email">Work email</label>
+        <div class="field-row">
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@company.com">
+          <button class="btn btn-primary" type="submit">Join the beta</button>
+        </div>
+        <p class="small note" id="start-note" aria-live="polite"></p>
+      </form>
     </div>
-    <div class="link-panel ice">
-      <h2 class="h2"><span class="accent">See it live</span> on a demo account</h2>
-      <p class="body muted">Click through a sample SaaS with two years of history, a Pulse brief and a Recover report.</p>
-      <div><a class="btn btn-white" href="#cta">Open the demo</a></div>
-    </div>
-  </section>
-
-  <section class="band-navy" id="cta" aria-labelledby="cta-title">
-    <div class="wrap">
-      <div class="cta">
-        <div class="eyebrow">Get started</div>
-        <h2 class="h2" id="cta-title"><span class="accent">Your real MRR,</span> in 60 seconds</h2>
-        <p class="lead muted">Connect Stripe with one click. PulseARR imports your history and shows your first numbers right away.</p>
-        <a class="btn btn-white" href="#top">Connect Stripe</a>
-      </div>
+    <div class="start-panel alt">
+      <p class="eyebrow">What happens next</p>
+      <ol class="steps">
+        <li><span><strong>Sign in with Stripe</strong><span class="muted">One click, read-only access.</span></span></li>
+        <li><span><strong>We import your history</strong><span class="muted">Customers, plans, invoices and refunds.</span></span></li>
+        <li><span><strong>First numbers in about 60 seconds</strong><span class="muted">The last 12 months load first.</span></span></li>
+        <li><span><strong>Your first Pulse brief</strong><span class="muted">The next morning, by email.</span></span></li>
+      </ol>
     </div>
   </section>
 </main>
 
-<footer class="footer">
-  <div class="wrap">
-    <div class="about">
+<footer class="footer dark">
+  <div class="wrap footer-grid">
+    <div class="footer-about">
       <a class="brand" href="#top" aria-label="PulseARR home">
-        <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" fill="#aacbff"/><path d="M3.5 16.5H9L11.5 6l2.2 8.2L15.5 11.5H20.5" fill="none" stroke="#000522" stroke-width="2" stroke-linecap="square"/></svg>
-        <span class="brand-word"><span class="w-pulse">Pulse</span><span class="w-arr">ARR</span></span>
+        <svg class="brand-mark" aria-hidden="true"><use href="#i-mark"/></svg>
+        <span class="brand-word"><span class="w1">Pulse</span><span class="w2">ARR</span></span>
       </a>
-      <p class="small muted" style="margin-top:1.2em;max-width:22em">Revenue you can trust.</p>
+      <p class="small muted" style="margin-top:1em">Revenue you can trust.</p>
     </div>
-    <div><h4>Product</h4><ul><li><a href="#platform">Metrics</a></li><li><a href="#platform">Pulse</a></li><li><a href="#products">Recover</a></li><li><a href="#products">Cancel Flow</a></li><li><a href="#pricing">Pricing</a></li></ul></div>
-    <div><h4>Compare</h4><ul><li><a href="#pricing">vs. Baremetrics</a></li><li><a href="#pricing">vs. ChartMogul</a></li><li><a href="#pricing">vs. ProfitWell</a></li><li><a href="#pricing">vs. Stripe dashboard</a></li></ul></div>
-    <div><h4>Resources</h4><ul><li><a href="#rules">How we count MRR</a></li><li><a href="#rules">Metric glossary</a></li><li><a href="#rules">MRR calculator</a></li><li><a href="#rules">Open pages</a></li></ul></div>
-    <div><h4>Company</h4><ul><li><a href="#security">Security</a></li><li><a href="#top">About</a></li><li><a href="#top">Terms</a></li><li><a href="#top">Privacy</a></li></ul></div>
-    <div class="legal"><span>© 2026 PulseARR</span><span>Sample site. Numbers shown are sample data.</span></div>
+    <nav aria-labelledby="f-product">
+      <h2 class="footer-title" id="f-product">Product</h2>
+      <ul>
+        <li><a href="#platform">Platform</a></li>
+        <li><a href="#recover">Recover</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+      </ul>
+    </nav>
+    <nav aria-labelledby="f-learn">
+      <h2 class="footer-title" id="f-learn">Learn</h2>
+      <ul>
+        <li><a href="#rules">How we count MRR</a></li>
+        <li><a href="#security">Security</a></li>
+        <li><a href="#pricing">Baremetrics comparison</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="wrap">
+    <div class="legal"><span>© 2026 PulseARR</span><span>Sample site. Every number shown is sample data.</span></div>
   </div>
 </footer>
 
 <script>
 (function () {
-  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = getComputedStyle(document.documentElement);
+  function token(name) { return root.getPropertyValue(name).trim(); }
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var NS = 'http://www.w3.org/2000/svg';
   function el(tag, attrs, parent) {
     var n = document.createElementNS(NS, tag);
     for (var k in attrs) n.setAttribute(k, attrs[k]);
     if (parent) parent.appendChild(n);
     return n;
+  }
+  function path(points) {
+    return points.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ');
+  }
+  function money(v) {
+    var sign = v < 0 ? '−' : '+';
+    var a = Math.abs(v);
+    return sign + '$' + (a >= 10000 ? (a / 1000).toFixed(1) + 'K' : a.toLocaleString('en-US'));
   }
 
   // Header turns to glass after 10px of scroll
@@ -661,81 +763,97 @@ button { font: inherit; }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // Sparkline: 12 months of MRR (sample)
-  var mrr = [31.6, 32.9, 34.1, 35.0, 36.8, 38.2, 39.5, 41.0, 42.7, 44.1, 46.3, 48.2];
-  var spark = document.getElementById('spark');
+  // Phone menu
+  var menuBtn = document.getElementById('menu-btn');
+  var mobileNav = document.getElementById('mobile-nav');
+  function setMenu(open) {
+    mobileNav.hidden = !open;
+    menuBtn.setAttribute('aria-expanded', String(open));
+    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+  menuBtn.addEventListener('click', function () { setMenu(mobileNav.hidden); });
+  mobileNav.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !mobileNav.hidden) { setMenu(false); menuBtn.focus(); } });
+
+  // Sparkline: 12 months of MRR in $K (sample)
   (function () {
+    var svg = document.getElementById('spark');
+    var mrr = [31.6, 32.9, 34.1, 35.0, 36.8, 38.2, 39.5, 41.0, 42.7, 44.1, 46.3, 48.2];
     var w = 400, h = 80, pad = 6;
-    var min = Math.min.apply(null, mrr), max = Math.max.apply(null, mrr);
+    var min = 30, max = 50;
     var pts = mrr.map(function (v, i) {
-      var x = pad + i * (w - pad * 2) / (mrr.length - 1);
-      var y = h - pad - (v - min) / (max - min) * (h - pad * 2);
-      return [x, y];
+      return [pad + i * (w - pad * 2) / (mrr.length - 1), h - pad - (v - min) / (max - min) * (h - pad * 2)];
     });
-    var line = pts.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ');
-    el('path', { d: line + ' L' + pts[pts.length - 1][0] + ' ' + h + ' L' + pts[0][0] + ' ' + h + ' Z', fill: '#131fa7', 'fill-opacity': '0.08', stroke: 'none' }, spark);
-    el('path', { d: line, fill: 'none', stroke: '#131fa7', 'stroke-width': '2', 'vector-effect': 'non-scaling-stroke' }, spark);
+    var line = path(pts);
+    var blue = token('--pulse-blue');
+    el('path', { d: line + ' L' + pts[pts.length - 1][0] + ' ' + h + ' L' + pts[0][0] + ' ' + h + ' Z', fill: blue, 'fill-opacity': '0.08' }, svg);
+    el('path', { d: line, fill: 'none', stroke: blue, 'stroke-width': '2', 'vector-effect': 'non-scaling-stroke' }, svg);
   })();
 
   // MRR movements chart (sample, in $)
-  var months = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'];
-  var data = [
-    { n: 2400, e: 900, r: 200, c: -300, ch: -900 },
-    { n: 2100, e: 1100, r: 150, c: -400, ch: -800 },
-    { n: 2600, e: 800, r: 300, c: -250, ch: -1000 },
-    { n: 2300, e: 1300, r: 100, c: -350, ch: -950 },
-    { n: 2000, e: 1000, r: 250, c: -500, ch: -1860 },
-    { n: 2700, e: 1200, r: 200, c: -300, ch: -700 }
-  ];
-  var svg = document.getElementById('movements');
   (function () {
-    var W = 520, H = 260, L = 52, R = 12, T = 14, B = 30;
+    var svg = document.getElementById('movements');
+    var months = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'];
+    var data = [
+      { n: 2400, e: 900, r: 200, c: -300, ch: -900 },
+      { n: 2100, e: 1100, r: 150, c: -400, ch: -800 },
+      { n: 2600, e: 800, r: 300, c: -250, ch: -1000 },
+      { n: 2300, e: 1300, r: 100, c: -350, ch: -950 },
+      { n: 2000, e: 1000, r: 250, c: -500, ch: -1860 },
+      { n: 2700, e: 1200, r: 200, c: -300, ch: -700 }
+    ];
+    var colors = { n: token('--mv-new'), e: token('--mv-expansion'), r: token('--mv-reactivation'), c: token('--mv-contraction'), ch: token('--mv-churn') };
+    var ink = token('--ink'), muted = token('--muted'), grid = token('--hover-gray'), blue = token('--pulse-blue');
+    var W = 520, H = 260, L = 52, R = 12, T = 22, B = 30;
     var top = 5000, bottom = -3000;
     var y = function (v) { return T + (top - v) / (top - bottom) * (H - T - B); };
-    var ticks = [-3000, -2000, -1000, 0, 1000, 2000, 3000, 4000, 5000];
-    ticks.forEach(function (t) {
-      el('line', { x1: L, x2: W - R, y1: y(t), y2: y(t), stroke: t === 0 ? '#0e0e0e' : '#eeeeee', 'stroke-width': t === 0 ? 1 : 1 }, svg);
-      var lab = el('text', { x: L - 8, y: y(t) + 4, 'text-anchor': 'end', 'font-size': 11, fill: '#6b6b6b', 'font-family': 'Inter, Arial, sans-serif' }, svg);
+    [-3000, -2000, -1000, 0, 1000, 2000, 3000, 4000, 5000].forEach(function (t) {
+      el('line', { x1: L, x2: W - R, y1: y(t), y2: y(t), stroke: t === 0 ? ink : grid, 'stroke-width': 1 }, svg);
+      var lab = el('text', { x: L - 8, y: y(t) + 4, 'text-anchor': 'end', 'font-size': 11, fill: muted }, svg);
       lab.textContent = (t < 0 ? '−' : '') + '$' + (Math.abs(t) / 1000) + 'K';
     });
     var band = (W - L - R) / months.length, bw = band * 0.5;
-    var colors = { n: '#0b7a4b', e: '#5bb38a', r: '#9fd3b8', c: '#e48a80', ch: '#b42318' };
-    var netPts = [];
+    var net = [];
     data.forEach(function (d, i) {
       var x = L + band * i + (band - bw) / 2;
-      var up = 0;
-      ['n', 'e', 'r'].forEach(function (k) {
-        el('rect', { x: x, y: y(up + d[k]), width: bw, height: y(up) - y(up + d[k]), fill: colors[k] }, svg);
-        up += d[k];
-      });
-      var down = 0;
-      ['c', 'ch'].forEach(function (k) {
-        el('rect', { x: x, y: y(down), width: bw, height: y(down + d[k]) - y(down), fill: colors[k] }, svg);
-        down += d[k];
-      });
-      var net = up + down;
-      netPts.push([x + bw / 2, y(net)]);
-      var m = el('text', { x: x + bw / 2, y: H - 10, 'text-anchor': 'middle', 'font-size': 11, fill: '#6b6b6b', 'font-family': 'Inter, Arial, sans-serif' }, svg);
+      var up = 0, down = 0;
+      ['n', 'e', 'r'].forEach(function (k) { el('rect', { x: x, y: y(up + d[k]), width: bw, height: y(up) - y(up + d[k]), fill: colors[k] }, svg); up += d[k]; });
+      ['c', 'ch'].forEach(function (k) { el('rect', { x: x, y: y(down), width: bw, height: y(down + d[k]) - y(down), fill: colors[k] }, svg); down += d[k]; });
+      net.push({ x: x + bw / 2, v: up + down });
+      var m = el('text', { x: x + bw / 2, y: H - 10, 'text-anchor': 'middle', 'font-size': 11, fill: muted }, svg);
       m.textContent = months[i];
     });
-    el('path', { d: netPts.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' '), fill: 'none', stroke: '#0e0e0e', 'stroke-width': 2 }, svg);
-    netPts.forEach(function (p, i) {
-      el('rect', { x: p[0] - 3, y: p[1] - 3, width: 6, height: 6, fill: i === netPts.length - 1 ? '#131fa7' : '#0e0e0e' }, svg);
+    el('path', { d: path(net.map(function (p) { return [p.x, y(p.v)]; })), fill: 'none', stroke: ink, 'stroke-width': 2 }, svg);
+    net.forEach(function (p, i) {
+      var last = i === net.length - 1;
+      el('rect', { x: p.x - 3, y: y(p.v) - 3, width: 6, height: 6, fill: last ? blue : ink }, svg);
     });
-    var last = netPts[netPts.length - 1];
-    var lbl = el('text', { x: last[0], y: last[1] - 10, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 600, fill: '#131fa7', 'font-family': 'Inter, Arial, sans-serif' }, svg);
-    var d5 = data[5];
-    lbl.textContent = '+$' + ((d5.n + d5.e + d5.r + d5.c + d5.ch) / 1000).toFixed(1) + 'K';
+    var lastPt = net[net.length - 1];
+    var lbl = el('text', { x: lastPt.x, y: y(data[5].n + data[5].e + data[5].r) - 6, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 600, fill: blue }, svg);
+    lbl.textContent = money(lastPt.v);
   })();
 
-  // Ask form (sample site)
-  var form = document.getElementById('ask-form');
-  form.addEventListener('submit', function (e) {
+  // Ask form (sample site, nothing is sent)
+  document.getElementById('ask-form').addEventListener('submit', function (e) {
     e.preventDefault();
-    var f = document.getElementById('ask-field');
-    document.getElementById('ask-note').textContent = f.value.trim()
-      ? 'Connect Stripe to ask Pulse about your own revenue.'
-      : 'Type a question about your revenue.';
+    var q = document.getElementById('ask-field').value.trim();
+    document.getElementById('ask-note').textContent = q
+      ? 'This is a sample site. Pulse answers from your own data once Stripe is connected.'
+      : 'Type a question first.';
+  });
+
+  // Beta form (sample site, nothing is sent)
+  document.getElementById('start-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var field = document.getElementById('email');
+    var note = document.getElementById('start-note');
+    var ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value.trim());
+    field.setAttribute('aria-invalid', String(!ok));
+    note.style.color = ok ? token('--muted') : token('--down');
+    note.textContent = ok
+      ? 'This is a sample site, so nothing was sent. The live form will add you to the beta list.'
+      : 'Enter a work email like you@company.com.';
+    if (!ok) field.focus();
   });
 
   // Billing toggle
@@ -743,60 +861,56 @@ button { font: inherit; }
   function setBilling(yearly) {
     mBtn.setAttribute('aria-pressed', String(!yearly));
     yBtn.setAttribute('aria-pressed', String(yearly));
-    document.querySelectorAll('.amt').forEach(function (n) {
+    document.querySelectorAll('.price-amount').forEach(function (n) {
       var m = Number(n.getAttribute('data-month'));
-      var v = yearly ? Math.round(m * 0.8) : m;
-      n.textContent = '$' + v;
+      n.textContent = '$' + (yearly ? Math.round(m * 0.8) : m);
     });
   }
   mBtn.addEventListener('click', function () { setBilling(false); });
   yBtn.addEventListener('click', function () { setBilling(true); });
 
-  // Hero pulse line: flat, one beat, then rising. Drawn once.
-  var canvas = document.getElementById('pulse-canvas');
-  var ctx = canvas.getContext('2d');
-  var start = null, dur = 2200;
-  function shape(t) {
-    // t in 0..1 along the width, returns y as fraction of height (0 top)
-    var base = 0.78;
-    if (t < 0.34) return base;
-    if (t < 0.37) return base - (t - 0.34) / 0.03 * 0.38;
-    if (t < 0.40) return 0.40 + (t - 0.37) / 0.03 * 0.48;
-    if (t < 0.43) return 0.88 - (t - 0.40) / 0.03 * 0.18;
-    return 0.70 - (t - 0.43) / 0.57 * 0.42;
-  }
-  function draw(progress) {
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var w = canvas.clientWidth, h = canvas.clientHeight;
-    if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+  // Hero pulse line: flat, one beat, then rising. Drawn once, never loops.
+  (function () {
+    var canvas = document.getElementById('pulse-canvas');
+    var ctx = canvas.getContext('2d');
+    var sky = token('--sky');
+    function shape(t) {
+      if (t < 0.34) return 0.78;
+      if (t < 0.37) return 0.78 - (t - 0.34) / 0.03 * 0.38;
+      if (t < 0.40) return 0.40 + (t - 0.37) / 0.03 * 0.48;
+      if (t < 0.43) return 0.88 - (t - 0.40) / 0.03 * 0.18;
+      return 0.70 - (t - 0.43) / 0.57 * 0.42;
+    }
+    function draw(progress) {
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var w = canvas.clientWidth, h = canvas.clientHeight;
       canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      ctx.globalAlpha = 0.28;
+      ctx.strokeStyle = sky;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      var steps = 400, end = Math.max(1, Math.floor(steps * progress));
+      for (var i = 0; i <= end; i++) {
+        var t = i / steps;
+        if (i === 0) ctx.moveTo(t * w, shape(t) * h); else ctx.lineTo(t * w, shape(t) * h);
+      }
+      ctx.stroke();
+      ctx.globalAlpha = 1;
     }
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, w, h);
-    ctx.strokeStyle = 'rgba(170, 203, 255, 0.28)';
-    ctx.lineWidth = 1.5;
-    ctx.lineJoin = 'miter';
-    ctx.beginPath();
-    var steps = 400, end = Math.max(1, Math.floor(steps * progress));
-    for (var i = 0; i <= end; i++) {
-      var t = i / steps, x = t * w, yv = shape(t) * h;
-      if (i === 0) ctx.moveTo(x, yv); else ctx.lineTo(x, yv);
+    if (reduce) { draw(1); }
+    else {
+      var start = null;
+      requestAnimationFrame(function frame(ts) {
+        if (start === null) start = ts;
+        var p = Math.min(1, (ts - start) / 2200);
+        draw(1 - Math.pow(1 - p, 3));
+        if (p < 1) requestAnimationFrame(frame);
+      });
     }
-    ctx.stroke();
-    if (progress >= 1) {
-      var ex = w, ey = shape(1) * h;
-      ctx.fillStyle = 'rgba(170, 203, 255, 0.5)';
-      ctx.fillRect(ex - 6, ey - 3, 6, 6);
-    }
-  }
-  function frame(ts) {
-    if (start === null) start = ts;
-    var p = Math.min(1, (ts - start) / dur);
-    var eased = 1 - Math.pow(1 - p, 3);
-    draw(eased);
-    if (p < 1) requestAnimationFrame(frame);
-  }
-  if (reduce) draw(1); else requestAnimationFrame(frame);
-  window.addEventListener('resize', function () { draw(1); });
+    var timer;
+    window.addEventListener('resize', function () { clearTimeout(timer); timer = setTimeout(function () { draw(1); }, 150); });
+  })();
 })();
 </script>
