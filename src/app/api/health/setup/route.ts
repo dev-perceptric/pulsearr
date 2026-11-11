@@ -6,6 +6,8 @@ import { adminClient } from "../../../../lib/serverAuth.ts";
 export const dynamic = "force-dynamic";
 
 const REQUIRED = ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_SECRET_KEY", "SECRETS_KEY", "APP_URL"] as const;
+/** Connecting Stripe and receiving its webhooks (M1). Reported on its own so the app still answers ok without them. */
+const STRIPE = ["STRIPE_SECRET_KEY", "STRIPE_APP_CLIENT_ID", "STRIPE_CONNECT_WEBHOOK_SECRET"] as const;
 
 async function dbAnswers(): Promise<boolean> {
   try {
@@ -23,5 +25,6 @@ export async function GET() {
   const db = await dbAnswers();
   const secretsKeyValid = keyIsValid();
   const ok = db && secretsKeyValid && REQUIRED.every((n) => env[n]);
-  return Response.json({ ok, db, secretsKeyValid, env }, { status: ok ? 200 : 503, headers: { "Cache-Control": "no-store" } });
+  const stripe = STRIPE.every((n) => env[n]);
+  return Response.json({ ok, db, secretsKeyValid, stripe, env }, { status: ok ? 200 : 503, headers: { "Cache-Control": "no-store" } });
 }
