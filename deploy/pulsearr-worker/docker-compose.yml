@@ -1,0 +1,22 @@
+# /docker/pulsearr-worker on the Hostinger VPS. Claims jobs straight from Postgres and runs the minute tick.
+# It joins sb-pulsearr (the network of the PulseARR Supabase stack) to reach Postgres at db:5432.
+# Secrets live in /docker/pulsearr-worker/.env on the server, never in the repo.
+name: pulsearr-worker
+
+services:
+  worker:
+    image: ghcr.io/dev-perceptric/pulsearr-worker:latest
+    env_file: .env
+    restart: unless-stopped
+    mem_limit: 512m
+    networks: [default, sb]
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+networks:
+  sb:
+    external: true
+    name: sb-pulsearr

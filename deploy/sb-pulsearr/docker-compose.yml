@@ -1,0 +1,121 @@
+# /docker/sb-pulsearr on the Hostinger VPS: PulseARR's own self-hosted Supabase stack (Postgres, GoTrue, PostgREST and
+# the Envoy gateway), the same images and limits as the other sb-<app> stacks. No storage service until a feature
+# needs files (it would add 256 MB).
+#
+# Values come from /docker/sb-pulsearr/.env (see .env.example here) and /opt/sb/pulsearr/auth.env (see
+# auth.env.example). Neither is in the repo.
+#
+# The default network is named sb-pulsearr, so the worker, the migrate runner, the backup and the sb-public Caddy can
+# join it as an external network and reach Postgres at db:5432 and the gateway at sb-pulsearr-api-gw-1:8000.
+name: sb-pulsearr
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: "3"
+
+services:
+  db:
+    image: supabase/postgres:17.6.1.136
+    restart: unless-stopped
+    mem_limit: 512m
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf", "-c", "log_min_messages=fatal"]
+    environment:
+      POSTGRES_HOST: /var/run/postgresql
+      PGPORT: 5432
+      POSTGRES_PORT: 5432
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: postgres
+      POSTGRES_DB: postgres
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXP: ${JWT_EXP}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - db-config:/etc/postgresql-custom
+      # The init scripts every stack shares. They run only when db-data is empty (the first start).
+      - /opt/sb/files/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql:ro
+      - /opt/sb/files/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:ro
+      - /opt/sb/files/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    logging: *logging
+
+  auth:
+    image: supabase/gotrue:v2.197.0
+    restart: unless-stopped
+    mem_limit: 128m
+    depends_on:
+      db:
+        condition: service_healthy
+    # SMTP (Resend), the email templates and subjects, and Google sign-in.
+    env_file: /opt/sb/pulsearr/auth.env
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: https://db.pulsearr.com
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${POSTGRES_PASSWORD}@db:5432/postgres
+      GOTRUE_SITE_URL: https://app.pulsearr.com
+      GOTRUE_URI_ALLOW_LIST: https://app.pulsearr.com/**,https://pulsearr.com/**,https://www.pulsearr.com/**,http://localhost:3000/**
+      GOTRUE_DISABLE_SIGNUP: "false"
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_EXP: ${JWT_EXP}
+      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: "false"
+      GOTRUE_MAILER_AUTOCONFIRM: "false"
+      GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
+      GOTRUE_SMS_AUTOCONFIRM: "false"
+      GOTRUE_MAILER_URLPATHS_INVITE: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_CONFIRMATION: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_RECOVERY: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: /auth/v1/verify
+    logging: *logging
+
+  rest:
+    image: postgrest/postgrest:v14.18
+    restart: unless-stopped
+    mem_limit: 128m
+    command: ["postgrest"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD}@db:5432/postgres
+      PGRST_DB_SCHEMAS: public,storage,graphql_public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_DB_MAX_ROWS: 1000
+      PGRST_DB_EXTRA_SEARCH_PATH: public,extensions
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+      PGRST_APP_SETTINGS_JWT_SECRET: ${JWT_SECRET}
+      PGRST_APP_SETTINGS_JWT_EXP: ${JWT_EXP}
+    logging: *logging
+
+  # The gateway: /auth/v1 → auth:9999, /rest/v1 → rest:3000, on port 8000. The sb-public Caddy points here.
+  # Its config lives on the server, not in the repo. Copy from /docker/sb-arrowsterr on the server if the path differs
+  # (check the api-gw volume and environment in /docker/sb-arrowsterr/docker-compose.yml). If that file holds a
+  # stack's keys rather than reading them from the environment, give PulseARR its own copy with PulseARR's keys.
+  api-gw:
+    image: envoyproxy/envoy:v1.39.6
+    restart: unless-stopped
+    mem_limit: 128m
+    depends_on: [auth, rest]
+    volumes:
+      - /opt/sb/files/envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
+    logging: *logging
+
+volumes:
+  db-data:
+  db-config:
+
+networks:
+  default:
+    name: sb-pulsearr

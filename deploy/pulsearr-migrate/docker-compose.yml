@@ -1,0 +1,33 @@
+# /docker/pulsearr-migrate on the Hostinger VPS: runs new supabase/migrations/NNN_*.sql files from main on their own.
+# migrate.sh (next to this file) has the rules. Logs: docker logs pulsearr-migrate-migrate-1
+# .env here holds GITHUB_TOKEN (read-only, this repo only) while the repo is private; leave it empty once it's public.
+name: pulsearr-migrate
+
+services:
+  migrate:
+    image: postgres:17-alpine
+    entrypoint: ["sh", "-c", "apk add --no-cache git bash >/dev/null && exec bash /app/migrate.sh"]
+    env_file: .env
+    environment:
+      PGHOST: db
+      PGUSER: postgres
+      PGDATABASE: postgres
+      REPO: dev-perceptric/pulsearr
+      BRANCH: main
+    volumes:
+      - ./migrate.sh:/app/migrate.sh:ro
+      # POSTGRES_PASSWORD is read from the stack's own .env, so it's written down in one place.
+      - /docker/sb-pulsearr/.env:/run/sb.env:ro
+    networks: [sb]
+    restart: unless-stopped
+    mem_limit: 128m
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+networks:
+  sb:
+    external: true
+    name: sb-pulsearr

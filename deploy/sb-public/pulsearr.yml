@@ -1,0 +1,28 @@
+# Merge into /docker/sb-public/docker-compose.yml on the server (the shared project with one Caddy per app).
+# It puts db.pulsearr.com (Traefik, Let's Encrypt) in front of the sb-pulsearr API gateway.
+# Copy the service under the file's services: and the network under its networks:, next to the other apps' entries.
+
+services:
+  pulsearr:
+    image: caddy:2.8.4-alpine
+    command: ["caddy", "reverse-proxy", "--from", ":8080", "--to", "sb-pulsearr-api-gw-1:8000"]
+    networks: [pulsearr]
+    restart: unless-stopped
+    mem_limit: 64m
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.sb-pulsearr.rule=Host(`db.pulsearr.com`)
+      - traefik.http.routers.sb-pulsearr.entrypoints=websecure
+      - traefik.http.routers.sb-pulsearr.tls=true
+      - traefik.http.routers.sb-pulsearr.tls.certresolver=letsencrypt
+      - traefik.http.services.sb-pulsearr.loadbalancer.server.port=8080
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+networks:
+  pulsearr:
+    external: true
+    name: sb-pulsearr

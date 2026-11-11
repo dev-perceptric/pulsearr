@@ -1,0 +1,10 @@
+# Add under endpoints: in the Gatus config of the uptime project (/docker/uptime), next to the other apps, then
+# run docker compose restart in /docker/uptime. Use the same alerts: block the other endpoints use.
+- name: app
+  group: pulsearr
+  url: https://app.pulsearr.com/api/health
+  interval: 60s
+  conditions:
+    - "[STATUS] == 200"
+    - "[RESPONSE_TIME] < 3000"
+    - "[CERTIFICATE_EXPIRATION] > 168h"

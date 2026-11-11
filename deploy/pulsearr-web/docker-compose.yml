@@ -1,0 +1,27 @@
+# /docker/pulsearr-web on the Hostinger VPS. The app at app.pulsearr.com, routed by the shared Traefik.
+# Secrets live in /docker/pulsearr-web/.env on the server (see .env.example at the repo root), never in the repo.
+# autodeploy pulls :latest every 5 minutes and restarts it when the image changed.
+#
+# Networks: like arrowsterr-web, this joins no named network. If Traefik on the server reaches arrowsterr-web over a
+# named network instead (check: docker inspect arrowsterr-web-web-1 --format '{{json .NetworkSettings.Networks}}'),
+# add the same network here and to the sb-public entry.
+name: pulsearr-web
+
+services:
+  web:
+    image: ghcr.io/dev-perceptric/pulsearr-web:latest
+    env_file: .env
+    restart: unless-stopped
+    mem_limit: 512m
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pulsearr-web.rule=Host(`app.pulsearr.com`)
+      - traefik.http.routers.pulsearr-web.entrypoints=websecure
+      - traefik.http.routers.pulsearr-web.tls=true
+      - traefik.http.routers.pulsearr-web.tls.certresolver=letsencrypt
+      - traefik.http.services.pulsearr-web.loadbalancer.server.port=3000
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"

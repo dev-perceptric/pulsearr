@@ -1,0 +1,14 @@
+# The PulseARR job worker. It claims jobs straight from Postgres (DATABASE_URL) and runs a tick each minute.
+# No build step: Node 22 runs the TypeScript directly. worker/main.ts imports ../src/lib/*.ts by relative path,
+# so the image needs worker/, src/lib/ and package.json ("type": "module"). No browser, so 512 MB is enough.
+FROM node:22-bookworm-slim
+ARG GIT_SHA=""
+ENV NODE_ENV=production GIT_SHA=$GIT_SHA
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --ignore-scripts && rm -rf /root/.npm
+COPY src/lib ./src/lib
+COPY worker ./worker
+# The node image's own non-root user. The worker writes no files.
+USER node
+CMD ["node", "--experimental-strip-types", "worker/main.ts"]

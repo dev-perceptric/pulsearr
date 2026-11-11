@@ -1,0 +1,17 @@
+# Shared by Dockerfile and Dockerfile.worker. worker/, src/ and supabase/ stay in the context.
+node_modules
+.next
+.git
+.github
+.claude
+.env*
+!.env.example
+site
+docs
+tests
+deploy
+coverage
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+Dockerfile*

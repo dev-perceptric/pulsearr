@@ -1,0 +1,71 @@
+# Build the web and worker images and publish them to GitHub's container registry (ghcr.io), tagged latest and the
+# commit. The Hostinger VPS pulls them on its own (autodeploy, every 5 minutes). Nothing deploys from here, and
+# GITHUB_TOKEN is the only secret it needs.
+#
+# Why workflow_run: images must only come from a main commit that passed Checks. Checks runs on every push and pull
+# request, so instead of repeating it here, this workflow starts when the Checks run for a push to main finishes,
+# and only builds if it succeeded. It builds the exact commit Checks tested (workflow_run.head_sha), not whatever
+# main points at by then. GitHub only reads workflow_run triggers from the default branch, which is main.
+# workflow_dispatch builds the commit it's run on, without waiting for Checks (for a rebuild by hand).
+name: Build images
+
+on:
+  workflow_run:
+    workflows: [Checks]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: build-images
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # NEXT_PUBLIC_POSTHOG_KEY is a repository variable (Settings > Secrets and variables > Actions > Variables).
+          # Unset means PostHog is off in that build.
+          - image: pulsearr-web
+            file: Dockerfile
+            args: |
+              NEXT_PUBLIC_POSTHOG_KEY=${{ vars.NEXT_PUBLIC_POSTHOG_KEY }}
+              GIT_SHA=${{ github.event.workflow_run.head_sha || github.sha }}
+          - image: pulsearr-worker
+            file: Dockerfile.worker
+            args: |
+              GIT_SHA=${{ github.event.workflow_run.head_sha || github.sha }}
+    env:
+      SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SHA }}
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.file }}
+          push: true
+          build-args: ${{ matrix.args }}
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:${{ env.SHA }}
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}

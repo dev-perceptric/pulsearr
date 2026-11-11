@@ -1,0 +1,34 @@
+# /docker/pulsearr-backup on the Hostinger VPS: a nightly pg_dump of the PulseARR database, kept 14 days in
+# /opt/backups/pulsearr and copied to Backblaze B2 when B2_* is set in .env here (see backup.sh).
+# Logs: docker logs pulsearr-backup-backup-1
+name: pulsearr-backup
+
+services:
+  backup:
+    image: postgres:17-alpine
+    entrypoint: ["sh", "-c", "apk add --no-cache bash coreutils rclone >/dev/null && exec bash /app/backup.sh"]
+    env_file: .env
+    environment:
+      PGHOST: db
+      # supabase_admin owns Supabase's own schemas, so the dump has everything. Its password is POSTGRES_PASSWORD.
+      PGUSER: supabase_admin
+      PGDATABASE: postgres
+      BACKUP_AT: "03:15"
+      KEEP_DAYS: "14"
+    volumes:
+      - ./backup.sh:/app/backup.sh:ro
+      - /docker/sb-pulsearr/.env:/run/sb.env:ro
+      - /opt/backups/pulsearr:/backups
+    networks: [sb]
+    restart: unless-stopped
+    mem_limit: 128m
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+networks:
+  sb:
+    external: true
+    name: sb-pulsearr

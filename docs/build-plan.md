@@ -229,7 +229,7 @@ Each milestone states what it adds to the monthly bill. Full totals are in secti
 
 | # | Milestone | Ships | Time | Adds per month (Beta / Growth) |
 |---|---|---|---|---|
-| M0 | Foundation | Repo, auth, workspaces, jobs queue, brand shell, VPS, backups, waitlist page on pulsearr.com | 1 week | $17 / $122 (servers, backups, domain, analytics, currency rates) |
+| M0 | Foundation | Repo, auth, workspaces, jobs queue, brand shell, VPS, backups, waitlist page on pulsearr.com | 1 week | $3 / $16 (backups and domain on the shared VPS at Beta; its own KVM 4 at Growth; see `docs/m0-plan.md` section 6) |
 | M1 | Stripe metrics core | Connect Stripe, backfill, webhooks, MRR engine, the fixture tests, dashboard, metric pages, live feed | 3 weeks | $0 / $0 (same servers) |
 | M2 | Customers and segments | Customer pages, segments, cohorts, goals, CSV export | 2 weeks | $0 / $0 |
 | M3 | Reports and alerts | Daily, weekly, monthly emails, Slack alerts | 1 week | $20 / $90 (Resend) |
@@ -251,19 +251,21 @@ Assumptions per team per month: 30 morning briefs, 40 Ask questions, 4 alert rea
 
 | Item | Beta (50 teams) | Growth (500 teams) |
 |---|---|---|
-| Hostinger VPS (app, worker, Postgres): KVM 4 at Beta, two KVM 8 at Growth | $13 (check) | $50 (check) |
-| Backups (Backblaze B2) | $2 (check) | $10 (check) |
-| Domain pulsearr.com | $2 | $2 |
-| Resend (Pro at Beta, Scale at Growth) | $20 (check) | $90 (check) |
+| Hostinger VPS (app, worker, Postgres): the shared KVM 2 at Beta (already paid), its own KVM 4 at Growth | $0 | $13 (check) |
+| Backups on Backblaze B2 (about 1 GB at Beta, 20 GB at Growth) | $1 (check) | $1 (check) |
+| Domain pulsearr.com (Namecheap, about $20 a year at renewal) | $2 (check) | $2 (check) |
+| Resend (inside the other apps' plan in M0; from M3 its own Pro at Beta, Scale plus extra emails at Growth) | $20 (check) | $180 (check) |
 | Twilio SMS ($0.0083 per US text, 25 teams × 80 at Beta, 250 × 80 at Growth) | $17 (check) | $166 (check) |
 | Claude: briefs on Haiku (about $0.002 each, cached) | $3 (check) | $30 (check) |
-| Claude: Ask on Sonnet (about $0.03 a question, schema cached) | $60 (check) | $600 (check) |
-| Claude: cancel summaries, alert reasons, matching help | $13 (check) | $130 (check) |
+| Claude: Ask on Sonnet (about $0.03 a question, schema cached) | $61 (check) | $608 (check) |
+| Claude: cancel summaries, alert reasons, matching help, forecast notes | $13 (check) | $115 (check) |
 | PostHog (product analytics) | $0 | $50 (check) |
 | Currency rates API | $0 (free tier, check) | $10 (check) |
-| **Total** | **about $130 a month** | **about $1,140 a month** |
+| **Total** | **about $117 a month** | **about $1,175 a month** |
 
-**Margin at Growth:** about $30,400 in revenue against $1,140 in running cost, before people and payment fees. Stripe's own fees on our subscriptions are about 2.9% plus $0.30 a charge (check), about $1,030 a month at Growth.
+Each line is rounded up to the next dollar. The model behind these numbers is `scripts/cost-model.mjs` (`npm run costs`); `docs/costs.md` has its latest output.
+
+**Margin at Growth:** about $30,400 in revenue against $1,175 in running cost, before people and payment fees. Stripe's own fees on our subscriptions are about 2.9% plus $0.30 a charge (check), about $1,030 a month at Growth.
 
 Ask questions are capped per plan (section 4), so a heavy team can't run up the Claude bill.
 
