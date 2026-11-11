@@ -449,14 +449,12 @@ const BUTTON_LOOK: Record<ButtonVariant, string> = {
  * danger is for delete and disconnect, always with askConfirm. A Modal's Enter finds its primary by `data-variant`.
  */
 export function Button({ variant = "primary", small = false, className = "", ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant; small?: boolean }) {
-  return (
-    <button
-      {...props}
-      data-variant={variant}
-      className={`inline-flex items-center justify-center gap-2 rounded-md border px-4 py-1 text-center text-[14px] leading-5 font-medium transition-colors duration-[var(--dur-hover)] ease-[var(--ease)] disabled:pointer-events-none disabled:opacity-40 [&_svg]:size-4 [&_svg]:shrink-0 ${small ? "min-h-8" : "min-h-9"} ${BUTTON_LOOK[variant]} ${className}`}
-    />
-  );
+  return <button {...props} data-variant={variant} className={`${buttonClass(variant, small)} ${className}`} />;
 }
+
+/** The button look, for a link that acts as a button (`<Link className={buttonClass("secondary")}>`). */
+export const buttonClass = (variant: ButtonVariant = "primary", small = false) =>
+  `inline-flex items-center justify-center gap-2 rounded-md border px-4 py-1 text-center text-[14px] leading-5 font-medium transition-colors duration-[var(--dur-hover)] ease-[var(--ease)] disabled:pointer-events-none disabled:opacity-40 [&_svg]:size-4 [&_svg]:shrink-0 ${small ? "min-h-8" : "min-h-9"} ${BUTTON_LOOK[variant]}`;
 
 /** Tag tones: soft fill and deep text. Brand is the neutral tag (ice and pulse blue); the rest mean status only. */
 export type Tone = "gray" | "brand" | "green" | "amber" | "red";

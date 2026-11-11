@@ -11,12 +11,12 @@ import { browserClient } from "@/lib/supa";
 import type { ClientConfig } from "./AuthPage";
 import { DialogHost } from "./Dialogs";
 import { Floating } from "./Floating";
-import { ChevronsUpDown, LayoutDashboard, LogOut, Menu, Settings, UserIcon } from "./Icons";
+import { Activity, ChevronsUpDown, LayoutDashboard, LogOut, Menu, Settings, UserIcon } from "./Icons";
 import { Lockup } from "./Logo";
 import { Sheet } from "./Overlay";
 import { PageBoundary } from "./PageBoundary";
 import { Select } from "./Select";
-import { forgetBoot, navOf, parseBoot, readBoot, readPref, sameBoot, saveBoot, savePref, type Boot, type Store, type WorkspaceRef } from "./shellState";
+import { forgetBoot, navOf, type NavId, parseBoot, readBoot, readPref, sameBoot, saveBoot, savePref, type Boot, type Store, type WorkspaceRef } from "./shellState";
 import { UndoHost } from "./Undo";
 import { AppCtx, Avatar, Button, clearScreens, IconButton, Loading, setTokenSource } from "./ui";
 
@@ -65,10 +65,11 @@ const analytics = async (fn: (ph: (typeof import("posthog-js"))["default"]) => u
 
 const NAV = [
   { id: "dashboard", href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
+  { id: "feed", href: "/feed", label: "Feed", icon: <Activity size={20} /> },
   { id: "settings", href: "/settings/workspace", label: "Settings", icon: <Settings size={20} /> },
 ] as const;
 
-const SCREEN_NAMES: Record<string, string> = { dashboard: "Dashboard", settings: "Settings" };
+const SCREEN_NAMES: Record<string, string> = { dashboard: "Dashboard", feed: "Feed", settings: "Settings" };
 
 export function AppShell({ config, children }: { config: ClientConfig; children: React.ReactNode }) {
   const router = useRouter();
@@ -254,7 +255,7 @@ export function AppShell({ config, children }: { config: ClientConfig; children:
   );
 }
 
-function SideNav({ shell, picked, onPick }: { shell: Shell | null; picked: "dashboard" | "settings" | null; onPick: () => void }) {
+function SideNav({ shell, picked, onPick }: { shell: Shell | null; picked: NavId | null; onPick: () => void }) {
   return (
     <div className="flex min-h-full flex-1 flex-col">
       <div className="flex min-h-16 shrink-0 items-center px-5">

@@ -117,16 +117,20 @@ export function parseTeam(v: unknown): Team {
 }
 
 /** Which settings section an address opens. */
-export const SETTINGS_SECTIONS = ["workspace", "team", "account"] as const;
+export const SETTINGS_SECTIONS = ["workspace", "sources", "team", "account"] as const;
 export type SettingsSectionId = (typeof SETTINGS_SECTIONS)[number];
 export function sectionOf(path: string): SettingsSectionId {
   const seg = path.replace(/^\/settings\/?/, "").split(/[/?#]/)[0] ?? "";
   return (SETTINGS_SECTIONS as readonly string[]).includes(seg) ? (seg as SettingsSectionId) : "workspace";
 }
 
-/** Which sidebar item is picked for an address. */
-export function navOf(path: string): "dashboard" | "settings" | null {
-  if (path === "/dashboard" || path.startsWith("/dashboard/")) return "dashboard";
-  if (path === "/settings" || path.startsWith("/settings/")) return "settings";
+export type NavId = "dashboard" | "feed" | "settings";
+
+/** Which sidebar item is picked for an address. A metric page sits under the dashboard it opens from. */
+export function navOf(path: string): NavId | null {
+  const under = (base: string) => path === base || path.startsWith(`${base}/`);
+  if (under("/dashboard") || under("/metrics")) return "dashboard";
+  if (under("/feed")) return "feed";
+  if (under("/settings")) return "settings";
   return null;
 }

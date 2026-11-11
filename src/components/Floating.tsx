@@ -30,10 +30,12 @@ type Props = {
   "aria-label"?: string;
   innerRef?: React.RefObject<HTMLDivElement | null>;
   onMouseLeave?: React.MouseEventHandler<HTMLDivElement>;
+  /** Placed again whenever this changes: for an anchor that moves without resizing (a chart's hover point). */
+  track?: unknown;
   children: React.ReactNode;
 };
 
-export function Floating({ anchor, placement = "bottom-start", gap = 4, onClose, matchWidth, passive, className = "", style, role, innerRef, onMouseLeave, children, ...aria }: Props) {
+export function Floating({ anchor, placement = "bottom-start", gap = 4, onClose, matchWidth, passive, className = "", style, role, innerRef, onMouseLeave, track, children, ...aria }: Props) {
   const own = useRef<HTMLDivElement>(null);
   const box = innerRef ?? own;
   const [spot, setSpot] = useState<Spot | null>(null);
@@ -77,7 +79,7 @@ export function Floating({ anchor, placement = "bottom-start", gap = 4, onClose,
       window.removeEventListener("resize", update);
       window.removeEventListener("scroll", update, true);
     };
-  }, [anchor, box, placement, gap, matchWidth]);
+  }, [anchor, box, placement, gap, matchWidth, track]);
 
   // Layers opened later sit on top; a click in one of them (a Select inside a popover) isn't a click outside.
   const [depth] = useState(nextDepth);

@@ -152,6 +152,11 @@ test("addresses: settings sections and the picked sidebar item", () => {
   assert.equal(navOf("/dashboard"), "dashboard");
   assert.equal(navOf("/settings/team"), "settings");
   assert.equal(navOf("/settingsx"), null);
+  assert.equal(sectionOf("/settings/sources?error=access_denied"), "sources");
+  assert.equal(navOf("/feed"), "feed");
+  assert.equal(navOf("/metrics/mrr"), "dashboard", "a metric page sits under the dashboard");
+  assert.equal(navOf("/metricsx"), null);
+  assert.equal(navOf("/feedback"), null);
 });
 
 // A fake Supabase client: each rpc call answers the next queued reply.

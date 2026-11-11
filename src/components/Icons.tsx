@@ -1,5 +1,7 @@
 import {
+  Activity as LActivity,
   ArrowLeft as LArrowLeft,
+  CalendarDays as LCalendarDays,
   Check as LCheck,
   ChevronDown as LChevronDown,
   ChevronLeft as LChevronLeft,
@@ -9,6 +11,7 @@ import {
   CreditCard as LCreditCard,
   Ellipsis as LEllipsis,
   Info as LInfo,
+  KeyRound as LKeyRound,
   LayoutDashboard as LLayoutDashboard,
   LogOut as LLogOut,
   Mail as LMail,
@@ -36,7 +39,9 @@ function line(I: LucideIcon, name: string) {
   return Icon;
 }
 
+export const Activity = line(LActivity, "Activity");
 export const ArrowLeft = line(LArrowLeft, "ArrowLeft");
+export const CalendarDays = line(LCalendarDays, "CalendarDays");
 export const Check = line(LCheck, "Check");
 export const ChevronDown = line(LChevronDown, "ChevronDown");
 export const ChevronLeft = line(LChevronLeft, "ChevronLeft");
@@ -45,6 +50,7 @@ export const ChevronsUpDown = line(LChevronsUpDown, "ChevronsUpDown");
 export const Copy = line(LCopy, "Copy");
 export const CreditCard = line(LCreditCard, "CreditCard");
 export const Info = line(LInfo, "Info");
+export const KeyRound = line(LKeyRound, "KeyRound");
 export const LayoutDashboard = line(LLayoutDashboard, "LayoutDashboard");
 export const LogOut = line(LLogOut, "LogOut");
 export const Mail = line(LMail, "Mail");

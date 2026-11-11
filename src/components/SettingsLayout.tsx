@@ -58,7 +58,7 @@ export function SettingsSection({ title, sub, action, danger = false, children }
   return (
     <section>
       <div className="mb-4 flex flex-wrap items-end gap-3">
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-56">
           <h2 className={`flex items-center gap-1.5 text-[16px] leading-[22px] font-semibold wrap-break-word ${danger ? "text-danger" : ""}`}>{title}</h2>
           {sub ? <p className="mt-1 text-[14px] wrap-break-word text-muted">{sub}</p> : null}
         </div>

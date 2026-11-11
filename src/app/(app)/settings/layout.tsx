@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { Settings, UserIcon, Users } from "@/components/Icons";
+import { Plug, Settings, UserIcon, Users } from "@/components/Icons";
 import { SettingsLayout } from "@/components/SettingsLayout";
 import { sectionOf, type SettingsSectionId } from "@/components/shellState";
 import { Page } from "@/components/ui";
@@ -11,6 +11,7 @@ const GROUPS = [
   {
     items: [
       { value: "workspace" as SettingsSectionId, label: "Workspace", icon: <Settings size={16} /> },
+      { value: "sources" as SettingsSectionId, label: "Sources", icon: <Plug size={16} /> },
       { value: "team" as SettingsSectionId, label: "Team", icon: <Users size={16} /> },
       { value: "account" as SettingsSectionId, label: "Account", icon: <UserIcon size={16} /> },
     ],

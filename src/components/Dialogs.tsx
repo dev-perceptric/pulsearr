@@ -80,7 +80,7 @@ export function DialogHost() {
         role="dialog"
         aria-modal="true"
         aria-label={req.title}
-        className="flex w-[440px] max-w-full flex-col gap-5 rounded-md bg-panel p-6 shadow-modal"
+        className="flex w-full max-w-[440px] flex-col gap-5 rounded-md bg-panel p-6 shadow-modal"
         onMouseDown={(e) => e.stopPropagation()}
         onKeyDown={(e) => {
           // Enter answers from the box or the focused button; Cmd/Ctrl+Enter answers from anywhere in it.
