@@ -2,7 +2,8 @@
 # Database tests (npm run test:db). Builds a throwaway database from tests/db/supabase_stub.sql and every file in
 # supabase/migrations, in order, twice (each file in one transaction, the way the VPS runner applies them; the
 # second pass proves they're safe to run again). Then runs each tests/db/*.sql file in its own copy of that
-# database and stops at the first failure.
+# database and stops at the first failure, then each tests/db/*.test.ts (worker code against the real database,
+# with Stripe mocked) with TEST_DATABASE_URL set to its own copy.
 #
 #   Local:  bash scripts/test-db.sh
 #           Starts a temporary Postgres from PG_BIN (default /usr/lib/postgresql/16/bin) in a temp folder on a free
@@ -109,4 +110,21 @@ for t in tests/db/*.sql; do
   fi
   "${PSQL[@]}" "$ADMIN" -c "drop database if exists $db" >/dev/null
 done
+if [ $FAILED = 0 ]; then
+  for t in tests/db/*.test.ts; do
+    name="$(basename "$t" .test.ts)"
+    db="${BASE}_ts_${name}"
+    DBS+=("$db")
+    "${PSQL[@]}" "$ADMIN" -c "create database $db template $BASE" >/dev/null
+    if out="$(TEST_DATABASE_URL="$(url_for "$db")" node --test --test-reporter=dot "$t" 2>&1)"; then
+      echo "ok   $name (node)"
+    else
+      echo "FAIL $name (node)" >&2
+      echo "$out" >&2
+      FAILED=1
+      break
+    fi
+    "${PSQL[@]}" "$ADMIN" -c "drop database if exists $db" >/dev/null
+  done
+fi
 exit $FAILED

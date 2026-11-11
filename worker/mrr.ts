@@ -131,8 +131,11 @@ export function replaceArgs(result: BuildResult, feed: FeedItem[]) {
 
 export type RebuildOutcome = { skipped: true } | { skipped: false; changedFrom: string | null; movements: number; mrr: number };
 
-/** Rebuild one customer. Throws JobError for a bad payload (no retry) and for missing rates or prices (later). */
-export async function rebuildCustomer(db: Db, payload: Record<string, unknown>, today: string): Promise<RebuildOutcome> {
+/**
+ * Rebuild one customer. Throws JobError for a bad payload (no retry) and for missing rates or prices (later).
+ * With `daily: false` mrr_daily is left alone: the backfill rebuilds it once after every customer.
+ */
+export async function rebuildCustomer(db: Db, payload: Record<string, unknown>, today: string, opts: { daily?: boolean } = {}): Promise<RebuildOutcome> {
   const ws = String(payload.workspace_id ?? "");
   const source = String(payload.source_id ?? "");
   const customer = String(payload.customer_id ?? "");
@@ -154,8 +157,11 @@ export async function rebuildCustomer(db: Db, payload: Record<string, unknown>, 
     throw e;
   }
   const args = replaceArgs(result, feed);
+  const daily = opts.daily ?? true;
   const { rows } = await db.query<{ changed: string | null }>(
-    "select public.replace_customer_mrr($1, $2, $3, $4::jsonb, $5::jsonb, $6::jsonb)::text as changed",
+    daily
+      ? "select public.replace_customer_mrr($1, $2, $3, $4::jsonb, $5::jsonb, $6::jsonb)::text as changed"
+      : "select public.replace_customer_mrr($1, $2, $3, $4::jsonb, $5::jsonb, $6::jsonb, false)::text as changed",
     [ws, source, customer, JSON.stringify(args.movements), JSON.stringify(args.days), JSON.stringify(args.feed)],
   );
   return { skipped: false, changedFrom: rows[0]?.changed ?? null, movements: result.movements.length, mrr: result.mrr };

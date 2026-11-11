@@ -1,8 +1,10 @@
 // Scheduled work, once a minute: clear out old finished jobs (prune_jobs) and stale rate-limit buckets
-// (prune_rate_buckets), and log the queue when it has work.
+// (prune_rate_buckets), log the queue when it has work, and enqueue the Stripe and rate jobs that are due
+// (worker/schedule.ts).
 
 import { sleep } from "../src/lib/retry.ts";
 import type { Db } from "./pg.ts";
+import { scheduleWork } from "./schedule.ts";
 
 export async function tickOnce(db: Db, log: (msg: string) => void = console.log): Promise<{ pruned: number; counts: Record<string, number> }> {
   const pruned = Number((await db.query<{ n: number | null }>("select public.prune_jobs() as n")).rows[0]?.n ?? 0) || 0;
@@ -16,7 +18,7 @@ export async function tickOnce(db: Db, log: (msg: string) => void = console.log)
   return { pruned, counts };
 }
 
-/** Run tickOnce every `everyMs` until `signal` aborts. A failed tick is logged and the next one runs on time. */
+/** Run tickOnce and scheduleWork every `everyMs` until `signal` aborts. A failed tick is logged and the next one runs on time. */
 export async function tickLoop(o: { db: Db; signal: AbortSignal; everyMs?: number; log?: (msg: string) => void }): Promise<void> {
   const log = o.log ?? console.log;
   while (!o.signal.aborted) {
@@ -24,6 +26,11 @@ export async function tickLoop(o: { db: Db; signal: AbortSignal; everyMs?: numbe
       await tickOnce(o.db, log);
     } catch (e) {
       log(`tick failed: ${e instanceof Error ? e.message : String(e)}`);
+    }
+    try {
+      await scheduleWork(o.db);
+    } catch (e) {
+      log(`schedule failed: ${e instanceof Error ? e.message : String(e)}`);
     }
     await sleep(o.everyMs ?? 60_000, o.signal).catch(() => undefined);
   }

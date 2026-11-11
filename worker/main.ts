@@ -7,6 +7,7 @@ import { databaseUrl, envVar } from "../src/lib/env.ts";
 import { jobLoop } from "../src/lib/jobs.ts";
 import { makeHandlers } from "./handlers.ts";
 import { pgRpc } from "./pg.ts";
+import { ensureRates } from "./schedule.ts";
 import { tickLoop } from "./tick.ts";
 
 const log = (msg: string) => console.log(`${new Date().toISOString()} ${msg}`);
@@ -38,8 +39,13 @@ async function main() {
   process.on("SIGINT", () => onSignal("SIGINT"));
 
   const worker = `${hostname()}-${process.pid}`;
-  const handlers = makeHandlers({ db: pool, log });
+  const handlers = makeHandlers({ db: pool, log, stripeSecretKey: () => envVar("STRIPE_SECRET_KEY") });
   log(`worker ${worker} up: ${Object.keys(handlers).join(", ")}; ${concurrency} at once`);
+  // Today's rates missing (a fresh database, or the worker was down): load them now.
+  await ensureRates(pool).then(
+    (queued) => queued && log("fx.load queued: no recent rates"),
+    (e) => log(`fx check failed: ${e instanceof Error ? e.message : String(e)}`),
+  );
 
   await Promise.all([
     jobLoop({ rpc: pgRpc(pool), worker, handlers, concurrency, idleMs: 1000, drainMs: 25_000, signal: stop.signal, log }),

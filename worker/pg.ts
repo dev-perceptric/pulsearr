@@ -4,9 +4,35 @@
 import type { Rpc } from "../src/lib/jobs.ts";
 
 /** Just what the worker needs from a pg Pool or Client, so tests can pass a fake. */
-export type Db = {
-  query<R = Record<string, unknown>>(text: string, params?: unknown[]): Promise<{ rows: R[]; fields?: { name: string }[] }>;
+type Queryable = {
+  query<R = Record<string, unknown>>(text: string, params?: unknown[]): Promise<{ rows: R[]; fields?: { name: string }[]; rowCount?: number | null }>;
 };
+/** One connection taken from a pool (a transaction runs on one). */
+export type DbClient = Queryable & { release: (err?: Error | boolean) => void };
+export type Db = Queryable & {
+  /** A pool's own connection, for a transaction (inTransaction). */
+  connect?: () => Promise<DbClient>;
+};
+
+/** Run `fn` inside one transaction on one connection of the pool. Rolled back if `fn` throws. */
+export async function inTransaction<T>(db: Db, fn: (tx: Db) => Promise<T>): Promise<T> {
+  if (!db.connect) throw new Error("This database handle can't open a transaction");
+  const c = await db.connect();
+  let broken = false;
+  try {
+    await c.query("begin");
+    const out = await fn(c);
+    await c.query("commit");
+    return out;
+  } catch (e) {
+    await c.query("rollback").catch(() => {
+      broken = true;
+    });
+    throw e;
+  } finally {
+    c.release(broken);
+  }
+}
 
 const NAME = /^[a-z_][a-z0-9_]{0,62}$/;
 
