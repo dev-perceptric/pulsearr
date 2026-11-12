@@ -1,0 +1,6 @@
+{
+  "name": "pulsearr-stripe-app",
+  "version": "0.0.1",
+  "private": true,
+  "description": "PulseARR's Stripe App: read-only OAuth access, no screens inside Stripe."
+}
