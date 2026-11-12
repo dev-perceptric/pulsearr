@@ -2,9 +2,8 @@
 # Secrets live in /docker/pulsearr-web/.env on the server (see .env.example at the repo root), never in the repo.
 # autodeploy pulls :latest every 5 minutes and restarts it when the image changed.
 #
-# Networks: like arrowsterr-web, this joins no named network. If Traefik on the server reaches arrowsterr-web over a
-# named network instead (check: docker inspect arrowsterr-web-web-1 --format '{{json .NetworkSettings.Networks}}'),
-# add the same network here and to the sb-public entry.
+# Networks: like arrowsterr-web, this joins no named network. If Traefik reaches the other apps over a named
+# network instead, add the same network here and to the sb-public entry.
 services:
   web:
     image: ghcr.io/dev-perceptric/pulsearr-web:latest
