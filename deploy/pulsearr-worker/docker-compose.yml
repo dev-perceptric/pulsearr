@@ -4,7 +4,8 @@
 services:
   worker:
     image: ghcr.io/dev-perceptric/pulsearr-worker:latest
-    env_file: .env
+    env_file:
+      - .env
     restart: unless-stopped
     mem_limit: 512m
     networks:
