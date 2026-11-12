@@ -5,8 +5,6 @@
 # Networks: like arrowsterr-web, this joins no named network. If Traefik on the server reaches arrowsterr-web over a
 # named network instead (check: docker inspect arrowsterr-web-web-1 --format '{{json .NetworkSettings.Networks}}'),
 # add the same network here and to the sb-public entry.
-name: pulsearr-web
-
 services:
   web:
     image: ghcr.io/dev-perceptric/pulsearr-web:latest
