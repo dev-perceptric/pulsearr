@@ -15,6 +15,7 @@ export const ENV_NAMES = [
   "NEXT_PUBLIC_POSTHOG_KEY",
   "STRIPE_SECRET_KEY",
   "STRIPE_APP_CLIENT_ID",
+  "STRIPE_APP_TEST_LINK",
   "STRIPE_CONNECT_WEBHOOK_SECRET",
 ] as const;
 
@@ -48,6 +49,8 @@ export const posthogKey = () => envVar("NEXT_PUBLIC_POSTHOG_KEY");
 export const stripeSecretKey = () => envVar("STRIPE_SECRET_KEY");
 /** The PulseARR Stripe App's client id (ca_...), for the install page. */
 export const stripeAppClientId = () => envVar("STRIPE_APP_CLIENT_ID");
+/** The external test channel link id (chnlink_...) used until Stripe publishes the app. Empty means the public link. */
+export const stripeAppTestLink = () => envVar("STRIPE_APP_TEST_LINK");
 /** The signing secret of the Connect webhook at /api/stripe/webhook (whsec_...). */
 export const stripeWebhookSecret = () => envVar("STRIPE_CONNECT_WEBHOOK_SECRET");
 

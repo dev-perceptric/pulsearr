@@ -2,7 +2,7 @@
 // Stripe App. The client navigates there. The state in the URL is sealed with the workspace, the person and a
 // nonce, and the nonce also goes into a short-lived cookie, so the callback only accepts an install this browser
 // started (someone else's install link can't connect their Stripe to your workspace, or yours to theirs).
-import { stripeAppClientId } from "../../../../lib/env.ts";
+import { stripeAppClientId, stripeAppTestLink } from "../../../../lib/env.ts";
 import { keyIsValid } from "../../../../lib/seal.ts";
 import { errorResponse, HttpError, requireMember } from "../../../../lib/serverAuth.ts";
 import { callbackUrl, stateCookie } from "../../../../lib/sources.ts";
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const nonce = newNonce();
     const state = sealState({ workspaceId: body!.workspace_id as string, userId: caller.userId, nonce });
     return Response.json(
-      { url: installUrl(clientId, callbackUrl(), state) },
+      { url: installUrl(clientId, callbackUrl(), state, stripeAppTestLink() || undefined) },
       { headers: { "Cache-Control": "no-store", "Set-Cookie": stateCookie(nonce, Math.floor(STATE_TTL_MS / 1000)) } },
     );
   } catch (e) {

@@ -1,6 +1,7 @@
 // Connecting a Stripe account through the PulseARR Stripe App (docs/m1-plan.md section 1, stripe-app/README.md).
 //
-//   installUrl(clientId, redirectUri, state)   Stripe's install page; Stripe sends the person back with ?code&state
+//   installUrl(clientId, redirectUri, state, channelLink?)   Stripe's install page (the external test link while the
+//                                              app awaits review); Stripe sends the person back with ?code&state
 //   exchangeCode(code, secretKey)              the install code (single use, 5 minutes) → tokens
 //   refreshTokens(refreshToken, secretKey)     → new tokens. The refresh token rolls: the old one stops working, so
 //                                              the caller saves the new pair before it uses the access token.
@@ -22,8 +23,13 @@ export const ACCESS_TOKEN_TTL_S = 3600;
 /** The cookie that ties a state to the browser that asked for it. */
 export const STATE_COOKIE = "pulsearr_stripe_state";
 
-export function installUrl(clientId: string, redirectUri: string, state: string): string {
-  const u = new URL(INSTALL_URL);
+/** Before Stripe publishes the app, installs go through the external test channel link (chnlink_...). */
+export const CHANNEL_LINK = /^chnlink_[A-Za-z0-9]+$/;
+
+export function installUrl(clientId: string, redirectUri: string, state: string, channelLink?: string): string {
+  const link = channelLink?.trim();
+  if (link && !CHANNEL_LINK.test(link)) throw new Error("STRIPE_APP_TEST_LINK must look like chnlink_...");
+  const u = new URL(link ? `https://marketplace.stripe.com/oauth/v2/${link}/authorize` : INSTALL_URL);
   u.searchParams.set("client_id", clientId);
   u.searchParams.set("redirect_uri", redirectUri);
   u.searchParams.set("state", state);

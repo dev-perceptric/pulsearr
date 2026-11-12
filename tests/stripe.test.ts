@@ -528,3 +528,18 @@ test("delete route: owners and admins delete; others can't; a gone source is a p
     b.restore();
   }
 });
+
+test("install link: the public link by default, the external test channel link when set, and a bad link refused", async () => {
+  const { installUrl } = await import("../src/lib/stripe/oauth.ts");
+  const cb = "https://app.pulsearr.com/api/stripe/callback";
+  const pub = new URL(installUrl("ca_abc", cb, "s1"));
+  assert.equal(pub.origin + pub.pathname, "https://marketplace.stripe.com/oauth/v2/authorize");
+  assert.equal(pub.searchParams.get("client_id"), "ca_abc");
+  assert.equal(pub.searchParams.get("redirect_uri"), cb);
+  assert.equal(pub.searchParams.get("state"), "s1");
+  const testLink = new URL(installUrl("ca_abc", cb, "s1", "chnlink_61VkONh4JDi7PTLZz"));
+  assert.equal(testLink.pathname, "/oauth/v2/chnlink_61VkONh4JDi7PTLZz/authorize");
+  assert.equal(testLink.searchParams.get("client_id"), "ca_abc");
+  assert.equal(new URL(installUrl("ca_abc", cb, "s1", "  ")).pathname, "/oauth/v2/authorize");
+  assert.throws(() => installUrl("ca_abc", cb, "s1", "chnlink_x/../../evil"));
+});
