@@ -11,11 +11,17 @@
 // touching mrr_daily, saving its place every 50 in sources.backfill.rebuild ({ run, cursor, customers, done }; no
 // `count`, so it never reads as an object type), then rebuilds mrr_daily once. A customer that can't be built yet
 // (a missing rate or price) gets its own mrr.rebuild_customer job, which retries on its own schedule.
+//
+// Test mode: Stripe leaves customers, subscriptions and invoices on test clocks out of its lists unless the call
+// names the clock. So in a test-mode source, once the plain list is done, those types list the source's test clocks
+// once (sources.backfill[object].clocks) and go through them one at a time (.clock), each with its own cursor. A key
+// that can't read test clocks (403) just skips them.
 
 import { enqueueJob, JobError, type Job } from "../../src/lib/jobs.ts";
 import { BACKFILL_OBJECTS, OLDER_INVOICES, PAGE_LIMIT, type BackfillObject, type StripeList, type StripeObject } from "../../src/lib/stripe/index.ts";
 import { rebuildCustomer } from "../mrr.ts";
 import { pgRpc, type Db } from "../pg.ts";
+import { StripeError } from "../../src/lib/stripe/client.ts";
 import { loadSource, sourceClient, stripeFailure, type BackfillState, type Source, type StripeDeps } from "./source.ts";
 import { storeCharges, storeCoupons, storeCustomers, storeInvoices, storePrices, storeProducts, storeRefunds, storeSubscriptions, type Ctx } from "./store.ts";
 
@@ -35,6 +41,19 @@ export const SPECS: Record<BackfillObject, Spec> = {
   charges: { path: "/v1/charges", params: () => ({}), store: storeCharges },
   refunds: { path: "/v1/refunds", params: () => ({ expand: ["data.charge"] }), store: (c, objs, at) => storeRefunds(c, objs, at) },
 };
+
+/** The types Stripe hides on test clocks unless the list names the clock. */
+const CLOCKED = new Set<string>(["customers", "subscriptions", "invoices", OLDER_INVOICES]);
+
+async function testClocks(stripe: Ctx["stripe"]): Promise<string[]> {
+  try {
+    const clocks = await stripe.listAll("/v1/test_helpers/test_clocks", {}, 10_000);
+    return clocks.map((c) => c.id).filter((id): id is string => typeof id === "string").sort();
+  } catch (e) {
+    if (e instanceof StripeError && (e.status === 403 || e.status === 404)) return [];
+    throw e;
+  }
+}
 
 const isBackfillObject = (v: unknown): v is BackfillObject => typeof v === "string" && Object.hasOwn(SPECS, v);
 
@@ -74,13 +93,26 @@ export async function runBackfill(deps: StripeDeps, job: Pick<Job, "payload">, s
       for (;;) {
         if (signal.aborted) throw signal.reason;
         const fetchedAt = new Date(now()).toISOString();
-        const page = await stripe.get<StripeList<StripeObject>>(spec.path, { limit: PAGE_LIMIT, ...spec.params(state), starting_after: state.cursor ?? undefined });
+        const clock = state.clock ? { test_clock: state.clock } : {};
+        let page: StripeList<StripeObject>;
+        try {
+          page = await stripe.get<StripeList<StripeObject>>(spec.path, { limit: PAGE_LIMIT, ...spec.params(state), ...clock, starting_after: state.cursor ?? undefined });
+        } catch (e) {
+          // A test clock deleted after it was listed: nothing left on it.
+          if (!(state.clock && e instanceof StripeError && e.missing)) throw e;
+          page = { object: "list", data: [], has_more: false };
+        }
         rows += await spec.store(ctx, page.data, fetchedAt);
         pages++;
         // The lease was lost while this page was written: the job's next run writes it again (upserts) from the last cursor.
         if (signal.aborted) throw signal.reason;
         const last = page.data.at(-1)?.id;
         state = { ...state, cursor: last ?? state.cursor ?? null, count: (state.count ?? 0) + page.data.length, done: !page.has_more || !last };
+        if (state.done && !source.livemode && CLOCKED.has(object)) {
+          const clocks = state.clocks ?? (await testClocks(stripe));
+          const next = clocks[state.clock ? clocks.indexOf(state.clock) + 1 : 0];
+          state = next ? { ...state, clocks, clock: next, cursor: null, done: false } : { ...state, clocks };
+        }
         if (state.done) state.finished_at = new Date(now()).toISOString();
         await saveState(deps.db, source.id, object, state);
         if (state.done) break;

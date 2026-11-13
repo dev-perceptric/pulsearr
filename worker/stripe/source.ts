@@ -14,7 +14,7 @@ import { TABLES, dedupe, isDeadGrant, refreshTokens, StripeError, stripeClient, 
 import { enqueueJob } from "../../src/lib/jobs.ts";
 import { inTransaction, pgRpc, type Db } from "../pg.ts";
 
-export type BackfillState = { cursor?: string | null; count?: number; done?: boolean; boundary?: number; run?: string; customers?: number; finished_at?: string };
+export type BackfillState = { cursor?: string | null; count?: number; done?: boolean; boundary?: number; run?: string; customers?: number; finished_at?: string; clocks?: string[]; clock?: string | null };
 
 export type Source = {
   id: string;

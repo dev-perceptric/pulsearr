@@ -100,6 +100,7 @@ test("a lost lease in the middle of a backfill picks up at the checkpoint, with 
   const customers = Array.from({ length: 250 }, (_, i) => ({ id: `cus_${String(250 - i).padStart(4, "0")}`, object: "customer", email: `c${i}@example.com`, created: 1767225600 + i }));
   const lease = new AbortController();
   const s = fakeFetch((u) => {
+    if (u.pathname === "/v1/test_helpers/test_clocks") return list([]);
     assert.equal(u.pathname, "/v1/customers");
     // The lease is lost while the second page is being written.
     if (u.searchParams.get("starting_after") === customers[99]!.id) lease.abort(new JobError("The job's lease was lost"));
@@ -130,6 +131,57 @@ test("a lost lease in the middle of a backfill picks up at the checkpoint, with 
   assert.equal(end.distinct, "250");
   assert.equal(end.state.done, true);
   assert.equal(end.state.count, 250);
+});
+
+test("a test-mode backfill also reads every test clock, each with its own cursor; a live one never asks", async () => {
+  await q("delete from public.jobs");
+  const ws = await workspace();
+  const src = await keySource(ws, "rk_test_clocks000001", ["customers"]);
+  const onClock: Record<string, Obj[]> = {
+    clock_a: Array.from({ length: 150 }, (_, i) => ({ id: `cus_a${String(i).padStart(4, "0")}`, object: "customer", created: 1767225600 + i })),
+    clock_b: [{ id: "cus_b0001", object: "customer", created: 1767225600 }],
+  };
+  const plain = [{ id: "cus_plain1", object: "customer", created: 1767225600 }];
+  const s = fakeFetch((u) => {
+    if (u.pathname === "/v1/test_helpers/test_clocks") return list([{ id: "clock_b", object: "test_helpers.test_clock" }, { id: "clock_gone", object: "test_helpers.test_clock" }, { id: "clock_a", object: "test_helpers.test_clock" }]);
+    assert.equal(u.pathname, "/v1/customers");
+    const clock = u.searchParams.get("test_clock");
+    if (clock === "clock_gone") return json({ error: { type: "invalid_request_error", code: "resource_missing", message: "No such test clock" } }, 404);
+    return page(clock ? onClock[clock]! : plain, u);
+  });
+  const handlers = makeHandlers({ db: pool, fetch: s.fetch, retry: FAST, log: () => {} });
+  const ran = await drain(() => handlers, ["stripe.backfill"]);
+  assert.equal(ran["stripe.backfill:done"], 1);
+  const end = await one<{ n: string; state: Obj }>("select (select count(*) from public.stripe_customers where source_id = $1)::text as n, backfill->'customers' as state from public.sources where id = $1", [src]);
+  assert.equal(end.n, "152", "the plain list plus both clocks");
+  assert.equal(end.state.done, true);
+  assert.deepEqual(end.state.clocks, ["clock_a", "clock_b", "clock_gone"]);
+  assert.equal(s.calls.filter((c) => c.url.pathname === "/v1/test_helpers/test_clocks").length, 1, "clocks are listed once");
+  const second = s.calls.find((c) => c.url.searchParams.get("test_clock") === "clock_a" && c.url.searchParams.get("starting_after"));
+  assert.equal(second?.url.searchParams.get("starting_after"), "cus_a0099", "a clock pages with its own cursor");
+  assert.equal(s.calls.find((c) => c.url.searchParams.get("test_clock") === "clock_b")?.url.searchParams.get("starting_after"), null, "the next clock starts from the top");
+
+  // A key that can't read test clocks still finishes with the plain list.
+  await q("delete from public.jobs");
+  const ws2 = await workspace();
+  const src2 = await keySource(ws2, "rk_test_clocks000002", ["customers"]);
+  const s2 = fakeFetch((u) => (u.pathname === "/v1/test_helpers/test_clocks" ? json({ error: { type: "invalid_request_error", message: "The provided key does not have the required permissions" } }, 403) : page(plain, u)));
+  await drain(() => makeHandlers({ db: pool, fetch: s2.fetch, retry: FAST, log: () => {} }), ["stripe.backfill"]);
+  const end2 = await one<{ n: string; state: Obj }>("select (select count(*) from public.stripe_customers where source_id = $1)::text as n, backfill->'customers' as state from public.sources where id = $1", [src2]);
+  assert.equal(end2.n, "1");
+  assert.equal(end2.state.done, true);
+
+  // A live source never lists test clocks.
+  await q("delete from public.jobs");
+  const ws3 = await workspace();
+  const { id: src3 } = await one<{ id: string }>(
+    "select public.connect_source($1, null, 'stripe_key', 'acct_liveclocks', null, true, null, null, $2, null, null, array['customers']::text[]) as id",
+    [ws3, seal("rk_live_clocks000003")],
+  );
+  const s3 = fakeFetch((u) => page(plain, u));
+  await drain(() => makeHandlers({ db: pool, fetch: s3.fetch, retry: FAST, log: () => {} }), ["stripe.backfill"]);
+  assert.ok(s3.calls.every((c) => c.url.pathname === "/v1/customers"), "only the plain list");
+  assert.equal((await one<{ state: Obj }>("select backfill->'customers' as state from public.sources where id = $1", [src3])).state.done, true);
 });
 
 test("a 429 from Stripe waits and retries; one that never clears puts the job back without using an attempt", async () => {
