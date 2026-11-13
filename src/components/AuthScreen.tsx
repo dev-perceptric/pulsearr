@@ -59,7 +59,7 @@ function Terms() {
 
 const textLink = "rounded-xs text-[13px] font-medium text-brand transition-colors duration-[var(--dur-hover)] hover:text-brand-hover disabled:pointer-events-none disabled:font-normal disabled:text-muted";
 
-export function AuthScreen({ sb, googleClientId, initialError = "" }: { sb: SupabaseClient; googleClientId: string | null; initialError?: string }) {
+export function AuthScreen({ sb, googleClientId, googleEnabled = false, initialError = "" }: { sb: SupabaseClient; googleClientId: string | null; googleEnabled?: boolean; initialError?: string }) {
   // A sign-up form on the website sends the email along (/signup?email=...).
   const [email, setEmail] = useState(() => (typeof window === "undefined" ? "" : (new URLSearchParams(window.location.search).get("email") ?? "").trim().slice(0, 254)));
   const [busy, setBusy] = useState(false);
@@ -212,12 +212,14 @@ export function AuthScreen({ sb, googleClientId, initialError = "" }: { sb: Supa
             Continue with email
           </Button>
         </form>
-        <div className="flex items-center gap-3 text-[12px] text-muted" aria-hidden="true">
-          <span className="h-px flex-1 bg-line" />
-          or
-          <span className="h-px flex-1 bg-line" />
-        </div>
-        {googleClientId ? (
+        {googleEnabled && (
+          <div className="flex items-center gap-3 text-[12px] text-muted" aria-hidden="true">
+            <span className="h-px flex-1 bg-line" />
+            or
+            <span className="h-px flex-1 bg-line" />
+          </div>
+        )}
+        {!googleEnabled ? null : googleClientId ? (
           <GoogleButton sb={sb} clientId={googleClientId} onStart={() => void track("signin_started", { method: "google" })} onError={(m) => setError(friendlyError(m))} />
         ) : (
           <Button type="button" variant="secondary" className="w-full" disabled={busy} onClick={() => void googleRedirect()}>

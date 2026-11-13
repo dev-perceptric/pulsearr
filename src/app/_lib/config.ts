@@ -13,5 +13,8 @@ export async function clientConfig(): Promise<ClientConfig | null> {
   const url = supabaseUrl();
   const key = supabasePublishableKey();
   if (!url || !key) return null;
-  return { url, key, googleClientId: envVar("GOOGLE_SIGNIN_CLIENT_ID") || envVar("GOOGLE_CLIENT_ID") || null };
+  const googleClientId = envVar("GOOGLE_SIGNIN_CLIENT_ID") || envVar("GOOGLE_CLIENT_ID") || null;
+  // The Google button shows only once Google sign-in is turned on (GOOGLE_ENABLED, the same switch as GoTrue's) or a
+  // client id is set; otherwise it would lead to "provider is not enabled".
+  return { url, key, googleClientId, googleEnabled: envVar("GOOGLE_ENABLED") === "true" || !!googleClientId };
 }

@@ -9,7 +9,7 @@ import { AuthFrame, AuthScreen } from "./AuthScreen";
 // /signin and /signup. Signed in already (or back from the email link or Google), it opens `next` or the dashboard.
 // The page reads the settings on the server and passes them in (src/app/(auth)/*/page.tsx).
 
-export type ClientConfig = { url: string; key: string; googleClientId: string | null };
+export type ClientConfig = { url: string; key: string; googleClientId: string | null; googleEnabled: boolean };
 
 const LINK_FAILED = "That link didn't open here. Type the code from the email instead.";
 
@@ -44,7 +44,7 @@ export function AuthPage({ config }: { config: ClientConfig }) {
   }, [sb, router]);
 
   if (!state.ready) return <AuthFrame />;
-  return <AuthScreen sb={sb} googleClientId={config.googleClientId} initialError={state.error} />;
+  return <AuthScreen sb={sb} googleClientId={config.googleClientId} googleEnabled={config.googleEnabled} initialError={state.error} />;
 }
 
 /** When the server is missing its settings: one plain line. The cause shows on /api/health/setup. */
