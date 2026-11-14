@@ -155,11 +155,32 @@ test("a test-mode backfill also reads every test clock, each with its own cursor
   const end = await one<{ n: string; state: Obj }>("select (select count(*) from public.stripe_customers where source_id = $1)::text as n, backfill->'customers' as state from public.sources where id = $1", [src]);
   assert.equal(end.n, "152", "the plain list plus both clocks");
   assert.equal(end.state.done, true);
-  assert.deepEqual(end.state.clocks, ["clock_a", "clock_b", "clock_gone"]);
+  assert.deepEqual(end.state.parts, ["clock_a", "clock_b", "clock_gone"]);
   assert.equal(s.calls.filter((c) => c.url.pathname === "/v1/test_helpers/test_clocks").length, 1, "clocks are listed once");
   const second = s.calls.find((c) => c.url.searchParams.get("test_clock") === "clock_a" && c.url.searchParams.get("starting_after"));
   assert.equal(second?.url.searchParams.get("starting_after"), "cus_a0099", "a clock pages with its own cursor");
   assert.equal(s.calls.find((c) => c.url.searchParams.get("test_clock") === "clock_b")?.url.searchParams.get("starting_after"), null, "the next clock starts from the top");
+
+  // Invoices: Stripe refuses test_clock on the invoice list, so they're listed by each customer on a clock.
+  await q("delete from public.jobs");
+  const ws4 = await workspace();
+  const src4 = await keySource(ws4, "rk_test_clocks000004", ["invoices"]);
+  const inv = (id: string, customer: string) => ({ id, object: "invoice", customer, status: "paid", currency: "usd", created: 1790000000, lines: { object: "list", data: [], has_more: false } });
+  const invoicesOf: Record<string, Obj[]> = { cus_a1: [inv("in_a1", "cus_a1"), inv("in_a2", "cus_a1")], cus_b1: [inv("in_b1", "cus_b1")] };
+  const s4 = fakeFetch((u) => {
+    if (u.pathname === "/v1/test_helpers/test_clocks") return list([{ id: "clock_a" }, { id: "clock_b" }]);
+    if (u.pathname === "/v1/customers") return page(u.searchParams.get("test_clock") === "clock_a" ? [{ id: "cus_a1", object: "customer" }] : [{ id: "cus_b1", object: "customer" }], u);
+    assert.equal(u.pathname, "/v1/invoices");
+    if (u.searchParams.has("test_clock")) return json({ error: { type: "invalid_request_error", message: "Received unknown parameter: test_clock" } }, 400);
+    const customer = u.searchParams.get("customer");
+    return page(customer ? (invoicesOf[customer] ?? []) : [], u);
+  });
+  await drain(() => makeHandlers({ db: pool, fetch: s4.fetch, retry: FAST, log: () => {} }), ["stripe.backfill"]);
+  const end4 = await one<{ n: string; state: Obj; err: string | null }>("select (select count(*) from public.stripe_invoices where source_id = $1)::text as n, backfill->'invoices' as state, last_error as err from public.sources where id = $1", [src4]);
+  assert.equal(end4.err, null);
+  assert.equal(end4.n, "3", "every invoice of every customer on a clock");
+  assert.deepEqual(end4.state.parts, ["cus_a1", "cus_b1"]);
+  assert.equal(end4.state.done, true);
 
   // A key that can't read test clocks still finishes with the plain list.
   await q("delete from public.jobs");

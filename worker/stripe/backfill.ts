@@ -12,10 +12,11 @@
 // `count`, so it never reads as an object type), then rebuilds mrr_daily once. A customer that can't be built yet
 // (a missing rate or price) gets its own mrr.rebuild_customer job, which retries on its own schedule.
 //
-// Test mode: Stripe leaves customers, subscriptions and invoices on test clocks out of its lists unless the call
-// names the clock. So in a test-mode source, once the plain list is done, those types list the source's test clocks
-// once (sources.backfill[object].clocks) and go through them one at a time (.clock), each with its own cursor. A key
-// that can't read test clocks (403) just skips them.
+// Test mode: Stripe leaves customers, subscriptions and invoices on test clocks out of its lists. Customers and
+// subscriptions can be listed by test_clock; invoices can't (Stripe refuses the parameter), so they are listed by
+// each customer on a clock. In a test-mode source, once the plain list is done, the job works out those parts once
+// (sources.backfill[object].parts: clock ids, or customer ids for invoices) and goes through them one at a time
+// (.part), each with its own cursor. A key that can't read test clocks (403) just skips them.
 
 import { enqueueJob, JobError, type Job } from "../../src/lib/jobs.ts";
 import { BACKFILL_OBJECTS, OLDER_INVOICES, PAGE_LIMIT, type BackfillObject, type StripeList, type StripeObject } from "../../src/lib/stripe/index.ts";
@@ -42,8 +43,8 @@ export const SPECS: Record<BackfillObject, Spec> = {
   refunds: { path: "/v1/refunds", params: () => ({ expand: ["data.charge"] }), store: (c, objs, at) => storeRefunds(c, objs, at) },
 };
 
-/** The types Stripe hides on test clocks unless the list names the clock. */
-const CLOCKED = new Set<string>(["customers", "subscriptions", "invoices", OLDER_INVOICES]);
+/** The types Stripe hides on test clocks, and the list parameter that reaches them. */
+const CLOCK_PARAM: Partial<Record<string, "test_clock" | "customer">> = { customers: "test_clock", subscriptions: "test_clock", invoices: "customer", [OLDER_INVOICES]: "customer" };
 
 async function testClocks(stripe: Ctx["stripe"]): Promise<string[]> {
   try {
@@ -53,6 +54,21 @@ async function testClocks(stripe: Ctx["stripe"]): Promise<string[]> {
     if (e instanceof StripeError && (e.status === 403 || e.status === 404)) return [];
     throw e;
   }
+}
+
+/** The clocks, or for invoices every customer on a clock, sorted. */
+async function testClockParts(stripe: Ctx["stripe"], by: "test_clock" | "customer"): Promise<string[]> {
+  const clocks = await testClocks(stripe);
+  if (by === "test_clock") return clocks;
+  const ids = new Set<string>();
+  for (const clock of clocks) {
+    try {
+      for (const c of await stripe.listAll("/v1/customers", { test_clock: clock }, 100_000)) if (typeof c.id === "string") ids.add(c.id);
+    } catch (e) {
+      if (!(e instanceof StripeError && e.missing)) throw e;
+    }
+  }
+  return [...ids].sort();
 }
 
 const isBackfillObject = (v: unknown): v is BackfillObject => typeof v === "string" && Object.hasOwn(SPECS, v);
@@ -89,17 +105,18 @@ export async function runBackfill(deps: StripeDeps, job: Pick<Job, "payload">, s
     }
     const stripe = sourceClient(deps, source, signal);
     const ctx: Ctx = { db: deps.db, source, stripe };
+    const by = CLOCK_PARAM[object];
     try {
       for (;;) {
         if (signal.aborted) throw signal.reason;
         const fetchedAt = new Date(now()).toISOString();
-        const clock = state.clock ? { test_clock: state.clock } : {};
+        const part = by && state.part ? { [by]: state.part } : {};
         let page: StripeList<StripeObject>;
         try {
-          page = await stripe.get<StripeList<StripeObject>>(spec.path, { limit: PAGE_LIMIT, ...spec.params(state), ...clock, starting_after: state.cursor ?? undefined });
+          page = await stripe.get<StripeList<StripeObject>>(spec.path, { limit: PAGE_LIMIT, ...spec.params(state), ...part, starting_after: state.cursor ?? undefined });
         } catch (e) {
-          // A test clock deleted after it was listed: nothing left on it.
-          if (!(state.clock && e instanceof StripeError && e.missing)) throw e;
+          // A test clock or customer deleted after it was listed: nothing left on it.
+          if (!(state.part && e instanceof StripeError && e.missing)) throw e;
           page = { object: "list", data: [], has_more: false };
         }
         rows += await spec.store(ctx, page.data, fetchedAt);
@@ -108,10 +125,10 @@ export async function runBackfill(deps: StripeDeps, job: Pick<Job, "payload">, s
         if (signal.aborted) throw signal.reason;
         const last = page.data.at(-1)?.id;
         state = { ...state, cursor: last ?? state.cursor ?? null, count: (state.count ?? 0) + page.data.length, done: !page.has_more || !last };
-        if (state.done && !source.livemode && CLOCKED.has(object)) {
-          const clocks = state.clocks ?? (await testClocks(stripe));
-          const next = clocks[state.clock ? clocks.indexOf(state.clock) + 1 : 0];
-          state = next ? { ...state, clocks, clock: next, cursor: null, done: false } : { ...state, clocks };
+        if (state.done && !source.livemode && by) {
+          const parts = state.parts ?? (await testClockParts(stripe, by));
+          const next = parts[state.part ? parts.indexOf(state.part) + 1 : 0];
+          state = next ? { ...state, parts, part: next, cursor: null, done: false } : { ...state, parts };
         }
         if (state.done) state.finished_at = new Date(now()).toISOString();
         await saveState(deps.db, source.id, object, state);
