@@ -13,7 +13,7 @@ Written November 11, 2026. M1 connects a team's Stripe, loads its history, keeps
 - `/api/stripe/callback` checks `state`, trades the code for tokens at `https://api.stripe.com/v1/oauth/token` with the platform key, and stores `stripe_user_id`, the access token and the refresh token sealed (`src/lib/seal.ts`). Access tokens are refreshed before they run out.
 - Server values: `STRIPE_SECRET_KEY` (the platform's key), `STRIPE_APP_CLIENT_ID`, `STRIPE_CONNECT_WEBHOOK_SECRET`. They go into hPanel for `pulsearr-web` and `pulsearr-worker` and show in `/api/health/setup`.
 
-**Backup path: a restricted key**, under Settings → Sources only, for beta teams while Stripe reviews the app. A read-only restricted key (`rk_live_…`) is checked with one call to `/v1/account`, then sealed. The key must not be able to write: the check refuses a key that can create a webhook endpoint.
+**Backup path: a restricted key**, under Settings → Sources only, for beta teams while Stripe reviews the app. A read-only restricted key (`rk_live_…`) is checked with one call to `/v1/account`, then sealed. The key must not be able to write: the check refuses a key that can create products, prices, coupons, subscriptions or invoices (each probe leaves out a required field, so nothing is ever created).
 
 **Disconnect** removes the tokens and, after `askConfirm`, every row from that source.
 

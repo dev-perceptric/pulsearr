@@ -2,7 +2,9 @@
 // (docs/m1-plan.md section 1). checkRestrictedKey reads the account with it, then proves it can't write.
 //
 // The write probe: POST to endpoints that create things, each with a body missing a required field, so nothing can
-// ever be created. Stripe checks a restricted key's permissions before it reads the body:
+// ever be created. On these five Stripe checks a restricted key's permissions before it reads the body (tested
+// against a real read-only key and a secret key, November 2026). Webhook endpoints and refunds read the body first,
+// so a read-only key gets a 400 there too: they must never be probes.
 //   403  the key can't write there (what we want)
 //   400  the key got past the permission check and only the body was refused: it can write, so it is refused
 //   2xx  can't happen with these bodies; treated as "can write"
@@ -16,10 +18,11 @@ export const RESTRICTED_KEY = /^rk_(live|test)_[A-Za-z0-9]{10,250}$/;
 
 /** POSTs that would create something, each with a required field left out. */
 export const WRITE_PROBES: { path: string; params: Record<string, string> }[] = [
-  { path: "/v1/webhook_endpoints", params: {} },
   { path: "/v1/products", params: {} },
+  { path: "/v1/prices", params: {} },
+  { path: "/v1/coupons", params: {} },
   { path: "/v1/subscriptions", params: {} },
-  { path: "/v1/refunds", params: {} },
+  { path: "/v1/invoices", params: {} },
 ];
 
 export type KeyProblem = "format" | "invalid" | "account" | "can_write" | "unchecked";

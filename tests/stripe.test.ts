@@ -172,11 +172,19 @@ test("a read-only restricted key is accepted, after probes that can't create any
 });
 
 test("a restricted key that can write is refused", async () => {
-  // Write access to webhook endpoints: Stripe gets past the permission check and only refuses the missing url.
-  const s = stripeAccount((path) => (path === "/v1/webhook_endpoints" ? stripeErr(400, "Missing required param: url.", { code: "parameter_missing", param: "url" }) : stripeErr(403, "no permission")));
+  // Write access to products: Stripe gets past the permission check and only refuses the missing name.
+  const s = stripeAccount((path) => (path === "/v1/products" ? stripeErr(400, "Missing required param: name.", { code: "parameter_missing", param: "name" }) : stripeErr(403, "no permission")));
   await assert.rejects(stripe.checkRestrictedKey("rk_live_canwrite12345", { fetch: s.fetch, retry: FAST }), (e: unknown) => e instanceof stripe.KeyCheckError && e.problem === "can_write");
-  const s2 = stripeAccount((path) => (path === "/v1/refunds" ? stripeErr(400, "Missing charge", { code: "parameter_missing" }) : stripeErr(403, "no permission")));
+  const s2 = stripeAccount((path) => (path === "/v1/invoices" ? stripeErr(400, "Must provide customer or from_invoice.", { code: "parameter_missing" }) : stripeErr(403, "no permission")));
   await assert.rejects(stripe.checkRestrictedKey("rk_live_canwrite12345", { fetch: s2.fetch, retry: FAST }), /can make changes/);
+});
+
+test("the probes never include endpoints where Stripe reads the body before the permission", () => {
+  // A read-only key gets a 400 from these two, so probing them refused every key.
+  const paths = stripe.WRITE_PROBES.map((p) => p.path);
+  assert.ok(!paths.includes("/v1/webhook_endpoints"));
+  assert.ok(!paths.includes("/v1/refunds"));
+  assert.deepEqual(paths.sort(), ["/v1/coupons", "/v1/invoices", "/v1/prices", "/v1/products", "/v1/subscriptions"]);
 });
 
 test("other keys: wrong kind, refused by Stripe, can't read the account, or a probe we can't read", async () => {
