@@ -10,6 +10,8 @@ site
 docs
 tests
 deploy
+# The deploy script goes into the web image, so the server can copy the newest one out (deploy/deploy.sh).
+!deploy/deploy.sh
 coverage
 *.tsbuildinfo
 next-env.d.ts

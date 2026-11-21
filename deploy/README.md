@@ -1,4 +1,34 @@
-# Deploying PulseARR on the Hostinger VPS
+# Deploying PulseARR
+
+PulseARR now runs on the OVH server (149.56.19.140, Docker and Traefik). The Hostinger VPS (45.90.109.7) below is gone:
+the runbook still holds for the first setup, with the new address.
+
+## Deploys
+
+Every push to `main` deploys on its own:
+
+1. Checks pass, then Build images builds `pulsearr-web` and `pulsearr-worker` (tagged `latest` and the commit).
+2. Job `deploy` SSHes to the server and runs `deploy/deploy.sh <commit>`: it pulls the images and restarts only the
+   containers that run them (found by image, in whichever compose project started them). The newest copy of the script
+   is inside the web image, so a change to it needs nothing done on the server.
+3. The job waits until `https://app.pulsearr.com/api/version` shows the commit, and fails the run if it doesn't within
+   5 minutes. A red run means the push is not live.
+
+The server's autodeploy also pulls `latest` every 5 minutes. Until the SSH settings exist, step 2 is skipped and step 3
+waits up to 12 minutes for autodeploy instead. Migrations keep coming from the `pulsearr-migrate` runner.
+
+Setup, once:
+
+1. On your computer: `ssh-keygen -t ed25519 -N '' -C github-pulsearr-deploy -f pulsearr-deploy`.
+2. On the server, as the deploy user (`ubuntu`, in the docker group): copy `deploy/deploy.sh` to
+   `~/pulsearr/deploy.sh` and `chmod 755` it, then add one line to `~/.ssh/authorized_keys` (the public key from step 1):
+   `command="/home/ubuntu/pulsearr/deploy.sh",no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty ssh-ed25519 AAAA... github-pulsearr-deploy`
+   Run `~/pulsearr/deploy.sh` once by hand and read what it restarts.
+3. In GitHub (Settings, Secrets and variables, Actions): variables `DEPLOY_HOST=149.56.19.140`, `DEPLOY_USER=ubuntu`;
+   secrets `DEPLOY_SSH_KEY` (the private key file) and `DEPLOY_KNOWN_HOSTS` (`ssh-keyscan -t ed25519 149.56.19.140`).
+   Then delete the private key from your computer.
+
+## First setup (written for the Hostinger VPS)
 
 This is the runbook for step 7 of `docs/m0-plan.md`. It changes the shared production server that runs the other apps, so **get a yes before starting**. Every secret goes into a file on the server (chmod 600), never into the repo, chat or a ticket.
 

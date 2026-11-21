@@ -1,6 +1,14 @@
 # Build the web and worker images and publish them to GitHub's container registry (ghcr.io), tagged latest and the
-# commit. The Hostinger VPS pulls them on its own (autodeploy, every 5 minutes). Nothing deploys from here, and
-# GITHUB_TOKEN is the only secret it needs.
+# commit. Then deploy them to the OVH server (149.56.19.140) and check they went live: job "deploy" SSHes in and runs
+# deploy/deploy.sh (it pulls the new images and restarts pulsearr-web and pulsearr-worker), then waits until
+# app.pulsearr.com/api/version shows this commit. The server's own autodeploy also pulls :latest every 5 minutes, so
+# until the SSH settings below exist, the job skips the SSH step and only waits for that, which still fails the run
+# when the new commit doesn't go live.
+# The SSH step runs only once the repo has the variable DEPLOY_HOST. It needs (Settings, Secrets and variables, Actions):
+#   variables: DEPLOY_HOST (the server's address), DEPLOY_USER (the SSH user), DEPLOY_PORT (optional, default 22),
+#              APP_URL (optional, default https://app.pulsearr.com)
+#   secrets:   DEPLOY_SSH_KEY (a private key made only for this), DEPLOY_KNOWN_HOSTS (the line from ssh-keyscan for the server)
+# Server setup: deploy/README.md, Deploys.
 #
 # Why workflow_run: images must only come from a main commit that passed Checks. Checks runs on every push and pull
 # request, so instead of repeating it here, this workflow starts when the Checks run for a push to main finishes,
@@ -69,3 +77,48 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:${{ env.SHA }}
           cache-from: type=gha,scope=${{ matrix.image }}
           cache-to: type=gha,mode=max,scope=${{ matrix.image }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    # One deploy at a time.
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    env:
+      SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - name: Restart the app and worker on the server
+        if: ${{ vars.DEPLOY_HOST != '' }}
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          HOST: ${{ vars.DEPLOY_HOST }}
+          USER_NAME: ${{ vars.DEPLOY_USER }}
+          PORT: ${{ vars.DEPLOY_PORT || '22' }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          # The server's authorized_keys locks this key to deploy/deploy.sh, so the command here is only a fallback.
+          ssh -i ~/.ssh/deploy_key -p "$PORT" -o StrictHostKeyChecking=yes -o BatchMode=yes "$USER_NAME@$HOST" deploy.sh "$SHA"
+      - name: Wait for the app to show this commit
+        env:
+          APP_URL: ${{ vars.APP_URL || 'https://app.pulsearr.com' }}
+          # Without the SSH step this waits for the server's autodeploy (every 5 minutes, plus the pull).
+          MINUTES: ${{ vars.DEPLOY_HOST != '' && '5' || '12' }}
+        run: |
+          # /api/version answers {"build":"<first 12 characters of the commit>"} (next.config.ts).
+          want=${SHA:0:12}
+          for _ in $(seq 1 $((MINUTES * 12))); do
+            got=$(curl -fsS -m 10 "$APP_URL/api/version" | sed -n 's/.*"build":"\([0-9a-f]*\)".*/\1/p' || true)
+            if [ "$got" = "$want" ]; then echo "Live: $SHA"; exit 0; fi
+            echo "Waiting for $want (server has ${got:-nothing yet})"
+            sleep 5
+          done
+          echo "The server didn't switch to $SHA within $MINUTES minutes (it has ${got:-nothing})." >&2
+          exit 1

@@ -28,6 +28,8 @@ RUN npm ci --omit=dev --ignore-scripts && rm -rf /root/.npm
 COPY --from=build --chown=web /app/.next ./.next
 COPY --from=build /app/public ./public
 COPY --from=build /app/next.config.ts ./
+# The newest deploy script, which the server copies out on every deploy (deploy/deploy.sh).
+COPY --from=build /app/deploy/deploy.sh ./deploy.sh
 USER web
 EXPOSE 3000
 CMD ["npx", "next", "start", "-p", "3000"]
