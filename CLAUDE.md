@@ -4,7 +4,7 @@ Subscription analytics for SaaS: MRR, churn, LTV and cohorts from Stripe, Pulse 
 
 Read first: `docs/build-plan.md` (the plan), `docs/m0-plan.md` (the milestone being built and the lessons from the other apps), `docs/brand.md` (look and copy), `docs/costs.md` (running cost), `deploy/README.md` (the server).
 
-Everything runs on the Hostinger VPS: `pulsearr-web` (Next.js in `src/`), `pulsearr-worker` (`worker/`, claims jobs straight from Postgres) and the `sb-pulsearr` Supabase stack. Sign-in and data go through the Supabase-style API at `SUPABASE_URL` (`https://db.pulsearr.com`).
+Everything runs on the OVH server (149.56.19.140, called the VPS below; the Hostinger VPS is gone): `pulsearr-web` (Next.js in `src/`), `pulsearr-worker` (`worker/`, claims jobs straight from Postgres) and the `sb-pulsearr` Supabase stack. Sign-in and data go through the Supabase-style API at `SUPABASE_URL` (`https://db.pulsearr.com`).
 
 ## Rule: every build includes its running cost
 - Every build plan, feature or milestone states what it adds to the monthly bill: servers plus every paid service, Claude tokens included, as monthly totals at Beta (50 teams) and Growth (500 teams). No per-team numbers.
@@ -67,7 +67,7 @@ Everything runs on the Hostinger VPS: `pulsearr-web` (Next.js in `src/`), `pulse
 - The worker stays in `worker/` with its own `worker/tsconfig.json`; the web build never sees it.
 
 ## Rule: production is main
-- Production is `main`. Checks (`.github/workflows/checks.yml`) run on every push; images (`ghcr.io/dev-perceptric/pulsearr-web` and `pulsearr-worker`) are built only from `main` after Checks pass, and the VPS pulls them on its own. Migrations come only from `main`.
+- Production is `main`. Checks (`.github/workflows/checks.yml`) run on every push; images (`ghcr.io/dev-perceptric/pulsearr-web` and `pulsearr-worker`) are built only from `main` after Checks pass, then deployed by the same workflow, which fails unless `/api/version` shows the new commit (`deploy/README.md`, Deploys). Migrations come only from `main`.
 - The VPS is the only host. No Render, Fly or other host files.
 
 ## Rule: secrets

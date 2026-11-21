@@ -43,7 +43,7 @@ npm run costs       # the running cost model
 
 ## Deploy
 
-Everything runs on the Hostinger VPS. A push to `main` runs Checks; when they pass, `.github/workflows/build-images.yml` builds `pulsearr-web` and `pulsearr-worker` and the server picks them up within 5 minutes. Migrations in `supabase/migrations` run on their own from `main`. The compose files and the server runbook are in [`deploy/README.md`](deploy/README.md).
+Everything runs on the OVH server (149.56.19.140). A push to `main` runs Checks; when they pass, `.github/workflows/build-images.yml` builds `pulsearr-web` and `pulsearr-worker`, deploys them, and fails unless `app.pulsearr.com/api/version` shows the new commit within minutes. Migrations in `supabase/migrations` run on their own from `main`. The compose files and the server runbook are in [`deploy/README.md`](deploy/README.md).
 
 ## Website
 
